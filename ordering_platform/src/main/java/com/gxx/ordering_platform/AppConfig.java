@@ -126,7 +126,7 @@ public class AppConfig {
 		
 		//配置基础信息
 		shiroFilterFactoryBean.setLoginUrl("/static/html/login.html");
-		shiroFilterFactoryBean.setSuccessUrl("success.html");
+		shiroFilterFactoryBean.setSuccessUrl("/static/html/main.html");
 		shiroFilterFactoryBean.setUnauthorizedUrl("/static/html/unauthorized.html");
 		shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
 		return shiroFilterFactoryBean;
