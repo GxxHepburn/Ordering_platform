@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import org.apache.catalina.Context;
@@ -26,6 +27,8 @@ import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSource
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.mybatis.spring.SqlSessionFactoryBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -41,6 +44,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.gxx.ordering_platform.reamls.ShiroRealm;
+import com.gxx.ordering_platform.service.WechatLoginService;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -48,13 +52,15 @@ import com.zaxxer.hikari.HikariDataSource;
 @ComponentScan
 @EnableWebMvc
 @EnableTransactionManagement
-@PropertySource("classpath:/jdbc.properties")
+@PropertySource({"classpath:/jdbc.properties", "classpath:/wechat.properties"})
 public class AppConfig {
+	
+	final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public static void main(String[] args) throws LifecycleException {
 		
 		Tomcat tomcat = new Tomcat();
-		tomcat.setPort(Integer.getInteger("port", 8080));
+		tomcat.setPort(Integer.getInteger("port", 80));
 		tomcat.getConnector();
 		Context ctx = tomcat.addWebapp("", new File("src/main/webapp").getAbsolutePath());
 		WebResourceRoot resources = new StandardRoot(ctx);
@@ -63,6 +69,26 @@ public class AppConfig {
 		ctx.setResources(resources);
 		tomcat.start();
 		tomcat.getServer().await();
+	}
+	
+	
+	public static String APPID;
+	public static String APPSECRET;
+	//初始化静态参数-wechat
+	@Configuration
+	class WechatConfig{
+		@Value("${wechat.appId}")
+		private  String appId;
+		
+		@Value("${wechat.appSecret}")
+		private  String appSecret;
+		
+		@PostConstruct
+		void init() {
+			
+			AppConfig.APPID = appId;
+			AppConfig.APPSECRET = appSecret;
+		}
 	}
 	
 	@Bean
@@ -115,14 +141,14 @@ public class AppConfig {
 		Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
 		
 		//配置权限-测试
-		filterChainDefinitionMap.put("/static/html/login.html", "anon");
-		filterChainDefinitionMap.put("/shiro/login", "anon");
-		filterChainDefinitionMap.put("/shiro/logout", "logout");
-		filterChainDefinitionMap.put("/static/html/user.html", "authc,roles[user]");
-		filterChainDefinitionMap.put("/static/html/admin.html", "authc,roles[admin]");
-		filterChainDefinitionMap.put("/static/html/list.html", "authc");
-		
-		filterChainDefinitionMap.put("/**", "authc");
+//		filterChainDefinitionMap.put("/static/html/login.html", "anon");
+//		filterChainDefinitionMap.put("/shiro/login", "anon");
+//		filterChainDefinitionMap.put("/shiro/logout", "logout");
+//		filterChainDefinitionMap.put("/static/html/user.html", "authc,roles[user]");
+//		filterChainDefinitionMap.put("/static/html/admin.html", "authc,roles[admin]");
+//		filterChainDefinitionMap.put("/static/html/list.html", "authc");
+//		
+//		filterChainDefinitionMap.put("/**", "authc");
 		
 		//配置基础信息
 		shiroFilterFactoryBean.setLoginUrl("/static/html/login.html");
