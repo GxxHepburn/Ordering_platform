@@ -3,3 +3,8 @@ testdb.lck
 testdb.log
 testdb.properties
 testdb.script
+.settings
+.project
+target
+.classpath
+*.gitignore

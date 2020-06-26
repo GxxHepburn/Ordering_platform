@@ -114,7 +114,7 @@ public class AppConfig {
 		shiroFilterFactoryBean.setSecurityManager(securityManager);
 		Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
 		
-		//配置权限
+		//配置权限-测试
 		filterChainDefinitionMap.put("/static/html/login.html", "anon");
 		filterChainDefinitionMap.put("/shiro/login", "anon");
 		filterChainDefinitionMap.put("/shiro/logout", "logout");
