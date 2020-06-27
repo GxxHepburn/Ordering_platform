@@ -1,4 +1,4 @@
-package com.gxx.ordering_platform;
+ package com.gxx.ordering_platform;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -27,6 +27,7 @@ import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSource
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,12 +45,12 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.gxx.ordering_platform.reamls.ShiroRealm;
-import com.gxx.ordering_platform.service.WechatLoginService;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
 @ComponentScan
+@MapperScan("com.gxx.ordering_platform.mapper")
 @EnableWebMvc
 @EnableTransactionManagement
 @PropertySource({"classpath:/jdbc.properties", "classpath:/wechat.properties"})

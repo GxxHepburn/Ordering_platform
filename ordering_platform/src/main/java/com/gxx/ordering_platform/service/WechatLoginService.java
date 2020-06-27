@@ -9,21 +9,30 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpClient.Version;
 import java.time.Duration;
+import java.util.Date;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.gxx.ordering_platform.entity.WechatUser;
+import com.gxx.ordering_platform.mapper.WechatUserMapper;
 
 
 @Component
 public class WechatLoginService {
+	
+	@Autowired
+	WechatUserMapper wechatUserMapper;
 
 	final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	static HttpClient httpClient = HttpClient.newBuilder().build();
 	
+	//获取wechat_openId
 	public String singin(String appId, String appSecret, String code) throws Exception {
 		String url = "https://api.weixin.qq.com/sns/jscode2session?"
 				+ "appid=" + appId 
@@ -54,5 +63,21 @@ public class WechatLoginService {
 		logger.info("openId: " + OPENID);
 		logger.info("session_key: " + SESSION_KEY);
 		return OPENID;
+	}
+	
+	//查看是否存在该用户
+	@Transactional
+	public WechatUser getUserByUOpenId(String uopenid) {
+		return wechatUserMapper.getByUOpenId(uopenid);
+	}
+	//存在则修改登陆时间
+	@Transactional
+	public boolean updateWechatUserByUOpenId(WechatUser wechatUser) {
+		return wechatUserMapper.updateLoginTimeByOpenId(wechatUser);
+	}
+	//不存在则初始化该用户
+	@Transactional
+	public boolean insertWechatNoUID(WechatUser wechatUser) {
+		return wechatUserMapper.insert(wechatUser);
 	}
 }
