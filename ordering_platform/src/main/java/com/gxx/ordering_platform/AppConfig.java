@@ -130,7 +130,7 @@ public class AppConfig {
 			@Override
 			public void addResourceHandlers(ResourceHandlerRegistry registry) {
 				registry.addResourceHandler("/static/**").addResourceLocations("/static/");
-				registry.addResourceHandler("/j60UNhsMqa.txt").addResourceLocations("/j60UNhsMqa.txt");
+				registry.addResourceHandler("/wechat/**").addResourceLocations("/");
 			}
 		};
 	}
