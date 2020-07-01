@@ -33,6 +33,7 @@ public class WechatOpenIdFilter implements Filter {
 	@Autowired
 	WechatLoginService WechatLoginService;
 
+	//这个拦截器的目的是防止非法侵入，确保安全性
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
@@ -49,15 +50,15 @@ public class WechatOpenIdFilter implements Filter {
 			output.write(buffer, 0, len);
 		}
 		String jsonString = output.toString();
+		logger.info(jsonString);
 		JSONObject jsonObject = new JSONObject(jsonString);
 		String openId = jsonObject.getString("openid");
-		logger.info(openId);
 		
 		if ("".equals(openId)) {
 			//拦截
 			return;
 		} else {
-			WechatUser wechatUser = WechatLoginService.getUserByUOpenId(/*openId*/"xx");
+			WechatUser wechatUser = WechatLoginService.getUserByUOpenId(openId);
 			if (wechatUser == null) {
 				//拦截
 				return;

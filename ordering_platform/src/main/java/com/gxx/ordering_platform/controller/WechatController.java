@@ -74,6 +74,7 @@ public class WechatController {
 	@ResponseBody
 	public String initMenu(@RequestBody String str) {
 		JSONObject jsonObject = new JSONObject(str);
+		logger.info(str);
 		String openId = jsonObject.getString("openid");
 		String res = jsonObject.getString("res");
 		return WeChatInitMenuService.initMenu(openId, res);
