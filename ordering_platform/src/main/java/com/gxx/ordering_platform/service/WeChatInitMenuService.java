@@ -10,6 +10,6 @@ public class WeChatInitMenuService {
 	final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	public String initMenu(String openId,String res) {
-		return "";
+		return "meibeilanjie";
 	}
 }

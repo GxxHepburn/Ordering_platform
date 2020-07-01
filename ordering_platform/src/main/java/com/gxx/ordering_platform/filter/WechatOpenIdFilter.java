@@ -55,10 +55,12 @@ public class WechatOpenIdFilter implements Filter {
 		
 		if ("".equals(openId)) {
 			//拦截
+			return;
 		} else {
-			WechatUser wechatUser = WechatLoginService.getUserByUOpenId(openId);
+			WechatUser wechatUser = WechatLoginService.getUserByUOpenId(/*openId*/"xx");
 			if (wechatUser == null) {
 				//拦截
+				return;
 			}
 			//放行
 			chain.doFilter(new WechatOpenIdFilterHttpServletRequest(req, output.toByteArray()), response);
