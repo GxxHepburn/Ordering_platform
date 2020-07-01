@@ -1,12 +1,18 @@
  package com.gxx.ordering_platform;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.sql.DataSource;
 
 import org.apache.catalina.Context;
@@ -30,6 +36,7 @@ import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -44,7 +51,9 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.gxx.ordering_platform.filter.WechatOpenIdFilter;
 import com.gxx.ordering_platform.reamls.ShiroRealm;
+import com.gxx.ordering_platform.service.WechatLoginService;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -134,6 +143,12 @@ public class AppConfig {
 			}
 		};
 	}
+	
+	@Bean(name = "wechatOpenIdFilter")
+	WechatOpenIdFilter createWechatOpenIdFilter() {
+		return new WechatOpenIdFilter();
+	}
+
 	
 	//shiro configuration
 	@Bean(name = "shiroFilter")

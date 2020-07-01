@@ -2,6 +2,7 @@ package com.gxx.ordering_platform.controller;
 
 import java.util.Date;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,16 +15,19 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gxx.ordering_platform.AppConfig;
 import com.gxx.ordering_platform.entity.WechatCode;
 import com.gxx.ordering_platform.entity.WechatUser;
+import com.gxx.ordering_platform.service.WeChatInitMenuService;
 import com.gxx.ordering_platform.service.WechatLoginService;
 
 @RestController
 @RequestMapping("/wechat")
-public class WechatLoginController {
+public class WechatController {
 
 	final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Autowired
 	WechatLoginService wechatLoginService;
+	@Autowired
+	WeChatInitMenuService WeChatInitMenuService;
 	
 	@PostMapping("/login")
 	@ResponseBody
@@ -44,7 +48,7 @@ public class WechatLoginController {
 //		logger.info("wechatUser: " + wechatUser);
 		Date date = new Date();
 		if (wechatUser == null) {
-			//没有这个用户，那么酒初始化这个用户
+			//没有这个用户，那么就初始化这个用户
 			WechatUser wechatUserInsert = new WechatUser();
 			wechatUserInsert.setU_LoginTime(date);
 			wechatUserInsert.setU_RegisterTime(date);
@@ -64,5 +68,14 @@ public class WechatLoginController {
 			}
 		}
 		return UOPENID;
+	}
+	
+	@PostMapping("/loggedIn/initMenu")
+	@ResponseBody
+	public String initMenu(@RequestBody String str) {
+		JSONObject jsonObject = new JSONObject(str);
+		String openId = jsonObject.getString("openid");
+		String res = jsonObject.getString("res");
+		return WeChatInitMenuService.initMenu(openId, res);
 	}
 }
