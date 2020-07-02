@@ -12,5 +12,6 @@ public class WeChatInitMenuServiceTest {
 	public void initMenuTest() {
 		String res = "1";
 		//通过与数据库交互，获取初始化菜单所需数据
+		
 	}
 }
