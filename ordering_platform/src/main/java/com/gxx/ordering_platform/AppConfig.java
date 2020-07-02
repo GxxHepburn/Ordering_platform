@@ -123,10 +123,10 @@ public class AppConfig {
 		return sqlSessionFactoryBean;
 	}
 	
-//	@Bean
-//	JdbcTemplate createJdbcTemplate(@Autowired DataSource dataSource) {
-//		return new JdbcTemplate(dataSource);
-//	}
+	@Bean
+	JdbcTemplate createJdbcTemplate(@Autowired DataSource dataSource) {
+		return new JdbcTemplate(dataSource);
+	}
 	
 	@Bean
 	PlatformTransactionManager createTxManager(@Autowired DataSource dataSource) {
