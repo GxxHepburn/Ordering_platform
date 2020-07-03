@@ -16,8 +16,12 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.gxx.ordering_platform.AppConfig;
 import com.gxx.ordering_platform.entity.Food;
+import com.gxx.ordering_platform.entity.FoodProperty;
+import com.gxx.ordering_platform.entity.FoodSpecifications;
 import com.gxx.ordering_platform.entity.FoodType;
 import com.gxx.ordering_platform.mapper.FoodMapper;
+import com.gxx.ordering_platform.mapper.FoodPropertyMapper;
+import com.gxx.ordering_platform.mapper.FoodSpecificationsMapper;
 import com.gxx.ordering_platform.mapper.FoodTypeMapper;
 
 //创建spring容器
@@ -33,6 +37,12 @@ public class WeChatInitMenuServiceTest {
 	@Autowired
 	FoodMapper foodMapper;
 	
+	@Autowired
+	FoodSpecificationsMapper foodSpecificationsMapper;
+	
+	@Autowired
+	FoodPropertyMapper foodPropertyMapper;
+	
 	final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Test
@@ -41,10 +51,10 @@ public class WeChatInitMenuServiceTest {
 		//通过与数据库交互，获取初始化菜单所需数据
 		int ft_mid = Integer.valueOf(res);
 		List<FoodType> foodTypes = foodTypeMapper.getByFTMID(ft_mid);
-		foodTypes.stream().forEach(food -> System.out.println(food.getFT_Name()));
+		System.out.println(getMenuJson(foodTypes).toString());;
 	}
 	
-	public JSONObject getFoodsByFoodTypes(List<FoodType> foodTypes) {
+	public JSONObject getMenuJson(List<FoodType> foodTypes) {
 		JSONObject menuJsonObject = new JSONObject();
 		
 		JSONArray menuJsonArray = new JSONArray();
@@ -53,7 +63,7 @@ public class WeChatInitMenuServiceTest {
 			foodTypeJsonObject.put("name", foodType.getFT_Name());
 			foodTypeJsonObject.put("sort", foodType.getFT_Sort());
 			
-			List<Food> foods = foodMapper.getByMIDANDFTID(foodType.getFT_ID(), foodType.getFT_MID());
+			List<Food> foods = foodMapper.getByMIDAndFTID(foodType.getFT_ID(), foodType.getFT_MID());
 			JSONArray foodsJsonArray = new JSONArray();
 			foods.stream().forEach(food -> {
 				JSONObject foodJsonObject = new JSONObject();
@@ -67,9 +77,32 @@ public class WeChatInitMenuServiceTest {
 				foodJsonObject.put("sort", food.getF_Sort());
 				JSONArray propertyJsonArray = new JSONArray();
 				//填充propertyJsonArray
+				List<FoodProperty> foodProperties = foodPropertyMapper.getByMIDAndFTIDAndFID(food.getF_MID(), 
+						food.getF_FTID(), food.getF_ID());
+				foodProperties.stream().forEach(foodProperty -> {
+					JSONObject propertyJsonObject = new JSONObject();
+					propertyJsonObject.put("name", foodProperty.getFP_Name());
+					propertyJsonObject.put("valueOne", foodProperty.getFP_ValueOne());		
+					propertyJsonObject.put("valueTwo", foodProperty.getFP_ValueTwo());
+					propertyJsonObject.put("valueThree", foodProperty.getFP_ValueThree());
+					propertyJsonObject.put("valueFour", foodProperty.getFP_ValueFour());
+					propertyJsonObject.put("valueFive", foodProperty.getFP_ValueFive());
+					
+					propertyJsonArray.put(propertyJsonObject);
+				});
+ 
 				foodJsonObject.put("property", propertyJsonArray);
 				JSONArray specsJsonArray = new JSONArray();
 				//填充specsJsonArray
+				List<FoodSpecifications> foodSpecifications = foodSpecificationsMapper.getByMIDAndFTIDAndFID(food.getF_MID(), 
+						food.getF_FTID(), food.getF_ID());
+				foodSpecifications.stream().forEach(foodSpec -> {
+					JSONObject specJsonObject = new JSONObject();
+					specJsonObject.put("name", foodSpec.getFS_Key());
+					specJsonObject.put("value", foodSpec.getFS_Value());
+
+					specsJsonArray.put(specJsonObject);
+				});
 				
 				foodJsonObject.put("specs", specsJsonArray);
 				foodsJsonArray.put(foodJsonObject);
