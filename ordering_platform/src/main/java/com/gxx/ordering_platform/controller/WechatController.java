@@ -2,6 +2,9 @@ package com.gxx.ordering_platform.controller;
 
 import java.util.Date;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,11 +73,17 @@ public class WechatController {
 		return UOPENID;
 	}
 	
-	@PostMapping("/loggedIn/initMenu")
+	@PostMapping(value = "/loggedIn/initMenu",produces="application/json;charset=UTF-8")
 	@ResponseBody
 	public String initMenu(@RequestBody String str) {
 		JSONObject jsonObject = new JSONObject(str);
 		String res = jsonObject.getString("res");
 		return WeChatInitMenuService.initMenu(res);
+	}
+	
+	@PostMapping("/xx")
+	public String test(HttpServletResponse response) {
+		System.out.println(response.getCharacterEncoding());
+		return "x";
 	}
 }

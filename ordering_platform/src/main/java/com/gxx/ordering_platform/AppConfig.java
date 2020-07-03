@@ -18,6 +18,7 @@ import javax.sql.DataSource;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.WebResourceRoot;
+import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.webresources.DirResourceSet;
 import org.apache.catalina.webresources.StandardRoot;
@@ -71,7 +72,8 @@ public class AppConfig {
 		
 		Tomcat tomcat = new Tomcat();
 		tomcat.setPort(Integer.getInteger("port", 80));
-		tomcat.getConnector();
+		Connector connector = tomcat.getConnector();
+		connector.setURIEncoding("utf-8");
 		Context ctx = tomcat.addWebapp("", new File("src/main/webapp").getAbsolutePath());
 		WebResourceRoot resources = new StandardRoot(ctx);
 		resources.addPreResources(

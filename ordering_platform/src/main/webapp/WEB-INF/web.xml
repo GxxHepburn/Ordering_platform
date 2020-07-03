@@ -25,6 +25,36 @@
 		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
 	
+	<!-- 配置EncodingFilter -->
+	<filter>
+        <filter-name>encodingFilter</filter-name>
+        <filter-class>com.gxx.ordering_platform.filter.EncodingFilter</filter-class>
+        <init-param>
+            <param-name>targetFilterLifecycle</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>encodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+	
+	<!-- 配置wechatOpenId检测 Filter -->
+	<filter>
+        <filter-name>wechatOpenIdFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+        <init-param>
+            <param-name>targetFilterLifecycle</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>wechatOpenIdFilter</filter-name>
+        <url-pattern>/wechat/loggedIn/*</url-pattern>
+    </filter-mapping>
+	
 	<!-- 配置Shiro Filter -->
 	<filter>
         <filter-name>shiroFilter</filter-name>
@@ -38,20 +68,5 @@
     <filter-mapping>
         <filter-name>shiroFilter</filter-name>
         <url-pattern>/*</url-pattern>
-    </filter-mapping> 
-    
-    <!-- 配置Shiro Filter -->
-	<filter>
-        <filter-name>wechatOpenIdFilter</filter-name>
-        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-        <init-param>
-            <param-name>targetFilterLifecycle</param-name>
-            <param-value>true</param-value>
-        </init-param>
-    </filter>
-
-    <filter-mapping>
-        <filter-name>wechatOpenIdFilter</filter-name>
-        <url-pattern>/wechat/loggedIn/*</url-pattern>
     </filter-mapping> 
 </web-app>
