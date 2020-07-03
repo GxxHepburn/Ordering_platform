@@ -16,5 +16,5 @@ public class Food {
 	private int F_Stock;
 	private int F_SalesVolume;
 	private String F_tag;
-	private int Sort;
+	private int F_Sort;
 }
