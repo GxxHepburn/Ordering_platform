@@ -58,6 +58,7 @@ public class WeChatInitMenuService {
 				foodJsonObject.put("image", food.getF_ImageUrl());
 				foodJsonObject.put("price", food.getF_Price());
 				foodJsonObject.put("status", food.getF_Status());
+				foodJsonObject.put("unit", food.getF_Unit());
 				foodJsonObject.put("stock", food.getF_Stock());
 				foodJsonObject.put("salesVolume", food.getF_SalesVolume());
 				foodJsonObject.put("tag", food.getF_tag());
