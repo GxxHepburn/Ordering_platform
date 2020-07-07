@@ -49,11 +49,13 @@ public class WeChatInitMenuService {
 			JSONObject foodTypeJsonObject = new JSONObject();
 			foodTypeJsonObject.put("name", foodType.getFT_Name());
 			foodTypeJsonObject.put("sort", foodType.getFT_Sort());
+			foodTypeJsonObject.put("id", foodType.getFT_ID());
 			
 			List<Food> foods = foodMapper.getByMIDAndFTID(foodType.getFT_ID(), foodType.getFT_MID());
 			JSONArray foodsJsonArray = new JSONArray();
 			foods.stream().forEach(food -> {
 				JSONObject foodJsonObject = new JSONObject();
+				foodJsonObject.put("id", food.getF_ID());
 				foodJsonObject.put("name", food.getF_Name());
 				foodJsonObject.put("image", food.getF_ImageUrl());
 				foodJsonObject.put("price", food.getF_Price());
