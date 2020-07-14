@@ -10,5 +10,5 @@ public class FoodSpecifications {
 	private int FS_FTID;
 	private int FS_MID;
 	private String FS_Key;
-	private String FS_Value;
+	private float FS_Value;
 }
