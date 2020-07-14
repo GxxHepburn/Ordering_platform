@@ -20,6 +20,7 @@ import com.gxx.ordering_platform.entity.WechatCode;
 import com.gxx.ordering_platform.entity.WechatUser;
 import com.gxx.ordering_platform.service.WeChatInitMenuService;
 import com.gxx.ordering_platform.service.WechatLoginService;
+import com.gxx.ordering_platform.service.WechatTableService;
 
 @RestController
 @RequestMapping("/wechat")
@@ -30,7 +31,10 @@ public class WechatController {
 	@Autowired
 	WechatLoginService wechatLoginService;
 	@Autowired
-	WeChatInitMenuService WeChatInitMenuService;
+	WeChatInitMenuService weChatInitMenuService;
+	
+	@Autowired
+	WechatTableService wechatTableService;
 	
 	@PostMapping("/login")
 	@ResponseBody
@@ -78,12 +82,21 @@ public class WechatController {
 	public String initMenu(@RequestBody String str) {
 		JSONObject jsonObject = new JSONObject(str);
 		String res = jsonObject.getString("res");
-		return WeChatInitMenuService.initMenu(res);
+		return weChatInitMenuService.initMenu(res);
 	}
 	
-	@PostMapping("/xx")
-	public String test(HttpServletResponse response) {
-		System.out.println(response.getCharacterEncoding());
-		return "x";
+//	@PostMapping("/xx")
+//	public String test(HttpServletResponse response) {
+//		System.out.println(response.getCharacterEncoding());
+//		return "x";
+//	}
+	
+	@PostMapping(value = "/loggedIn/getTabNameAndTabTypeName",produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String getTabNameAndTabTypeName(@RequestBody String str) {
+		logger.info(str);
+		JSONObject jsonObject = new JSONObject(str);
+		String tableId = jsonObject.getString("table");
+		return wechatTableService.getTabNameAndTabTypeName(tableId);
 	}
 }

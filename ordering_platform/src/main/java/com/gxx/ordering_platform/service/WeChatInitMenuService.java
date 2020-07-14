@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.gxx.ordering_platform.entity.Food;
 import com.gxx.ordering_platform.entity.FoodProperty;
@@ -35,6 +36,8 @@ public class WeChatInitMenuService {
 
 	final Logger logger = LoggerFactory.getLogger(getClass());
 	
+	//事物-防止读取菜单过程中，被修改库存
+	@Transactional
 	public String initMenu(String res) {
 		int ft_mid = Integer.valueOf(res);
 		List<FoodType> foodTypes = foodTypeMapper.getByFTMID(ft_mid);

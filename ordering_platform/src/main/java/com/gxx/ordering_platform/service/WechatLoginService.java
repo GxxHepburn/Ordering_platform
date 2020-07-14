@@ -66,17 +66,15 @@ public class WechatLoginService {
 	}
 	
 	//查看是否存在该用户
-	@Transactional
 	public WechatUser getUserByUOpenId(String uopenid) {
 		return wechatUserMapper.getByUOpenId(uopenid);
 	}
 	//存在则修改登陆时间
-	@Transactional
 	public boolean updateWechatUserByUOpenId(WechatUser wechatUser) {
 		return wechatUserMapper.updateLoginTimeByOpenId(wechatUser);
 	}
 	//不存在则初始化该用户
-	@Transactional
+	//@Transactional
 	public boolean insertWechatNoUID(WechatUser wechatUser) {
 		return wechatUserMapper.insert(wechatUser);
 	}
