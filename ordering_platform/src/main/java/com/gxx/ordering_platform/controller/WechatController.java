@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ import com.gxx.ordering_platform.entity.WechatCode;
 import com.gxx.ordering_platform.entity.WechatUser;
 import com.gxx.ordering_platform.service.WeChatInitMenuService;
 import com.gxx.ordering_platform.service.WechatLoginService;
+import com.gxx.ordering_platform.service.WechatOrderingService;
 import com.gxx.ordering_platform.service.WechatTableService;
 
 @RestController
@@ -35,6 +37,9 @@ public class WechatController {
 	
 	@Autowired
 	WechatTableService wechatTableService;
+	
+	@Autowired
+	WechatOrderingService wechatOrderingService;
 	
 	@PostMapping("/login")
 	@ResponseBody
@@ -94,9 +99,15 @@ public class WechatController {
 	@PostMapping(value = "/loggedIn/getTabNameAndTabTypeName",produces="application/json;charset=UTF-8")
 	@ResponseBody
 	public String getTabNameAndTabTypeName(@RequestBody String str) {
-		logger.info(str);
 		JSONObject jsonObject = new JSONObject(str);
 		String tableId = jsonObject.getString("table");
 		return wechatTableService.getTabNameAndTabTypeName(tableId);
+	}
+	
+	@Transactional
+	@PostMapping(value = "/loggedIn/order",produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String order(@RequestBody String str) {
+		return wechatOrderingService.ordering(str);
 	}
 }
