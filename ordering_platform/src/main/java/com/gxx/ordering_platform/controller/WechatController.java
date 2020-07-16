@@ -104,10 +104,17 @@ public class WechatController {
 		return wechatTableService.getTabNameAndTabTypeName(tableId);
 	}
 	
-	@Transactional
+	
 	@PostMapping(value = "/loggedIn/order",produces="application/json;charset=UTF-8")
 	@ResponseBody
 	public String order(@RequestBody String str) {
-		return wechatOrderingService.ordering(str);
+		try {
+			wechatOrderingService.ordering(str);
+		} catch (Exception e) {
+			//遇到错误，返回下单失败
+			return "0";
+		}
+		//下单成功
+		return "1";
 	}
 }

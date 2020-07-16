@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.gxx.ordering_platform.entity.OrderDetail;
 import com.gxx.ordering_platform.entity.Orders;
@@ -34,7 +35,8 @@ public class WechatOrderingService {
 
 	final Logger logger = LoggerFactory.getLogger(getClass());
 	
-	public String ordering(String str) {
+	@Transactional
+	public void ordering(String str) {
 		//获取参数
 		JSONObject jsonObject = new JSONObject(str);
 		String openid = jsonObject.getString("openid");
@@ -92,8 +94,6 @@ public class WechatOrderingService {
 			orderDetailMapper.insert(orderDetail);
 			logger.info("OD_ID: " + orderDetail.getOD_ID());
 		}
-		
-		return "WechatOrderingService: 下单了!";
 	}
 	
 	//根据JSONObject转化为OrderDetail对象
