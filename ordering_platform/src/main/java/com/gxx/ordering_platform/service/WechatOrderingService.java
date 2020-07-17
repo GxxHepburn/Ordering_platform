@@ -90,6 +90,8 @@ public class WechatOrderingService {
 				//设置菜品库存D_value
 				foodMapper.updateStockByFID(D_value, orderDetail.getOD_FID());
 			}
+			//更新数据库中销量
+			
 			orderDetail.setOD_RealNum(realNum);
 			orderDetailMapper.insert(orderDetail);
 			logger.info("OD_ID: " + orderDetail.getOD_ID());

@@ -2,19 +2,19 @@ package com.gxx.ordering_platform.controller;
 
 import java.util.Date;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletContext;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.gxx.ordering_platform.AppConfig;
 import com.gxx.ordering_platform.entity.WechatCode;
@@ -40,6 +40,9 @@ public class WechatController {
 	
 	@Autowired
 	WechatOrderingService wechatOrderingService;
+	
+	@Autowired
+	private WebApplicationContext webApplicationContext;
 	
 	@PostMapping("/login")
 	@ResponseBody
@@ -108,13 +111,16 @@ public class WechatController {
 	@PostMapping(value = "/loggedIn/order",produces="application/json;charset=UTF-8")
 	@ResponseBody
 	public String order(@RequestBody String str) {
+		JSONObject jsonObject = new JSONObject(str);
+		int mid = jsonObject.getInt("mid");
 		try {
 			wechatOrderingService.ordering(str);
 		} catch (Exception e) {
 			//遇到错误，返回下单失败
 			return "0";
 		}
-		//下单成功
-		return "1";
+		//下单成功-更新客户端menu
+		WeChatInitMenuService weChatInitMenuService = (WeChatInitMenuService)webApplicationContext.getBean("weChatInitMenuService");
+		return weChatInitMenuService.initMenu(String.valueOf(mid));
 	}
 }
