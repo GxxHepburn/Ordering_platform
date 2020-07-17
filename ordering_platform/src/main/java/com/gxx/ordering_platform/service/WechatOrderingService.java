@@ -68,6 +68,8 @@ public class WechatOrderingService {
 			//获取现在真是的库存
 			logger.info("OD_FID: " + orderDetail.getOD_FID());
 			int nowStock = foodMapper.getStockByFID(orderDetail.getOD_FID());
+			//传入点菜数量，当触发退款时，再核减退款菜品数量
+			int nowSalesNum = foodMapper.getSalesNumByFID(orderDetail.getOD_FID());
 			int realNum = 0;
 			int overSellNum = 0;
 			int D_value = 0;
@@ -89,8 +91,11 @@ public class WechatOrderingService {
 				}
 				//设置菜品库存D_value
 				foodMapper.updateStockByFID(D_value, orderDetail.getOD_FID());
+				
 			}
 			//更新数据库中销量
+			//设置菜品销量nowSalesNum+orderDetail.getOD_Num()
+			foodMapper.updateSalesVolumeByFID(nowSalesNum+orderDetail.getOD_Num(), orderDetail.getOD_FID());
 			
 			orderDetail.setOD_RealNum(realNum);
 			orderDetailMapper.insert(orderDetail);

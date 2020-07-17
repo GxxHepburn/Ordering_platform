@@ -18,7 +18,15 @@ public interface FoodMapper {
 	@ResultType(Integer.class)
 	Integer getStockByFID(@Param("f_id") int f_id);
 	
+	@Select("SELECT F_SalesVolume FROM food WHERE F_ID = #{f_id}")
+	@ResultType(Integer.class)
+	Integer getSalesNumByFID(@Param("f_id") int f_id);
+	
 	//修改库存
 	@Update("UPDATE food SET F_Stock = #{f_stock} WHERE F_ID = #{f_id}")
 	boolean updateStockByFID(@Param("f_stock") int f_stock,@Param("f_id") int f_id);
+	
+	//修改销量
+	@Update("UPDATE food SET F_SalesVolume = #{f_salesvolume} WHERE F_ID = #{f_id}")
+	boolean updateSalesVolumeByFID(@Param("f_salesvolume") int f_salesvolume,@Param("f_id") int f_id);
 }

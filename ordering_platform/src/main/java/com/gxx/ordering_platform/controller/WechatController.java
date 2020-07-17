@@ -2,7 +2,6 @@ package com.gxx.ordering_platform.controller;
 
 import java.util.Date;
 
-import javax.servlet.ServletContext;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.gxx.ordering_platform.AppConfig;
 import com.gxx.ordering_platform.entity.WechatCode;
