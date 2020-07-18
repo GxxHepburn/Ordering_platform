@@ -111,14 +111,21 @@ public class WechatController {
 	public String order(@RequestBody String str) {
 		JSONObject jsonObject = new JSONObject(str);
 		int mid = jsonObject.getInt("mid");
+		String orderSearchId = "";
 		try {
-			wechatOrderingService.ordering(str);
+			orderSearchId = wechatOrderingService.ordering(str);
 		} catch (Exception e) {
 			//遇到错误，返回下单失败
+			e.printStackTrace();
+			logger.error(e.toString());
 			return "0";
 		}
 		//下单成功-更新客户端menu
 		WeChatInitMenuService weChatInitMenuService = (WeChatInitMenuService)webApplicationContext.getBean("weChatInitMenuService");
-		return weChatInitMenuService.initMenu(String.valueOf(mid));
+		
+		String newJsonStr = weChatInitMenuService.initMenu(String.valueOf(mid));
+		JSONObject newJsonObject = new JSONObject(newJsonStr);
+		newJsonObject.put("orderSearchId", orderSearchId);
+		return newJsonObject.toString();
 	}
 }

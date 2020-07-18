@@ -18,4 +18,5 @@ public class Orders {
 	private Date O_PayTime;
 	private String O_Remarks;
 	private int O_TotleNum;
+	private String O_UniqSearchID;
 }

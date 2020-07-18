@@ -36,7 +36,7 @@ public class WechatOrderingService {
 	final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Transactional
-	public void ordering(String str) {
+	public String ordering(String str) {
 		//获取参数
 		JSONObject jsonObject = new JSONObject(str);
 		String openid = jsonObject.getString("openid");
@@ -48,7 +48,9 @@ public class WechatOrderingService {
 		JSONArray ordersJsonArray = jsonObject.getJSONArray("orders");
 		Date orderingTime = new Date();
 		WechatUser wechatUser = wechatUserMapper.getByUOpenId(openid);
+		String O_UniqSearchID = getOrderSearchID(mid, tid, orderingTime);
 		logger.info("orders: " + ordersJsonArray);
+		logger.info("O_UniqSearchID: " + O_UniqSearchID);
 		
 		Orders orders = new Orders();
 		orders.setO_MID(mid);
@@ -59,6 +61,7 @@ public class WechatOrderingService {
 		orders.setO_OrderingTime(orderingTime);
 		orders.setO_Remarks(remark);
 		orders.setO_TotleNum(totalNum);
+		orders.setO_UniqSearchID(O_UniqSearchID);
 		
 		ordersMapper.insert(orders);
 		
@@ -101,6 +104,16 @@ public class WechatOrderingService {
 			orderDetailMapper.insert(orderDetail);
 			logger.info("OD_ID: " + orderDetail.getOD_ID());
 		}
+		return O_UniqSearchID;
+	}
+	
+	//生成订单号
+	private String getOrderSearchID(int mid, int tid, Date orderingTime) {
+		return "M" + mid + "T" + tid + "Y" 
+				+ (orderingTime.getYear()+1900) + "M" 
+				+ (orderingTime.getMonth()+1) + "D" + orderingTime.getDate() 
+				+ "H" + orderingTime.getHours() + "M" + orderingTime.getMinutes() 
+				+ "S" + orderingTime.getSeconds();
 	}
 	
 	//根据JSONObject转化为OrderDetail对象
