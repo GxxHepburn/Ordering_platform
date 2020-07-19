@@ -128,4 +128,23 @@ public class WechatController {
 		newJsonObject.put("orderSearchId", orderSearchId);
 		return newJsonObject.toString();
 	}
+	
+	@PostMapping(value = "/loggedIn/add",produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String add(@RequestBody String str) {
+		JSONObject jsonObject = new JSONObject(str);
+		int mid = jsonObject.getInt("mid");
+		//加菜逻辑
+		try {
+			wechatOrderingService.add(str);
+		} catch (Exception e) {
+			//遇到错误，返回夹菜失败
+			e.printStackTrace();
+			logger.error(e.toString());
+			return "0";
+		}
+		//下单成功-更新客户端menu
+		WeChatInitMenuService weChatInitMenuService = (WeChatInitMenuService)webApplicationContext.getBean("weChatInitMenuService");
+		return weChatInitMenuService.initMenu(String.valueOf(mid));
+	}
 }

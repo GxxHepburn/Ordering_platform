@@ -148,4 +148,49 @@ public class WechatOrderingService {
 		
 		return orderDetail;
 	}
+	
+	public void add(String str) {
+		//根据orderId,然后insertfood
+		JSONObject jsonObject = new JSONObject(str);
+		JSONArray ordersJsonArray = jsonObject.getJSONArray("orders");
+		String orderSearchId = jsonObject.getString("orderSearchId");
+		for(int i=0; i<ordersJsonArray.length(); i++) {
+			JSONObject orderDetailJsonObject = ordersJsonArray.getJSONObject(i);
+			//获取Orders
+			Orders orders = ordersMapper.selectBySearchId(orderSearchId);
+			OrderDetail orderDetail = getByOrdersJsonArray(orders, orderDetailJsonObject);
+			logger.info("OD_FID: " + orderDetail.getOD_FID());
+			int nowStock = foodMapper.getStockByFID(orderDetail.getOD_FID());
+			int nowSalesNum = foodMapper.getSalesNumByFID(orderDetail.getOD_FID());
+			int realNum = 0;
+			int overSellNum = 0;
+			int D_value = 0;
+			if (nowStock < 0) {
+				realNum = orderDetail.getOD_Num();
+			} else {
+				D_value = nowStock - orderDetail.getOD_Num();
+				if (D_value < 0) {
+					//触发超卖警告
+					//TD
+					//将库存设置为0
+					overSellNum = -D_value;
+					D_value = 0;
+					//设置orderDetail-realNum
+					realNum = nowStock;
+				} else {
+					realNum = orderDetail.getOD_Num();
+				}
+				//设置菜品库存D_value
+				foodMapper.updateStockByFID(D_value, orderDetail.getOD_FID());
+				
+			}
+			//更新数据库中销量
+			//设置菜品销量nowSalesNum+orderDetail.getOD_Num()
+			foodMapper.updateSalesVolumeByFID(nowSalesNum+orderDetail.getOD_Num(), orderDetail.getOD_FID());
+			
+			orderDetail.setOD_RealNum(realNum);
+			orderDetailMapper.insert(orderDetail);
+			logger.info("OD_ID: " + orderDetail.getOD_ID());
+		}
+	}
 }
