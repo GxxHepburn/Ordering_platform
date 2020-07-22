@@ -65,7 +65,7 @@ import com.zaxxer.hikari.HikariDataSource;
 @MapperScan("com.gxx.ordering_platform.mapper")
 @EnableWebMvc
 @EnableTransactionManagement
-@PropertySource({"classpath:/jdbc.properties", "classpath:/wechat.properties"})
+@PropertySource(value = {"classpath:/jdbc.properties", "classpath:/wechat.properties", "classpath:/merchantNumber.properties"}, encoding = "UTF-8")
 public class AppConfig {
 	
 	final Logger logger = LoggerFactory.getLogger(getClass());
