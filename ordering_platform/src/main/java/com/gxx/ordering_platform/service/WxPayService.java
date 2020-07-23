@@ -1,17 +1,22 @@
 package com.gxx.ordering_platform.service;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 import org.apache.ibatis.binding.MapperMethod.ParamMap;
+import org.ietf.jgss.Oid;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.gxx.ordering_platform.mapper.OrdersMapper;
 import com.gxx.ordering_platform.wxPaySDK.MerchantWXPayConfig;
 import com.gxx.ordering_platform.wxPaySDK.ServiceWXPayConfig;
 import com.gxx.ordering_platform.wxPaySDK.WXPay;
@@ -58,6 +63,18 @@ public class WxPayService {
 	@Autowired
 	MerchantWXPayConfig merchantWXPayConfig;
 	
+	@Autowired
+	OrdersMapper ordersMapper;
+	
+	public void updateIsPay(String searchId, int isPay) {
+		ordersMapper.updateIsPay(searchId, isPay);
+	}
+	
+	@Transactional
+	public void updatePaied(String out_trade_no, int isPayNow, int payStatues, Date payTime) {
+		ordersMapper.updatePaied(out_trade_no, isPayNow, payStatues, payTime);
+	}
+	
 	public Map<String, String> wxPay(String openId, String ipAddress) throws Exception {
 		//1.拼接统一下单地址参数
 		Map<String, String> paraMap = new HashMap<String, String>();
@@ -103,13 +120,30 @@ public class WxPayService {
 		return payMap;
 	}
 	
-	public Map<String, String> wxServicePay(String openId, String ipAddress) throws Exception {
+	public Map<String, String> wxServicePay(String openId, String ipAddress, String str) throws Exception {
+		
+		//要把生曾UUID放到数据库里
+		//根据str得到searcId，和total_fee
+		JSONObject jsonObject = new JSONObject(str);
+		String searchId = jsonObject.getString("searchId");
+		float total_fee_float = jsonObject.getFloat("total_fee");
+		int total_fee_int = (int)(total_fee_float*100);
+		String total_fee = String.valueOf(total_fee_int);
+		//先检查orders里这个字段是否有数据，如果有，说明支付过，失败了。继续使用这个out_trade_no进行支付
+		String out_trade_no = ordersMapper.selectBySearchId(searchId).getO_OutTradeNo();
+		if (out_trade_no == null) {
+			out_trade_no = UUID.randomUUID().toString().replaceAll("-", "");
+		}
+		//添加out_trade_no到数据库,设置正在支付为1，那么服务端进行操作时会检查这个isPayNow字段。如果为1，无法完结订单。
+		//在success方法中，对这个isPayNow进行归0
+		ordersMapper.updateOut_Trade_NoBySearchId(1, out_trade_no, searchId);
+		
 		Map<String, String> paraMap = new HashMap<String, String>();
 		paraMap.put("sub_openid", openId);
 		paraMap.put("body", "郭利" + "-test");
-		paraMap.put("out_trade_no", UUID.randomUUID().toString().replaceAll("-", ""));
+		paraMap.put("out_trade_no", out_trade_no);
 		paraMap.put("spbill_create_ip", ipAddress);
-		paraMap.put("total_fee", "1");
+		paraMap.put("total_fee", "1"/*total_fee*/);
 		paraMap.put("trade_type", "JSAPI");
 		paraMap.put("sub_appid", this.service_sub_appid);
 		paraMap.put("sub_mch_id", this.service_sub_mch_id);

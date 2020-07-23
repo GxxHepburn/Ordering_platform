@@ -193,4 +193,13 @@ public class WechatOrderingService {
 			logger.info("OD_ID: " + orderDetail.getOD_ID());
 		}
 	}
+	
+	public boolean getPayStatus(String searchId) {
+		Orders orders = ordersMapper.selectBySearchId(searchId);
+		if (orders.getO_PayStatue() != 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }

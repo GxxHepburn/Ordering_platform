@@ -19,4 +19,6 @@ public class Orders {
 	private String O_Remarks;
 	private int O_TotleNum;
 	private String O_UniqSearchID;
+	private int O_isPayNow;
+	private String o_OutTradeNo;
 }

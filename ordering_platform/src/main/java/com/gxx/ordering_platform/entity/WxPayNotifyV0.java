@@ -23,7 +23,7 @@ public class WxPayNotifyV0 implements Serializable {
 	private String mch_id;
 	private String nonce_str;
 	private String openid;
-	private String out_trade_no;
+	private String out_trade_no;//根据这个定位订单，对订单数据做最后的修改
 	private String result_code;
 	private String return_code;
 	private String sign;
