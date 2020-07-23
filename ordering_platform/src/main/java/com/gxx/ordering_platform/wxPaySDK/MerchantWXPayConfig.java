@@ -9,7 +9,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MyWXPayConfig extends WXPayConfig {
+public class MerchantWXPayConfig extends WXPayConfig {
 
 	final Logger logger = LoggerFactory.getLogger(getClass());
 	

@@ -30,10 +30,37 @@ public class WxPayController {
 	
 	final Logger logger = LoggerFactory.getLogger(getClass());
 	
+	@PostMapping("/pay/{openId}")
+	@ResponseBody
+	public String servicePay(HttpServletRequest request, @PathVariable String openId) {
+		logger.info("servicePayController: 出发支付controller");
+		String ip = request.getHeader("x-forwarded-for");
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("Proxy-Client-IP");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("WL-Proxy-Client-IP");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getRemoteAddr();
+		}
+		if (ip.indexOf(",") != -1) {
+			String[] ips = ip.split(",");
+			ip = ips[0].trim();
+		}
+		Map<String, String> payMap = null;
+		try {
+			payMap = wxPayService.wxServicePay(openId, ip);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return new JSONObject(payMap).toString();
+	}
+	
 	@PostMapping("/{openId}")
 	@ResponseBody
 	public String pay(HttpServletRequest request, @PathVariable String openId){
-		logger.info("openId: " + openId);
 		String ip = request.getHeader("x-forwarded-for");
 		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
 			ip = request.getHeader("Proxy-Client-IP");

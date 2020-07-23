@@ -65,7 +65,8 @@ import com.zaxxer.hikari.HikariDataSource;
 @MapperScan("com.gxx.ordering_platform.mapper")
 @EnableWebMvc
 @EnableTransactionManagement
-@PropertySource(value = {"classpath:/jdbc.properties", "classpath:/wechat.properties", "classpath:/merchantNumber.properties"}, encoding = "UTF-8")
+@PropertySource(value = {"classpath:/jdbc.properties", "classpath:/wechat.properties", 
+		"classpath:/merchantNumber.properties", "classpath:/serviceNumber.properties"}, encoding = "UTF-8")
 public class AppConfig {
 	
 	final Logger logger = LoggerFactory.getLogger(getClass());
@@ -88,6 +89,8 @@ public class AppConfig {
 	
 	public static String APPID;
 	public static String APPSECRET;
+	public static String SERVICEAPPID;
+	public static String SERVICEAPPSECRET;
 	//初始化静态参数-wechat
 	@Configuration
 	class WechatConfig{
@@ -97,11 +100,19 @@ public class AppConfig {
 		@Value("${wechat.appSecret}")
 		private  String appSecret;
 		
+		@Value("${serviceNumber.appid}")
+		private String serviceAppId;
+		
+		@Value("${serviceNumber.appSecret}")
+		private  String serviceAppSecret;
+		
 		@PostConstruct
 		void init() {
 			
 			AppConfig.APPID = appId;
 			AppConfig.APPSECRET = appSecret;
+			AppConfig.SERVICEAPPID = serviceAppId;
+			AppConfig.SERVICEAPPSECRET = serviceAppSecret;
 		}
 	}
 	

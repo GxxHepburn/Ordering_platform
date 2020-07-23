@@ -58,6 +58,7 @@ public class WechatLoginService {
 		
 		String OPENID = null;
 		String SESSION_KEY = null;
+		logger.info("code2sessionObject: " + code2sessionObject.toString());
 		OPENID = code2sessionObject.getString("openid");
 		SESSION_KEY = code2sessionObject.getString("session_key");
 		logger.info("openId: " + OPENID);
