@@ -1,17 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+
+	<property name="LOG_HOME" value="C:/Users/Administrator/Desktop/log" />  
+	<property name="SECURITY_LOG" value="C:/Users/Administrator/Desktop/securitylog" />  
+	
+	<!-- 自定义securityLoggerFilter的日志文件 -->
+	<!--特殊业务记录单独的日志文件-->
+	<appender name="SECURITY_FILE"  
+        class="ch.qos.logback.core.rolling.RollingFileAppender">  
+        <Encoding>UTF-8</Encoding>  
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">  
+            <FileNamePattern>${SECURITY_LOG}/orPlat.log.%d{yyyy-MM-dd}.log</FileNamePattern>  
+            <MaxHistory>30</MaxHistory>  
+        </rollingPolicy>  
+        <layout class="ch.qos.logback.classic.PatternLayout">  
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>  
+        </layout>  
+    </appender>  
+
 	<appender name="STDOUT"
 		class="ch.qos.logback.core.ConsoleAppender">
 		<layout class="ch.qos.logback.classic.PatternLayout">
 			<Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</Pattern>
 		</layout>
 	</appender>
+	
+	<!-- 按照每天生成日志文件 -->  
+    <appender name="FILE"  
+        class="ch.qos.logback.core.rolling.RollingFileAppender">  
+        <Encoding>UTF-8</Encoding>  
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">  
+            <FileNamePattern>${LOG_HOME}/orPlat.log.%d{yyyy-MM-dd}.log</FileNamePattern>  
+            <MaxHistory>30</MaxHistory>  
+        </rollingPolicy>  
+        <layout class="ch.qos.logback.classic.PatternLayout">  
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>  
+        </layout>  
+    </appender>  
 
 	<logger name="com.gxx.ordering_platform" level="info" additivity="false">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+	</logger>
+	
+	<logger name="securityLog" additivity="false" level="INFO">
+		<appender-ref ref="SECURITY_FILE"/>
 		<appender-ref ref="STDOUT" />
 	</logger>
 
 	<root level="info">
 		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
 	</root>
+	
+	
 </configuration>
