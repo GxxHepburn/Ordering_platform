@@ -1,6 +1,7 @@
 package com.gxx.ordering_platform.mapper;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
@@ -33,4 +34,13 @@ public interface OrdersMapper {
 			@Param("o_paystatue") int payStatues, @Param("o_paytime") Date payTime);
 	@Update("UPDATE orders SET O_isPayNow = #{o_ispaynow} WHERE O_UniqSearchID = #{o_uniqsearchid}")
 	boolean updateIsPay(@Param("o_uniqsearchid") String o_uniqsearchid, @Param("o_ispaynow") int isPay);
+	
+	@Select("SELECT * FROM orders WHERE O_UID = #{o_uid} AND O_PayStatue = 0 OR O_PayStatue = 3 ORDER BY O_OrderingTime")
+	List<Orders> getOrdersOrderByTimeNow(@Param("o_uid") int o_uid);
+	
+	@Select("SELECT * FROM orders WHERE O_UID = #{o_uid} AND O_PayStatue = 1 ORDER BY O_OrderingTime")
+	List<Orders> getOrdersOrderByTimeFinished(@Param("o_uid") int o_uid);
+	
+	@Select("SELECT * FROM orders WHERE O_UID = #{o_uid} AND O_PayStatue = 2 ORDER BY O_OrderingTime")
+	List<Orders> getOrdersOrderByTimeReturn(@Param("o_uid") int o_uid);
 }

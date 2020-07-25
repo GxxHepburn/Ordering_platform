@@ -1,6 +1,7 @@
 package com.gxx.ordering_platform.service;
 
 import java.util.Date;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -204,7 +205,27 @@ public class WechatOrderingService {
 	}
 	
 	//获得home订单列表
+	@Transactional
 	public String home(String str) {
-		return "";
+		JSONObject jsonObject = new JSONObject(str);
+		String openid = jsonObject.getString("openid");
+		//未完成付款订单-payStatus==0||3,按照时间排序
+		int o_uid = wechatUserMapper.getByUOpenId(openid).getU_ID();
+		logger.info("o_uid: " + o_uid);
+		logger.info("openid: " + openid);
+		List<Orders> nowOrders = ordersMapper.getOrdersOrderByTimeNow(o_uid);
+		List<Orders> finishedOrders = ordersMapper.getOrdersOrderByTimeFinished(o_uid);
+		List<Orders> returnOrders = ordersMapper.getOrdersOrderByTimeReturn(o_uid);
+		
+		JSONArray nowJsonArray = new JSONArray(nowOrders);
+		JSONArray finishedJsonArray = new JSONArray(finishedOrders);
+		JSONArray returnJsonArray = new JSONArray(returnOrders);
+		
+		JSONObject ansJsonObject = new JSONObject();
+		ansJsonObject.put("nowOrders", nowJsonArray);
+		ansJsonObject.put("finishedOrders", finishedJsonArray);
+		ansJsonObject.put("returnOrders", returnJsonArray);
+		
+		return ansJsonObject.toString();
 	}
 }

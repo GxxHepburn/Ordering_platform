@@ -153,7 +153,7 @@ public class WechatController {
 	public String home(@RequestBody String str) {
 		String returnStr = null;
 		try {
-			wechatOrderingService.home(str);
+			returnStr = wechatOrderingService.home(str);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
