@@ -202,4 +202,9 @@ public class WechatOrderingService {
 			return false;
 		}
 	}
+	
+	//获得home订单列表
+	public String home(String str) {
+		return "";
+	}
 }

@@ -147,4 +147,19 @@ public class WechatController {
 		WeChatInitMenuService weChatInitMenuService = (WeChatInitMenuService)webApplicationContext.getBean("weChatInitMenuService");
 		return weChatInitMenuService.initMenu(String.valueOf(mid));
 	}
+	
+	@PostMapping(value = "/loggedIn/home",produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String home(@RequestBody String str) {
+		String returnStr = null;
+		try {
+			wechatOrderingService.home(str);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			logger.error(e.toString());
+			return "0";
+		}
+		return returnStr;
+	}
 }
