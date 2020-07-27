@@ -1,8 +1,11 @@
 package com.gxx.ordering_platform.mapper;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import com.gxx.ordering_platform.entity.OrderDetail;
 
@@ -15,4 +18,7 @@ public interface OrderDetailMapper {
 			+ "#{orderDetail.OD_Num}, #{orderDetail.OD_RealNum})") 
 	@Options(useGeneratedKeys = true, keyProperty = "OD_ID")
 	int insert(@Param("orderDetail") OrderDetail orderDetail);
+	
+	@Select("SELECT * FROM orderdetail WHERE OD_OID = #{o_id}")
+	List<OrderDetail> getByOrderId(@Param("o_id")int o_id);
 }

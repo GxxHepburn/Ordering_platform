@@ -88,7 +88,7 @@ public class WechatController {
 	public String initMenu(@RequestBody String str) {
 		JSONObject jsonObject = new JSONObject(str);
 		String res = jsonObject.getString("res");
-		return weChatInitMenuService.initMenu(res);
+		return weChatInitMenuService.initMenu(res).toString();
 	}
 	
 //	@PostMapping("/xx")
@@ -111,6 +111,7 @@ public class WechatController {
 	public String order(@RequestBody String str) {
 		JSONObject jsonObject = new JSONObject(str);
 		int mid = jsonObject.getInt("mid");
+		logger.info("wechatController_mid: " + mid);
 		String orderSearchId = "";
 		try {
 			orderSearchId = wechatOrderingService.ordering(str);
@@ -123,7 +124,7 @@ public class WechatController {
 		//下单成功-更新客户端menu
 		WeChatInitMenuService weChatInitMenuService = (WeChatInitMenuService)webApplicationContext.getBean("weChatInitMenuService");
 		
-		String newJsonStr = weChatInitMenuService.initMenu(String.valueOf(mid));
+		String newJsonStr = weChatInitMenuService.initMenu(String.valueOf(mid)).toString();
 		JSONObject newJsonObject = new JSONObject(newJsonStr);
 		newJsonObject.put("orderSearchId", orderSearchId);
 		return newJsonObject.toString();
@@ -145,7 +146,7 @@ public class WechatController {
 		}
 		//下单成功-更新客户端menu
 		WeChatInitMenuService weChatInitMenuService = (WeChatInitMenuService)webApplicationContext.getBean("weChatInitMenuService");
-		return weChatInitMenuService.initMenu(String.valueOf(mid));
+		return weChatInitMenuService.initMenu(String.valueOf(mid)).toString();
 	}
 	
 	@PostMapping(value = "/loggedIn/home",produces="application/json;charset=UTF-8")
@@ -156,6 +157,20 @@ public class WechatController {
 			returnStr = wechatOrderingService.home(str);
 		} catch (Exception e) {
 			// TODO: handle exception
+			e.printStackTrace();
+			logger.error(e.toString());
+			return "0";
+		}
+		return returnStr;
+	}
+	
+	@PostMapping(value = "/loggedIn/touchDetail",produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String touchDetail(@RequestBody String str) {
+		String returnStr = null;
+		try {
+			returnStr = wechatOrderingService.touchDetail(str);
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.toString());
 			return "0";

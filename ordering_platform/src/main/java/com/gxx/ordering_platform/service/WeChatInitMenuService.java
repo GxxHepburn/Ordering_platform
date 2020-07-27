@@ -38,10 +38,10 @@ public class WeChatInitMenuService {
 	
 	//事物-防止读取菜单过程中，被修改库存
 	@Transactional
-	public String initMenu(String res) {
+	public JSONObject initMenu(String res) {
 		int ft_mid = Integer.valueOf(res);
 		List<FoodType> foodTypes = foodTypeMapper.getByFTMID(ft_mid);
-		return getMenuJson(foodTypes).toString();
+		return getMenuJson(foodTypes);
 	}
 	
 	public JSONObject getMenuJson(List<FoodType> foodTypes) {

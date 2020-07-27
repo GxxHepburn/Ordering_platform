@@ -10,13 +10,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
 
+import com.gxx.ordering_platform.entity.Food;
 import com.gxx.ordering_platform.entity.OrderDetail;
 import com.gxx.ordering_platform.entity.Orders;
+import com.gxx.ordering_platform.entity.Tab;
+import com.gxx.ordering_platform.entity.TabType;
 import com.gxx.ordering_platform.entity.WechatUser;
 import com.gxx.ordering_platform.mapper.FoodMapper;
 import com.gxx.ordering_platform.mapper.OrderDetailMapper;
 import com.gxx.ordering_platform.mapper.OrdersMapper;
+import com.gxx.ordering_platform.mapper.TabMapper;
+import com.gxx.ordering_platform.mapper.TabTypeMapper;
 import com.gxx.ordering_platform.mapper.WechatUserMapper;
 
 @Component
@@ -33,6 +39,15 @@ public class WechatOrderingService {
 	
 	@Autowired
 	OrderDetailMapper orderDetailMapper;
+	
+	@Autowired
+	TabMapper tabMapper;
+	
+	@Autowired
+	TabTypeMapper tabTypeMapper;
+	
+	@Autowired
+	WebApplicationContext webApplicationContext;
 
 	final Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -44,6 +59,7 @@ public class WechatOrderingService {
 		int totalNum = jsonObject.getInt("totalNum");
 		float totalPrice = jsonObject.getFloat("totalPrice");
 		int mid = jsonObject.getInt("mid");
+		logger.info("wechatOrderingService_mid: " + mid);
 		int tid = jsonObject.getInt("tid");
 		String remark = jsonObject.getString("remark");
 		JSONArray ordersJsonArray = jsonObject.getJSONArray("orders");
@@ -155,10 +171,18 @@ public class WechatOrderingService {
 		JSONObject jsonObject = new JSONObject(str);
 		JSONArray ordersJsonArray = jsonObject.getJSONArray("orders");
 		String orderSearchId = jsonObject.getString("orderSearchId");
+		int nowTotalNum = jsonObject.getInt("totalNum");
+		float nowTotalPrice = jsonObject.getFloat("totalPrice");
+		//获取Orders
+		Orders orders = ordersMapper.selectBySearchId(orderSearchId);
+		int totalNum = orders.getO_TotleNum() + nowTotalNum;
+		float totalPrice = orders.getO_TotlePrice() + nowTotalPrice;
+		ordersMapper.updateNumAndPriceBySearchId(orderSearchId, totalNum, totalPrice);
+		
+		//加上总数和totalPrice
+		
 		for(int i=0; i<ordersJsonArray.length(); i++) {
 			JSONObject orderDetailJsonObject = ordersJsonArray.getJSONObject(i);
-			//获取Orders
-			Orders orders = ordersMapper.selectBySearchId(orderSearchId);
 			OrderDetail orderDetail = getByOrdersJsonArray(orders, orderDetailJsonObject);
 			logger.info("OD_FID: " + orderDetail.getOD_FID());
 			int nowStock = foodMapper.getStockByFID(orderDetail.getOD_FID());
@@ -227,5 +251,48 @@ public class WechatOrderingService {
 		ansJsonObject.put("returnOrders", returnJsonArray);
 		
 		return ansJsonObject.toString();
+	}
+	
+	@Transactional
+	public String touchDetail(String str) {
+		JSONObject jsonObject = new JSONObject(str);
+		int t_id = jsonObject.getInt("tableId"); 
+		int o_id = jsonObject.getInt("orderID");
+		int m_id = jsonObject.getInt("res");
+		Tab tab = tabMapper.getByTabId(t_id);
+		int tt_id = tab.getT_TTID();
+		TabType tabType = tabTypeMapper.getByTabTypeId(tt_id);
+		
+		String tabTypeName = tabType.getTT_Name();
+		String tableName = tab.getT_Name();
+		
+		List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(o_id);
+		JSONArray jsonArray = new JSONArray();
+		for(int i=0; i<orderDetails.size(); i++) {
+			JSONObject orderDetailJsonObject = new JSONObject();
+			orderDetailJsonObject.put("id", orderDetails.get(i).getOD_FID());
+			Food food = foodMapper.getByFoodId(orderDetails.get(i).getOD_FID());
+			orderDetailJsonObject.put("name", food.getF_Name());
+			orderDetailJsonObject.put("price", orderDetails.get(i).getOD_RealPrice());
+			orderDetailJsonObject.put("specs", orderDetails.get(i).getOD_Spec());
+			JSONArray proJsonArray = new JSONArray();
+			proJsonArray.put(orderDetails.get(i).getOD_PropOne());
+			proJsonArray.put(orderDetails.get(i).getOD_PropTwo());
+			orderDetailJsonObject.put("property", proJsonArray);
+			orderDetailJsonObject.put("num", orderDetails.get(i).getOD_Num());
+			
+			jsonArray.put(orderDetailJsonObject);
+		}
+		logger.info(orderDetails.toString());
+		
+		WeChatInitMenuService weChatInitMenuService = (WeChatInitMenuService)webApplicationContext.getBean("weChatInitMenuService");
+		
+		JSONObject returnJsonObject = new JSONObject();
+		returnJsonObject.put("tabName", tableName);
+		returnJsonObject.put("tabTypeName", tabTypeName);
+		returnJsonObject.put("alreadyOrders", jsonArray);
+		returnJsonObject.put("menu", weChatInitMenuService.initMenu(String.valueOf(m_id)));
+		logger.info("menu: " + weChatInitMenuService.initMenu(String.valueOf(m_id)).toString());
+		return returnJsonObject.toString();
 	}
 }
