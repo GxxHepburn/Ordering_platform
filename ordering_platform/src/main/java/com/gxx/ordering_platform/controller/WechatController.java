@@ -15,8 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.gxx.ordering_platform.AppConfig;
+import com.gxx.ordering_platform.entity.QrCode;
 import com.gxx.ordering_platform.entity.WechatCode;
 import com.gxx.ordering_platform.entity.WechatUser;
+import com.gxx.ordering_platform.mapper.QrCodeMapper;
+import com.gxx.ordering_platform.service.QrCodeService;
 import com.gxx.ordering_platform.service.WeChatInitMenuService;
 import com.gxx.ordering_platform.service.WechatLoginService;
 import com.gxx.ordering_platform.service.WechatOrderingService;
@@ -38,6 +41,9 @@ public class WechatController {
 	
 	@Autowired
 	WechatOrderingService wechatOrderingService;
+	
+	@Autowired
+	QrCodeService qrCodeService;
 	
 	@Autowired
 	private WebApplicationContext webApplicationContext;
@@ -82,6 +88,15 @@ public class WechatController {
 		}
 		return UOPENID;
 	}
+	
+	@PostMapping(value = "/loggedIn/selectQrCode",produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String selectQrCode(@RequestBody String str) {
+		JSONObject jsonObject = new JSONObject(str);
+		String url = jsonObject.getString("QrCode");
+		return qrCodeService.checking(url);
+	}
+	
 	
 	@PostMapping(value = "/loggedIn/initMenu",produces="application/json;charset=UTF-8")
 	@ResponseBody
