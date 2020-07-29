@@ -54,6 +54,7 @@ public class WechatController {
 		final String APPID = AppConfig.APPID;
 		final String APPSECRET = AppConfig.APPSECRET;
 		
+		
 		String UOPENID = null;
 		try {
 			UOPENID =  wechatLoginService.singin(APPID, APPSECRET, wechatCode.code);
@@ -61,6 +62,7 @@ public class WechatController {
 			//登陆验证失败
 			return "0";
 		}
+		logger.info("/login_openid: " + UOPENID);
 		//看看用户是否存在，若不存在，则初始化用户表，如果存在就更新登陆时间
 		
 		WechatUser wechatUser = wechatLoginService.getUserByUOpenId(UOPENID);

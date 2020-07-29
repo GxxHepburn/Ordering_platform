@@ -1,22 +1,20 @@
  package com.gxx.ordering_platform;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.sql.DataSource;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
+import org.apache.catalina.Service;
 import org.apache.catalina.WebResourceRoot;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
@@ -37,7 +35,6 @@ import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -51,12 +48,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
-import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 import com.gxx.ordering_platform.filter.WechatOpenIdFilter;
 import com.gxx.ordering_platform.reamls.ShiroRealm;
-import com.gxx.ordering_platform.service.WechatLoginService;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -75,8 +69,15 @@ public class AppConfig {
 		
 		Tomcat tomcat = new Tomcat();
 		tomcat.setPort(Integer.getInteger("port", 80));
+		
+//		Service service = tomcat.getService();
+//		service.addConnector(getSslConnector());
+		
 		Connector connector = tomcat.getConnector();
 		connector.setURIEncoding("utf-8");
+		getSslConnector(connector);
+		
+		
 		Context ctx = tomcat.addWebapp("", new File("src/main/webapp").getAbsolutePath());
 		WebResourceRoot resources = new StandardRoot(ctx);
 		resources.addPreResources(
@@ -85,6 +86,35 @@ public class AppConfig {
 		tomcat.start();
 		tomcat.getServer().await();
 	}
+	
+	private static void getSslConnector(Connector connector) {
+	    connector.setPort(443);
+	    connector.setSecure(true);
+	    connector.setScheme("https");
+	    connector.setAttribute("sslkeyAlias", "tomcat");
+	    
+//	    InputStream inputStream = AppConfig.class.getClassLoader().getResourceAsStream("/pfx-password.properties");
+//	    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+//	    String password = "";
+//	    try {
+//			password = bufferedReader.readLine();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+	    
+	    connector.setAttribute("keystorePass", "79NO1xYF");
+	    connector.setAttribute("keystoreType", "PKCS12");
+	    connector.setAttribute("keystoreFile",
+	            "C:/Ordering_platform_workspace/Ordering_platform/ordering_platform/src/main/resources/4282031_www.donghuastar.com.pfx");
+	    connector.setAttribute("clientAuth", "false");
+	    connector.setAttribute("sslProtocol", "TLS");
+	    connector.setAttribute("maxThreads", "200");
+	    connector.setAttribute("protocol", "org.apache.coyote.http11.Http11AprProtocol");
+	    connector.setAttribute("SSLEnabled", true);
+	    connector.setAttribute("ciphers", "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256");
+	    connector.setAttribute("SSLCipherSuite", "ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4");
+	 }
 	
 	
 	public static String APPID;
