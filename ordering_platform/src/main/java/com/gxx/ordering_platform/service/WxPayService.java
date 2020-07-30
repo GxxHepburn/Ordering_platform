@@ -87,7 +87,7 @@ public class WxPayService {
 		paraMap.put("trade_type", "JSAPI");
 		logger.info("paraMap: " + paraMap);
 		
-		final String SUCCESS_NOTIFY = "http://www.donghuastar.com/wxpay/success";
+		final String SUCCESS_NOTIFY = "https://www.donghuastar.com/wxpay/success";
 		boolean useSandbox = false;
 		WXPay wxPay = new WXPay(merchantWXPayConfig, SUCCESS_NOTIFY, false, useSandbox);
 		
@@ -149,7 +149,7 @@ public class WxPayService {
 		paraMap.put("sub_mch_id", this.service_sub_mch_id);
 		logger.info("paraMap: " + paraMap);
 		
-		final String SUCCESS_NOTIFY = "http://www.donghuastar.com/wxpay/success";
+		final String SUCCESS_NOTIFY = "https://www.donghuastar.com/wxpay/success";
 		boolean useSandbox = false;
 		WXPay wxPay = new WXPay(serviceWXPayConfig , SUCCESS_NOTIFY, false, useSandbox);
 		
