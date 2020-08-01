@@ -93,17 +93,17 @@ public class AppConfig {
 	    connector.setScheme("https");
 	    connector.setAttribute("sslkeyAlias", "tomcat");
 	    
-//	    InputStream inputStream = AppConfig.class.getClassLoader().getResourceAsStream("/pfx-password.properties");
-//	    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-//	    String password = "";
-//	    try {
-//			password = bufferedReader.readLine();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+	    InputStream inputStream = AppConfig.class.getClassLoader().getResourceAsStream("pfx-password.properties");
+	    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+	    String password = "";
+	    try {
+			password = bufferedReader.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	    
-	    connector.setAttribute("keystorePass", "79NO1xYF");
+	    connector.setAttribute("keystorePass", password);
 	    connector.setAttribute("keystoreType", "PKCS12");
 	    connector.setAttribute("keystoreFile",
 	            "C:/Ordering_platform_workspace/Ordering_platform/ordering_platform/src/main/resources/4282031_www.donghuastar.com.pfx");
