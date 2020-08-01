@@ -68,8 +68,8 @@ public class AppConfig {
 	public static void main(String[] args) throws LifecycleException {
 		
 		Tomcat tomcat = new Tomcat();
-		tomcat.setPort(Integer.getInteger("port", 80));
 		
+//		tomcat.setPort(Integer.getInteger("port", 80));
 //		Service service = tomcat.getService();
 //		service.addConnector(getSslConnector());
 		
@@ -88,7 +88,7 @@ public class AppConfig {
 	}
 	
 	private static void getSslConnector(Connector connector) {
-	    connector.setPort(443);
+	    connector.setPort(8443);
 	    connector.setSecure(true);
 	    connector.setScheme("https");
 	    connector.setAttribute("sslkeyAlias", "tomcat");
