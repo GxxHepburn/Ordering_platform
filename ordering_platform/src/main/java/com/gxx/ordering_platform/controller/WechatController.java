@@ -23,6 +23,7 @@ import com.gxx.ordering_platform.mapper.QrCodeMapper;
 import com.gxx.ordering_platform.service.QrCodeService;
 import com.gxx.ordering_platform.service.WeChatInitMenuService;
 import com.gxx.ordering_platform.service.WechatLoginService;
+import com.gxx.ordering_platform.service.WechatMerService;
 import com.gxx.ordering_platform.service.WechatOrderingService;
 import com.gxx.ordering_platform.service.WechatTableService;
 
@@ -45,6 +46,9 @@ public class WechatController {
 	
 	@Autowired
 	QrCodeService qrCodeService;
+	
+	@Autowired
+	WechatMerService wechatMerService;
 	
 	@Autowired
 	private WebApplicationContext webApplicationContext;
@@ -195,5 +199,11 @@ public class WechatController {
 			return "0";
 		}
 		return returnStr;
+	}
+	
+	@PostMapping(value = "/loggedIn/getMer",produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String getMer(@RequestBody String str) {
+		return wechatMerService.getMer(str);
 	}
 }
