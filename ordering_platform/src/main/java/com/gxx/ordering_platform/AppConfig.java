@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
@@ -45,7 +46,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -53,6 +56,8 @@ import com.gxx.ordering_platform.filter.WechatOpenIdFilter;
 import com.gxx.ordering_platform.reamls.ShiroRealm;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+
+import lombok.experimental.var;
 
 @Configuration
 @ComponentScan
@@ -161,6 +166,7 @@ public class AppConfig {
 		return new HikariDataSource(config);
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Bean
 	SqlSessionFactoryBean createSqlSessionFactoryBean(@Autowired DataSource dataSource) {
 		var sqlSessionFactoryBean = new SqlSessionFactoryBean();
@@ -179,12 +185,30 @@ public class AppConfig {
 	}
 	
 	@Bean
-	WebMvcConfigurer createWebMvcConfigurer() {
+	WebMvcConfigurer createWebMvcConfigurer(@Autowired HandlerInterceptor[] interceptors) {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addResourceHandlers(ResourceHandlerRegistry registry) {
 				registry.addResourceHandler("/static/**").addResourceLocations("/static/");
+				// 配置小程序域名校验文件？
 				registry.addResourceHandler("/wechat/**").addResourceLocations("/");
+			}
+
+			@SuppressWarnings("deprecation")
+			@Override
+			public void addInterceptors(InterceptorRegistry registry) {
+				// TODO Auto-generated method stub
+				List<String> includePathList = new ArrayList<String>();
+				includePathList.add("/OSM");
+				List<String> excludePathList = new ArrayList<String>();
+				excludePathList.add("/OSM/login");
+				for (var interceptor : interceptors) {
+					if ("com.gxx.ordering_platform.interceptor.AuthInterceptor".equals(interceptor.getClass().getName())) {
+						registry.addInterceptor(interceptor).excludePathPatterns(excludePathList).addPathPatterns(includePathList);
+						continue;
+					}
+					registry.addInterceptor(interceptor);
+				}
 			}
 		};
 	}

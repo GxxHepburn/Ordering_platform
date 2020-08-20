@@ -25,6 +25,12 @@
    </properties>
    
    <dependencies>
+   
+   		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.6.0</version>
+		</dependency>
    	
    		<!-- 获取访问者信息 -->
    		<dependency>
