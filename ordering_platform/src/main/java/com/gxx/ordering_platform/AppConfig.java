@@ -199,7 +199,7 @@ public class AppConfig {
 			public void addInterceptors(InterceptorRegistry registry) {
 				// TODO Auto-generated method stub
 				List<String> includePathList = new ArrayList<String>();
-				includePathList.add("/OSM");
+				includePathList.add("/OSM/**");
 				List<String> excludePathList = new ArrayList<String>();
 				excludePathList.add("/OSM/login");
 				for (var interceptor : interceptors) {

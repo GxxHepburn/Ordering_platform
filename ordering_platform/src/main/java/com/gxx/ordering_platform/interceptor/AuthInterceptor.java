@@ -28,10 +28,11 @@ public class AuthInterceptor implements HandlerInterceptor {
 				Claims claims = JWTUtils.parseJwt(jwtString);
 				// 日志记录请求者信息
 				logger.info("jwt拦截器，放行claims: " + claims);
+				// 过期会抛出错误
 				return true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			response.setStatus(400);
 		}
 		return false;
 	} 
