@@ -1,0 +1,98 @@
+{
+    "data":
+    [
+        {
+            "id": 101,
+            "authName": "用户管理",
+            "path": "users",
+            "children": [
+                {
+                    "id": 102,
+                    "authName": "用户列表",
+                    "path": "users",
+                    "children": []
+                }
+            ]
+        },
+        {
+        	"id": 201,
+            "authName": "商品管理",
+            "path": "goods",
+            "children": [
+                {
+                    "id": 202,
+                    "authName": "商品列表",
+                    "path": "goods",
+                    "children": []
+                },
+                {
+                    "id": 205,
+                    "authName": "商品检索",
+                    "path": "goodsSearch",
+                    "children": []
+                },
+                {
+                	"id": 203,
+                    "authName": "分类参数",
+                    "path": "params",
+                    "children": []
+                },
+                {
+                	"id": 204,
+                    "authName": "商品分类",
+                    "path": "categories",
+                    "children": []
+                }
+            ]
+        },
+        {
+        	"id": 301,
+            "authName": "订单管理",
+            "path": "orders",
+            "children": [
+                {
+                    "id": 302,
+                    "authName": "订单列表",
+                    "path": "orders",
+                    "children": []
+                },
+                {
+                	"id": 303,
+                    "authName": "用餐列表",
+                    "path": "nowOrders",
+                    "children": []
+                }
+            ]
+        },
+        {
+        	"id": 401,
+            "authName": "店铺设置",
+            "path": "merInfo",
+            "children": [
+                {
+                    "id": 402,
+                    "authName": "店铺信息",
+                    "path": "merInfo",
+                    "children": []
+                }
+            ]
+        },
+        {
+        	"id": 501,
+            "authName": "数据统计",
+            "path": "reports",
+            "children": [
+            	{
+                    "id": 502,
+                    "authName": "数据报表",
+                    "path": "reports",
+                    "children": []
+                }
+            ]
+        }
+    ],
+    "meta": {
+        "msg": "获取菜单列表成功",
+        "status": 200
+    }
+}
