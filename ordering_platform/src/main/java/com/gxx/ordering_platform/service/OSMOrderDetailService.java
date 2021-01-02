@@ -35,8 +35,15 @@ public class OSMOrderDetailService {
 		for(int i=0; i<orderDetails.size(); i++) {
 			JSONObject orderDetailJsonObject = new JSONObject();
 			orderDetailJsonObject.put("id", orderDetails.get(i).getOD_FID());
-			Food food = foodMapper.getByFoodId(orderDetails.get(i).getOD_FID());
-			orderDetailJsonObject.put("name", food.getF_Name());
+			Food food = foodMapper.getByFoodId(orderDetails.get(i).getOD_FID());// 修改orderDetail表，这样就不需要food表了
+			String foodName = "";
+			if (food == null) {
+				foodName = "商品已删除";
+			} else {
+				foodName = food.getF_Name();
+			}
+				
+			orderDetailJsonObject.put("name", foodName);
 			orderDetailJsonObject.put("price", orderDetails.get(i).getOD_RealPrice());
 			orderDetailJsonObject.put("specs", orderDetails.get(i).getOD_Spec());
 			JSONArray proJsonArray = new JSONArray();

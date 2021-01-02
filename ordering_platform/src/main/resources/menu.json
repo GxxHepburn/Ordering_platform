@@ -26,21 +26,27 @@
                     "children": []
                 },
                 {
-                    "id": 205,
+                    "id": 203,
                     "authName": "商品检索",
                     "path": "goodsSearch",
                     "children": []
                 },
                 {
-                	"id": 203,
-                    "authName": "分类参数",
-                    "path": "params",
+                	"id": 204,
+                    "authName": "添加商品",
+                    "path": "goods/add",
                     "children": []
                 },
                 {
-                	"id": 204,
+                	"id": 205,
                     "authName": "商品分类",
                     "path": "categories",
+                    "children": []
+                },
+                {
+                	"id": 206,
+                    "authName": "添加分类",
+                    "path": "addCategories",
                     "children": []
                 }
             ]
@@ -60,6 +66,43 @@
                 	"id": 303,
                     "authName": "用餐列表",
                     "path": "nowOrders",
+                    "children": []
+                }
+            ]
+        },
+        {
+        	"id": 601,
+            "authName": "餐桌管理",
+            "path": "tabs",
+            "children": [
+                {
+                    "id": 602,
+                    "authName": "餐桌列表",
+                    "path": "tabList",
+                    "children": []
+                },
+                {
+                	"id": 603,
+                    "authName": "餐桌检索",
+                    "path": "searchTab",
+                    "children": []
+                },
+                {
+                	"id": 604,
+                    "authName": "添加餐桌",
+                    "path": "addTab",
+                    "children": []
+                },
+                {
+                	"id": 605,
+                    "authName": "餐桌分类",
+                    "path": "tabType",
+                    "children": []
+                },
+                {
+                	"id": 606,
+                    "authName": "添加分类",
+                    "path": "addTabType",
                     "children": []
                 }
             ]

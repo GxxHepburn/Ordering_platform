@@ -73,7 +73,7 @@ public class WeChatInitMenuServiceTest {
 				foodJsonObject.put("status", food.getF_Status());
 				foodJsonObject.put("stock", food.getF_Stock());
 				foodJsonObject.put("salesVolume", food.getF_SalesVolume());
-				foodJsonObject.put("tag", food.getF_tag());
+				foodJsonObject.put("tag", food.getF_Tag());
 				foodJsonObject.put("sort", food.getF_Sort());
 				JSONArray propertyJsonArray = new JSONArray();
 				//填充propertyJsonArray

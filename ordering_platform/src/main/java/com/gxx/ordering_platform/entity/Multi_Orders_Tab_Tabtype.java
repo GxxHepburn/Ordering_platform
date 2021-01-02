@@ -5,7 +5,7 @@ import java.util.Date;
 import lombok.Data;
 
 @Data
-public class Multi_Orders_Tab {
+public class Multi_Orders_Tab_Tabtype {
 
 	private int O_ID;
 	private int O_MID;
@@ -20,4 +20,5 @@ public class Multi_Orders_Tab {
 	private String O_UniqSearchID;
 	private String O_OutTradeNo;
 	private String T_Name;
+	private String TT_Name;
 }

@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
-import com.gxx.ordering_platform.entity.Multi_Orders_Tab;
+import com.gxx.ordering_platform.entity.Multi_Orders_Tab_Tabtype;
 import com.gxx.ordering_platform.entity.Orders;
 
 public interface OrdersMapper {
@@ -49,6 +49,6 @@ public interface OrdersMapper {
 	List<Orders> getOrdersOrderByTimeReturn(@Param("o_uid") int o_uid);
 	
 	@Select("SELECT O_ID, O_MID, O_UID, O_TID, O_TotlePrice, O_PayStatue, O_OrderingTime, O_PayTime, "
-			+ "O_OutTradeNo, O_Remarks, O_TotleNum, O_UniqSearchID, T_Name FROM tab INNER JOIN orders WHERE tab.T_ID = orders.O_TID AND O_UID = #{o_uid} ORDER BY O_OrderingTime DESC")
-	List<Multi_Orders_Tab> getOrdersByUIDOrderByIimeDESC(@Param("o_uid") int o_uid);
+			+ "O_OutTradeNo, O_Remarks, O_TotleNum, O_UniqSearchID, T_Name, TT_Name FROM orders left join tab on tab.T_ID = orders.O_TID left join tabtype on tabtype.TT_ID = tab.T_TTID WHERE O_UID = #{o_uid} ORDER BY O_OrderingTime DESC")
+	List<Multi_Orders_Tab_Tabtype> getOrdersByUIDOrderByIimeDESC(@Param("o_uid") int o_uid);
 }

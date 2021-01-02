@@ -113,12 +113,7 @@ public class WechatController {
 		String res = jsonObject.getString("res");
 		return weChatInitMenuService.initMenu(res).toString();
 	}
-	
-//	@PostMapping("/xx")
-//	public String test(HttpServletResponse response) {
-//		System.out.println(response.getCharacterEncoding());
-//		return "x";
-//	}
+
 	
 	@PostMapping(value = "/loggedIn/getTabNameAndTabTypeName",produces="application/json;charset=UTF-8")
 	@ResponseBody

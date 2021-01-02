@@ -46,6 +46,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -182,6 +184,11 @@ public class AppConfig {
 	@Bean
 	PlatformTransactionManager createTxManager(@Autowired DataSource dataSource) {
 		return new DataSourceTransactionManager(dataSource);
+	}
+	
+	@Bean(name="multipartResolver")
+	public MultipartResolver multipartResolver(){
+		return new CommonsMultipartResolver();
 	}
 	
 	@Bean

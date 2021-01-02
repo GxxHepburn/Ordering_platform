@@ -259,12 +259,18 @@ public class WechatOrderingService {
 		int t_id = jsonObject.getInt("tableId"); 
 		int o_id = jsonObject.getInt("orderID");
 		int m_id = jsonObject.getInt("res");
-		Tab tab = tabMapper.getByTabId(t_id);
-		int tt_id = tab.getT_TTID();
-		TabType tabType = tabTypeMapper.getByTabTypeId(tt_id);
 		
-		String tabTypeName = tabType.getTT_Name();
-		String tableName = tab.getT_Name();
+		Tab tab = tabMapper.getByTabId(t_id);
+		String tabTypeName = "已删除";
+		String tableName = "已删除";
+		
+		if (tab != null) {
+			int tt_id = tab.getT_TTID();
+			TabType tabType = tabTypeMapper.getByTabTypeId(tt_id);
+			
+			tabTypeName = tabType.getTT_Name();
+			tableName = tab.getT_Name();
+		}
 		
 		List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(o_id);
 		JSONArray jsonArray = new JSONArray();
@@ -272,7 +278,13 @@ public class WechatOrderingService {
 			JSONObject orderDetailJsonObject = new JSONObject();
 			orderDetailJsonObject.put("id", orderDetails.get(i).getOD_FID());
 			Food food = foodMapper.getByFoodId(orderDetails.get(i).getOD_FID());
-			orderDetailJsonObject.put("name", food.getF_Name());
+			String foodName = "";
+			if (food == null) {
+				foodName = "已删除";
+			} else {
+				foodName = food.getF_Name();
+			}
+			orderDetailJsonObject.put("name", foodName);
 			orderDetailJsonObject.put("price", orderDetails.get(i).getOD_RealPrice());
 			orderDetailJsonObject.put("specs", orderDetails.get(i).getOD_Spec());
 			JSONArray proJsonArray = new JSONArray();
