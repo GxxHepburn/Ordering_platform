@@ -15,4 +15,5 @@ public class OrderDetail {
 	private String OD_PropTwo;
 	private int OD_Num;
 	private int OD_RealNum;
+	private String OD_FName;
 }

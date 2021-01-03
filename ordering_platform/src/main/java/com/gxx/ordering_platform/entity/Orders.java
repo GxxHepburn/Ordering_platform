@@ -21,4 +21,5 @@ public class Orders {
 	private String O_UniqSearchID;
 	private int O_isPayNow;
 	private String O_OutTradeNo;
+	private float O_ReturnNum;
 }

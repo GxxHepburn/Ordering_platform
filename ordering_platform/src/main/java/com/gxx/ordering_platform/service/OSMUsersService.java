@@ -1,9 +1,11 @@
 package com.gxx.ordering_platform.service;
 
+import java.security.GeneralSecurityException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,6 +15,7 @@ import com.gxx.ordering_platform.entity.Mmngct;
 import com.gxx.ordering_platform.entity.Multi_WechatUser_Orders;
 import com.gxx.ordering_platform.mapper.MmaMapper;
 import com.gxx.ordering_platform.mapper.WechatUserMapper;
+import com.gxx.ordering_platform.utils.EncryptionAndDeciphering;
 
 @Component
 public class OSMUsersService {
@@ -22,7 +25,7 @@ public class OSMUsersService {
 	@Autowired WechatUserMapper wechatUserMapper;
 
 	@Transactional
-	public String users(String query, String pagenum, String pagesize, String mmngctUserName) {
+	public String users(String query, String pagenum, String pagesize, String mmngctUserName) throws JSONException, GeneralSecurityException {
 		
 		int pagenumInt = Integer.valueOf(pagenum);
 		int pagesizeInt = Integer.valueOf(pagesize);
@@ -57,7 +60,7 @@ public class OSMUsersService {
 			JSONObject jsonObject = new JSONObject();
 			
 			jsonObject.put("U_ID", multi_WechatUser_Order.getU_ID());
-			jsonObject.put("U_OpenId", multi_WechatUser_Order.getU_OpenId());
+			jsonObject.put("U_OpenId", EncryptionAndDeciphering.encryption(multi_WechatUser_Order.getU_OpenId()));
 			
 			//格式化时间
 			jsonObject.put("U_LoginTime", simpleDateFormat.format(multi_WechatUser_Order.getU_LoginTime()));

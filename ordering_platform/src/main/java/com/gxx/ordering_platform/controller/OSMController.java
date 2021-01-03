@@ -4,11 +4,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,7 +108,24 @@ public class OSMController {
 	@ResponseBody
 	public String users(String query, String pagenum, String pagesize, String mmngctUserName){
 		
-		return oSMUsersService.users(query, pagenum, pagesize, mmngctUserName);
+		try {
+			return oSMUsersService.users(query, pagenum, pagesize, mmngctUserName);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "获取失败");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
 	}
 	
 	@PostMapping("/userOrdersList")
@@ -114,7 +133,25 @@ public class OSMController {
 	public String userOrderList(@RequestBody Map<String, Object> map) {
 		
 		int U_ID = (int)map.get("U_ID");
-		return oSMOrderingService.userOrderList(U_ID);
+		try {
+			return oSMOrderingService.userOrderList(U_ID);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "获取失败");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
 	}
 	
 	@PostMapping("/orderDetails")
@@ -266,5 +303,34 @@ public class OSMController {
 	@ResponseBody
 	public String addTT(@RequestBody Map<String, Object> map) {
 		return oSMTabTypeService.addTT(map);
+	}
+	
+	@PostMapping(value = "/ordersTabAndTabTypeOptions", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String ordersTabAndTabTypeOptions(@RequestBody Map<String, Object> map) {
+		return oSMTabService.ordersTabAndTabTypeOptions(map);
+	}
+	
+	@PostMapping(value = "/getOrderFormList", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String getOrderFormList(@RequestBody Map<String, Object> map) {
+		try {
+			return oSMOrderingService.getOrderFormList(map);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "获取失败");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
 	}
 }

@@ -120,6 +120,7 @@ public class WxPayService {
 		return payMap;
 	}
 	
+	// 小程序用的是这个
 	public Map<String, String> wxServicePay(String openId, String ipAddress, String str) throws Exception {
 		
 		//要把生曾UUID放到数据库里
@@ -160,8 +161,6 @@ public class WxPayService {
 		
 		Map<String, String> payMap = new HashMap<String, String>();
 		payMap.put("appId", this.appId);
-//		payMap.put("sub_appid", this.service_sub_appid);
-//		payMap.put("sub_mch_id", this.service_sub_mch_id);
 		
 		payMap.put("timeStamp", WXPayUtil.getCurrentTimestamp() + "");
 		payMap.put("nonceStr", WXPayUtil.generateNonceStr());

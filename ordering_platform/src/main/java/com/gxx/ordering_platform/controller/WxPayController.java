@@ -36,6 +36,7 @@ public class WxPayController {
 	
 	final Logger logger = LoggerFactory.getLogger(getClass());
 	
+	// 小程序正在使用的接口
 	@Transactional
 	@PostMapping("/pay/{openId}")
 	@ResponseBody

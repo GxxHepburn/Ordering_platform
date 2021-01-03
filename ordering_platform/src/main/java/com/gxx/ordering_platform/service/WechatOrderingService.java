@@ -101,6 +101,7 @@ public class WechatOrderingService {
 				if (D_value < 0) {
 					//触发超卖警告
 					//TD
+					
 					//将库存设置为0
 					overSellNum = -D_value;
 					D_value = 0;
@@ -117,6 +118,8 @@ public class WechatOrderingService {
 			//设置菜品销量nowSalesNum+orderDetail.getOD_Num()
 			foodMapper.updateSalesVolumeByFID(nowSalesNum+orderDetail.getOD_Num(), orderDetail.getOD_FID());
 			
+			String OD_FName = foodMapper.getByFoodId(orderDetail.getOD_FID()).getF_Name();
+			orderDetail.setOD_FName(OD_FName);
 			orderDetail.setOD_RealNum(realNum);
 			orderDetailMapper.insert(orderDetail);
 			logger.info("OD_ID: " + orderDetail.getOD_ID());
@@ -213,6 +216,8 @@ public class WechatOrderingService {
 			//设置菜品销量nowSalesNum+orderDetail.getOD_Num()
 			foodMapper.updateSalesVolumeByFID(nowSalesNum+orderDetail.getOD_Num(), orderDetail.getOD_FID());
 			
+			String OD_FName = foodMapper.getByFoodId(orderDetail.getOD_FID()).getF_Name();
+			orderDetail.setOD_FName(OD_FName);
 			orderDetail.setOD_RealNum(realNum);
 			orderDetailMapper.insert(orderDetail);
 			logger.info("OD_ID: " + orderDetail.getOD_ID());

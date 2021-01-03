@@ -35,15 +35,8 @@ public class OSMOrderDetailService {
 		for(int i=0; i<orderDetails.size(); i++) {
 			JSONObject orderDetailJsonObject = new JSONObject();
 			orderDetailJsonObject.put("id", orderDetails.get(i).getOD_FID());
-			Food food = foodMapper.getByFoodId(orderDetails.get(i).getOD_FID());// 修改orderDetail表，这样就不需要food表了
-			String foodName = "";
-			if (food == null) {
-				foodName = "商品已删除";
-			} else {
-				foodName = food.getF_Name();
-			}
 				
-			orderDetailJsonObject.put("name", foodName);
+			orderDetailJsonObject.put("name", orderDetails.get(i).getOD_FName());
 			orderDetailJsonObject.put("price", orderDetails.get(i).getOD_RealPrice());
 			orderDetailJsonObject.put("specs", orderDetails.get(i).getOD_Spec());
 			JSONArray proJsonArray = new JSONArray();
@@ -51,6 +44,12 @@ public class OSMOrderDetailService {
 			proJsonArray.put(orderDetails.get(i).getOD_PropTwo());
 			orderDetailJsonObject.put("property", proJsonArray);
 			orderDetailJsonObject.put("num", orderDetails.get(i).getOD_Num());
+			
+			orderDetailJsonObject.put("OD_ID", orderDetails.get(i).getOD_ID());
+			orderDetailJsonObject.put("OD_OID", orderDetails.get(i).getOD_OID());
+			orderDetailJsonObject.put("OD_FoodState", orderDetails.get(i).getOD_FoodState());
+			orderDetailJsonObject.put("OD_RealNum", orderDetails.get(i).getOD_RealNum());
+			
 			
 			jsonArray.put(orderDetailJsonObject);
 		}

@@ -43,4 +43,7 @@ public interface TabMapper {
 	
 	@Delete("DELETE FROM tab WHERE T_TTID = #{t_ttid}")
 	void deleteByTTID(@Param("t_ttid") int t_ttid);
+	
+	@Select("SELECT * FROM tab WHERE T_TTID = #{t_ttid}")
+	List<Tab> getByTTID(@Param("t_ttid") int t_ttid);
 }
