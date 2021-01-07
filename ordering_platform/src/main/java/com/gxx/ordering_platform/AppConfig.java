@@ -53,8 +53,14 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
+import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
 import com.gxx.ordering_platform.filter.WechatOpenIdFilter;
+import com.gxx.ordering_platform.handler.OSMOrderingHandler;
+import com.gxx.ordering_platform.interceptor.OSMWebSocketSession;
 import com.gxx.ordering_platform.reamls.ShiroRealm;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -65,6 +71,7 @@ import lombok.experimental.var;
 @ComponentScan
 @MapperScan("com.gxx.ordering_platform.mapper")
 @EnableWebMvc
+@EnableWebSocket
 @EnableTransactionManagement
 @PropertySource(value = {"classpath:/jdbc.properties", "classpath:/wechat.properties", 
 		"classpath:/merchantNumber.properties", "classpath:/serviceNumber.properties"}, encoding = "UTF-8")
@@ -154,6 +161,23 @@ public class AppConfig {
 	}
 	
 	@Bean
+	WebSocketConfigurer createWebSocketConfigur(@Autowired OSMOrderingHandler osmOrderingHandler, @Autowired OSMWebSocketSession osmWebSocketSession) {
+		// TODO Auto-generated method stub
+
+		return new WebSocketConfigurer() {
+			
+			@Override
+			public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+				// TODO Auto-generated method stub
+				// 线上版本，不允许跨域
+//				registry.addHandler(osmOrderingHandler, "/websocketOrdering").addInterceptors(osmWebSocketSession);
+				// 这里设置了允许跨域！请正式版本删除这个跨域
+				registry.addHandler(osmOrderingHandler, "/websocketOrdering").addInterceptors(osmWebSocketSession).setAllowedOrigins("http://localhost:8080");
+			}
+		};
+	}
+	
+	@Bean
 	DataSource createDataSource(
 			@Value("${jdbc.url}") String jdbcUrl,
 			@Value("${jdbc.username}") String jdbcUsername,
@@ -196,7 +220,8 @@ public class AppConfig {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addResourceHandlers(ResourceHandlerRegistry registry) {
-				registry.addResourceHandler("/static/**").addResourceLocations("/static/");
+				// 前后端分离项目，已经不需要了
+//				registry.addResourceHandler("/static/**").addResourceLocations("/static/");
 				// 配置小程序域名校验文件？
 				registry.addResourceHandler("/wechat/**").addResourceLocations("/");
 			}
@@ -207,6 +232,10 @@ public class AppConfig {
 				// TODO Auto-generated method stub
 				List<String> includePathList = new ArrayList<String>();
 				includePathList.add("/OSM/**");
+				// 添加到拦截器拦截队列中，同时前端请求修改，让其携带token
+				// 这样操作是没用的，因为拦截器只针对controller，拦截器是居于aop的方法拦截的，而我们的websocket的连接没有controller，所以无效
+				// 解决办法是在HttpSessionHandshakeInterceptor 中处理，是有需要拦截
+//				includePathList.add("/websocketOrdering");//添加到拦截器拦截队列中，同时前端请求修改，让其携带token
 				List<String> excludePathList = new ArrayList<String>();
 				excludePathList.add("/OSM/login");
 				for (var interceptor : interceptors) {

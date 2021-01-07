@@ -94,4 +94,42 @@ public interface OrdersMapper {
 			@Param("payStartTime") Date payStartTime, @Param("payEndTime") Date payEndTime,
 			@Param("limitStart") int limitStart, @Param("pagesizeInt") int pagesizeInt,
 			@Param("payStatus") Integer PayStatus);
+	
+	@Select("<script>"
+			+ "SELECT COUNT(*) "
+			+ "FROM orders left join tab on tab.T_ID = orders.O_TID left join tabtype on tabtype.TT_ID = tab.T_TTID "
+			+ "WHERE 1=1"
+			+ "<if test='o_uid!=null'>"
+			+ " AND O_UID = #{o_uid}"
+			+ "</if>"
+			+ "<if test='o_tid!=null'>"
+			+ " AND O_TID = #{o_tid}"
+			+ "</if>"
+			+ "<if test='tt_id!=null'>"
+			+ " AND tabtype.TT_ID = #{tt_id}"
+			+ "</if>"
+			+ "<if test='orderStartTime!=null'>"
+			+ " AND O_OrderingTime &gt;= #{orderStartTime}"
+			+ "</if>"
+			+ "<if test='orderEndTime!=null'>"
+			+ " AND O_OrderingTime &lt;= #{orderEndTime}"
+			+ "</if>"
+			+ "<if test='payStartTime!=null'>"
+			+ " AND O_PayTime &gt;= #{payStartTime}"
+			+ "</if>"
+			+ "<if test='payEndTime!=null'>"
+			+ " AND O_PayTime &lt;= #{payEndTime}"
+			+ "</if>"
+			+ "<if test='payStatus!=null'>"
+			+ " AND O_PayStatue = #{payStatus}"
+			+ "</if>"
+			+ "</script>")
+	int getOrdersTotalByUIDTabIDTabtypeIDOorderTimePayTime(
+			@Param("o_uid") Integer o_uid, @Param("o_tid") Integer o_tid, @Param("tt_id") Integer tt_tid,
+			@Param("orderStartTime") Date orderStartTime, @Param("orderEndTime") Date orderEndTime,
+			@Param("payStartTime") Date payStartTime, @Param("payEndTime") Date payEndTime,
+			@Param("payStatus") Integer PayStatus);
+	
+	@Update("UPDATE orders SET O_TotlePrice = #{o_totlePrice} WHERE O_ID = #{o_id}")
+	void updateTotlePrice(@Param("o_id") int o_id, @Param("o_totlePrice") float o_totlePrice);
 }

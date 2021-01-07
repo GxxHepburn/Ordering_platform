@@ -33,7 +33,19 @@ public class OSMOrderingService {
 		//获取该用户订单
 		List<Multi_Orders_Tab_Tabtype> multi_Orders_Tab_Tabtypes = ordersMapper.getOrdersByUIDOrderByIimeDESC(U_ID);
 		
-		return listToString(multi_Orders_Tab_Tabtypes);
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "获取成功");
+		
+		JSONObject dataJsonObject = new JSONObject();
+		dataJsonObject.put("orderFormList", listToString(multi_Orders_Tab_Tabtypes));
+		
+		newJsonObject.put("data", dataJsonObject);
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
 	}
 
 	@Transactional
@@ -75,10 +87,27 @@ public class OSMOrderingService {
 		datesList.add(payEndTimeDate);
 		
 		List<String> timeStringsList = new ArrayList<String>();
-		timeStringsList.add(map.get("OrderStartTime").toString());
-		timeStringsList.add(map.get("OrderEndTime").toString());
-		timeStringsList.add(map.get("PayStartTime").toString());
-		timeStringsList.add(map.get("PayEndTime").toString());
+		
+		String OrderStartTime = "";
+		if (map.get("OrderStartTime") != null) {
+			OrderStartTime = map.get("OrderStartTime").toString();
+		}
+		String OrderEndTime = "";
+		if (map.get("OrderEndTime") != null) {
+			OrderEndTime = map.get("OrderEndTime").toString();
+		}
+		String PayStartTime = "";
+		if (map.get("PayStartTime") != null) {
+			PayStartTime = map.get("PayStartTime").toString();
+		}
+		String PayEndTime = "";
+		if (map.get("PayEndTime") != null) {
+			PayEndTime = map.get("PayEndTime").toString();
+		}
+		timeStringsList.add(OrderStartTime);
+		timeStringsList.add(OrderEndTime);
+		timeStringsList.add(PayStartTime);
+		timeStringsList.add(PayEndTime);
 		
 		for(int i = 0; i < timeStringsList.size(); i++) {
 			if (!"".equals(timeStringsList.get(i))) {
@@ -96,10 +125,12 @@ public class OSMOrderingService {
 		
 		List<Multi_Orders_Tab_Tabtype> multi_Orders_Tab_Tabtypes = null;
 		
+		int total = 0;
 		// 根据参数
 		// 订单号不为空，直接根据订单号，查询订单
 		if (!"".equals(O_UniqSearchID)) {
 			multi_Orders_Tab_Tabtypes = ordersMapper.getOrdersByUniqSearchIDOrderByIimeDESC(O_UniqSearchID);
+			total = 1;
 		} else {
 			if (!"".equals(U_OpenId)) {
 				// 有商户号
@@ -110,19 +141,28 @@ public class OSMOrderingService {
 			} 
 			multi_Orders_Tab_Tabtypes = ordersMapper.getOrdersByUIDTabIDTabtypeIDOorderTimePayTimeOrderByIimeDESC(U_ID,
 					TabId, TabTypeId, datesList.get(0), datesList.get(1), datesList.get(2), datesList.get(3), limitStart, pagesizeInt, PayStatus);
+			total = ordersMapper.getOrdersTotalByUIDTabIDTabtypeIDOorderTimePayTime(U_ID,
+					TabId, TabTypeId, datesList.get(0), datesList.get(1), datesList.get(2), datesList.get(3), PayStatus);
 		}
-		
-		return listToString(multi_Orders_Tab_Tabtypes);
-	}
-	
-	// 根据List<Multi_Orders_Tab_Tabtype> 返回值
-	public String listToString(List<Multi_Orders_Tab_Tabtype> multi_Orders_Tab_Tabtypes) {
 		
 		JSONObject newJsonObject = new JSONObject();
 		
 		JSONObject metaJsonObject = new JSONObject();
 		metaJsonObject.put("status", 200);
 		metaJsonObject.put("msg", "获取成功");
+		
+		JSONObject dataJsonObject = new JSONObject();
+		dataJsonObject.put("orderFormList", listToString(multi_Orders_Tab_Tabtypes));
+		dataJsonObject.put("total", total);
+		
+		newJsonObject.put("data", dataJsonObject);
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
+	}
+	
+	// 根据List<Multi_Orders_Tab_Tabtype> 返回值
+	public JSONArray listToString(List<Multi_Orders_Tab_Tabtype> multi_Orders_Tab_Tabtypes) {
 		
 		//格式化时间
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -171,9 +211,6 @@ public class OSMOrderingService {
 			ordersJsonArray.put(jsonObject);
 		}
 		
-		newJsonObject.put("data", ordersJsonArray);
-		newJsonObject.put("meta", metaJsonObject);
-		
-		return newJsonObject.toString();
+		return ordersJsonArray;
 	}
 }

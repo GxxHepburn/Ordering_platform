@@ -73,7 +73,6 @@ public class WechatOrderingService {
 		orders.setO_MID(mid);
 		orders.setO_UID(wechatUser.getU_ID());
 		orders.setO_TID(tid);
-		orders.setO_TotlePrice(totalPrice);
 		orders.setO_PayStatue(0);
 		orders.setO_OrderingTime(orderingTime);
 		orders.setO_Remarks(remark);
@@ -81,6 +80,8 @@ public class WechatOrderingService {
 		orders.setO_UniqSearchID(O_UniqSearchID);
 		
 		ordersMapper.insert(orders);
+		
+		float totalReturnPrice = 0.00f;
 		
 		for(int i=0; i<ordersJsonArray.length(); i++) {
 			JSONObject orderDetailJsonObject = ordersJsonArray.getJSONObject(i);
@@ -100,7 +101,7 @@ public class WechatOrderingService {
 				D_value = nowStock - orderDetail.getOD_Num();
 				if (D_value < 0) {
 					//触发超卖警告
-					//TD
+					//TD,新订单中自动相关returnnum = overSellNum。对于所有的未支付订单，超卖都需要弹窗提醒
 					
 					//将库存设置为0
 					overSellNum = -D_value;
@@ -114,6 +115,8 @@ public class WechatOrderingService {
 				foodMapper.updateStockByFID(D_value, orderDetail.getOD_FID());
 				
 			}
+			
+			totalReturnPrice += overSellNum * orderDetail.getOD_RealPrice();
 			//更新数据库中销量
 			//设置菜品销量nowSalesNum+orderDetail.getOD_Num()
 			foodMapper.updateSalesVolumeByFID(nowSalesNum+orderDetail.getOD_Num(), orderDetail.getOD_FID());
@@ -124,6 +127,8 @@ public class WechatOrderingService {
 			orderDetailMapper.insert(orderDetail);
 			logger.info("OD_ID: " + orderDetail.getOD_ID());
 		}
+		orders.setO_TotlePrice(totalPrice - totalReturnPrice);
+		ordersMapper.updateTotlePrice(orders.getO_ID(), orders.getO_TotlePrice());
 		return O_UniqSearchID;
 	}
 	
@@ -180,9 +185,10 @@ public class WechatOrderingService {
 		Orders orders = ordersMapper.selectBySearchId(orderSearchId);
 		int totalNum = orders.getO_TotleNum() + nowTotalNum;
 		float totalPrice = orders.getO_TotlePrice() + nowTotalPrice;
-		ordersMapper.updateNumAndPriceBySearchId(orderSearchId, totalNum, totalPrice);
+//		ordersMapper.updateNumAndPriceBySearchId(orderSearchId, totalNum, totalPrice);
 		
 		//加上总数和totalPrice
+		float totalReturnPrice = 0.00f;
 		
 		for(int i=0; i<ordersJsonArray.length(); i++) {
 			JSONObject orderDetailJsonObject = ordersJsonArray.getJSONObject(i);
@@ -212,6 +218,7 @@ public class WechatOrderingService {
 				foodMapper.updateStockByFID(D_value, orderDetail.getOD_FID());
 				
 			}
+			totalReturnPrice += overSellNum * orderDetail.getOD_RealPrice();
 			//更新数据库中销量
 			//设置菜品销量nowSalesNum+orderDetail.getOD_Num()
 			foodMapper.updateSalesVolumeByFID(nowSalesNum+orderDetail.getOD_Num(), orderDetail.getOD_FID());
@@ -222,6 +229,7 @@ public class WechatOrderingService {
 			orderDetailMapper.insert(orderDetail);
 			logger.info("OD_ID: " + orderDetail.getOD_ID());
 		}
+		ordersMapper.updateNumAndPriceBySearchId(orderSearchId, totalNum, totalPrice - totalReturnPrice);
 	}
 	
 	public boolean getPayStatus(String searchId) {
@@ -279,6 +287,8 @@ public class WechatOrderingService {
 		
 		List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(o_id);
 		JSONArray jsonArray = new JSONArray();
+		int returnTotalPrice = 0;
+		int hasReturn = 0;
 		for(int i=0; i<orderDetails.size(); i++) {
 			JSONObject orderDetailJsonObject = new JSONObject();
 			orderDetailJsonObject.put("id", orderDetails.get(i).getOD_FID());
@@ -297,10 +307,17 @@ public class WechatOrderingService {
 			proJsonArray.put(orderDetails.get(i).getOD_PropTwo());
 			orderDetailJsonObject.put("property", proJsonArray);
 			orderDetailJsonObject.put("num", orderDetails.get(i).getOD_Num());
+			orderDetailJsonObject.put("realNum", orderDetails.get(i).getOD_RealNum());
+			
+			returnTotalPrice += (orderDetails.get(i).getOD_Num()- orderDetails.get(i).getOD_RealNum()) * orderDetails.get(i).getOD_RealPrice();
 			
 			jsonArray.put(orderDetailJsonObject);
 		}
 		logger.info(orderDetails.toString());
+		
+		if (returnTotalPrice > 0) {
+			hasReturn = 1;
+		}
 		
 		WeChatInitMenuService weChatInitMenuService = (WeChatInitMenuService)webApplicationContext.getBean("weChatInitMenuService");
 		
@@ -309,6 +326,10 @@ public class WechatOrderingService {
 		returnJsonObject.put("tabTypeName", tabTypeName);
 		returnJsonObject.put("alreadyOrders", jsonArray);
 		returnJsonObject.put("menu", weChatInitMenuService.initMenu(String.valueOf(m_id)));
+		
+		returnJsonObject.put("returnTotalPrice", returnTotalPrice);
+		returnJsonObject.put("hasReturn", hasReturn);
+		
 		logger.info("menu: " + weChatInitMenuService.initMenu(String.valueOf(m_id)).toString());
 		return returnJsonObject.toString();
 	}
