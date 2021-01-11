@@ -22,4 +22,5 @@ public class Orders {
 	private int O_isPayNow;
 	private String O_OutTradeNo;
 	private float O_ReturnNum;
+	private int O_NumberOfDiners;
 }

@@ -128,36 +128,10 @@ public class OSMController {
 		return newJsonObject.toString();
 	}
 	
-	@PostMapping("/userOrdersList")
-	@ResponseBody
-	public String userOrderList(@RequestBody Map<String, Object> map) {
-		
-		int U_ID = (int)map.get("U_ID");
-		try {
-			return oSMOrderingService.userOrderList(U_ID);
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		// 错误信息
-		JSONObject newJsonObject = new JSONObject();
-		
-		JSONObject metaJsonObject = new JSONObject();
-		metaJsonObject.put("status", 500);
-		metaJsonObject.put("msg", "获取失败");
-		
-		newJsonObject.put("meta", metaJsonObject);
-		return newJsonObject.toString();
-	}
-	
 	@PostMapping("/orderDetails")
 	@ResponseBody
 	public String orderDetails(@RequestBody Map<String, Object> map) {
-		int O_ID = (int) map.get("O_ID");
+		int O_ID = Integer.valueOf(map.get("O_ID").toString());
 		return oSMOrderDetailService.orderDetails(O_ID);
 	}
 	
@@ -316,6 +290,98 @@ public class OSMController {
 	public String getOrderFormList(@RequestBody Map<String, Object> map) {
 		try {
 			return oSMOrderingService.getOrderFormList(map);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "获取失败");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
+	
+	@PostMapping(value = "/getOrderForm", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String getOrderForm(@RequestBody Map<String, Object> map) {
+		try {
+			return oSMOrderingService.getOrderForm(map);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "获取失败");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
+	
+	@PostMapping(value = "/getOrderAddFormList", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String getOrderAddFormList(@RequestBody Map<String, Object> map) {
+		try {
+			return oSMOrderingService.getOrderAddFormList(map);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "获取失败");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
+	
+	@PostMapping(value = "/onlyReturnGoods", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String onlyReturnGoods(@RequestBody Map<String, Object> map) {
+		try {
+			return oSMOrderingService.onlyReturnGoods(map);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "获取失败");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
+	
+	@PostMapping(value = "/onePunchUpGoods", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String onePunchUpGoods(@RequestBody Map<String, Object> map) {
+		try {
+			return oSMFoodService.onePunchUpGoods(map);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

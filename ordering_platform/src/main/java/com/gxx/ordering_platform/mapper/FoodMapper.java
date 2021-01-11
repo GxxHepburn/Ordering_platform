@@ -73,4 +73,7 @@ public interface FoodMapper {
 	
 	@Select("SELECT * FROM food WHERE F_FTID = #{f_ftid} LIMIT 1")
 	Food isCateNullByFTID(@Param("f_ftid") int f_ftid);
+	
+	@Update("UPDATE food SET F_Stock = -1 WHERE F_MID = #{m_id} AND F_Stock = 0")
+	void updateStockByM_ID_AND_F_StockNotZero(@Param("m_id") int m_id);
 }

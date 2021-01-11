@@ -14,8 +14,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gxx.ordering_platform.entity.Mer;
 import com.gxx.ordering_platform.entity.Multi_Orders_Tab_Tabtype;
+import com.gxx.ordering_platform.entity.OrderAdd;
+import com.gxx.ordering_platform.entity.OrderDetail;
 import com.gxx.ordering_platform.entity.WechatUser;
+import com.gxx.ordering_platform.mapper.FoodMapper;
+import com.gxx.ordering_platform.mapper.MerMapper;
+import com.gxx.ordering_platform.mapper.OrderAddMapper;
+import com.gxx.ordering_platform.mapper.OrderDetailMapper;
 import com.gxx.ordering_platform.mapper.OrdersMapper;
 import com.gxx.ordering_platform.mapper.WechatUserMapper;
 import com.gxx.ordering_platform.utils.EncryptionAndDeciphering;
@@ -27,11 +34,20 @@ public class OSMOrderingService {
 
 	@Autowired WechatUserMapper wechatUserMapper;
 	
+	@Autowired MerMapper merMapper;
+	
+	@Autowired OrderAddMapper orderAddMapper;
+	
+	@Autowired OrderDetailMapper orderDetailMapper;
+	
+	@Autowired FoodMapper foodMapper;
+	
 	@Transactional
-	public String userOrderList(int U_ID) {
+	public String getOrderForm(Map<String, Object> map) {
+		int O_ID = Integer.valueOf(map.get("O_ID").toString());
 		
-		//获取该用户订单
-		List<Multi_Orders_Tab_Tabtype> multi_Orders_Tab_Tabtypes = ordersMapper.getOrdersByUIDOrderByIimeDESC(U_ID);
+		Multi_Orders_Tab_Tabtype multi_Orders_Tab_Tabtype = ordersMapper.getOrderForm(O_ID);
+		Mer mer = merMapper.getMerByMID(multi_Orders_Tab_Tabtype.getO_MID());
 		
 		JSONObject newJsonObject = new JSONObject();
 		
@@ -40,7 +56,24 @@ public class OSMOrderingService {
 		metaJsonObject.put("msg", "获取成功");
 		
 		JSONObject dataJsonObject = new JSONObject();
-		dataJsonObject.put("orderFormList", listToString(multi_Orders_Tab_Tabtypes));
+		
+		JSONObject orderJsonObject = new JSONObject(multi_Orders_Tab_Tabtype);
+		
+		//格式化时间
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		if (multi_Orders_Tab_Tabtype.getO_PayTime() == null) {
+			orderJsonObject.put("o_PayTime", "");
+		} else {
+			orderJsonObject.put("o_PayTime", simpleDateFormat.format(multi_Orders_Tab_Tabtype.getO_PayTime()));
+		}
+		
+		orderJsonObject.put("o_OrderingTime", simpleDateFormat.format(multi_Orders_Tab_Tabtype.getO_OrderingTime()));
+		dataJsonObject.put("orderForm", orderJsonObject);
+		
+		JSONObject merJsonObject = new JSONObject(mer);
+		dataJsonObject.put("merForm", merJsonObject);
+		
 		
 		newJsonObject.put("data", dataJsonObject);
 		newJsonObject.put("meta", metaJsonObject);
@@ -196,6 +229,7 @@ public class OSMOrderingService {
 			
 			jsonObject.put("O_isPayNow", multi_Orders_Tab_Tabtype.getO_isPayNow());
 			jsonObject.put("O_ReturnNum", multi_Orders_Tab_Tabtype.getO_ReturnNum());
+			jsonObject.put("O_NumberOfDiners", multi_Orders_Tab_Tabtype.getO_NumberOfDiners());
 			
 			String T_Name = multi_Orders_Tab_Tabtype.getT_Name();
 			if (T_Name == null) {
@@ -212,5 +246,96 @@ public class OSMOrderingService {
 		}
 		
 		return ordersJsonArray;
+	}
+
+	@Transactional
+	public String getOrderAddFormList(Map<String, Object> map) {
+		int O_ID = Integer.valueOf(map.get("O_ID").toString());
+		
+		List<OrderAdd> orderAdds = orderAddMapper.getByO_ID(O_ID);
+		JSONArray orderAddsJsonArray = new JSONArray(orderAdds);
+		
+		//格式化时间
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		for (int i = 0; i < orderAdds.size(); i++) {
+			List<OrderDetail> orderDetails = orderDetailMapper.getByOA_ID(orderAdds.get(i).getOA_ID());
+			JSONArray orderDetailsJSONArray = new JSONArray(orderDetails);
+			
+			orderAddsJsonArray.getJSONObject(i).put("OA_OrderingTime", simpleDateFormat.format(orderAdds.get(i).getOA_OrderingTime()));
+			
+			orderAddsJsonArray.getJSONObject(i).put("orderDetails", orderDetailsJSONArray);
+		}
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "获取成功");
+		
+		JSONObject dataJsonObject = new JSONObject();
+		dataJsonObject.put("orderAddFormList", orderAddsJsonArray);
+		
+		newJsonObject.put("data", dataJsonObject);
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
+
+	@Transactional
+	public String onlyReturnGoods(Map<String, Object> map) {
+		// 因为是主动退点商品，所以不回复库存
+		// 只update这个orderDetail,如果实际数目=0，则删除该orderdetail
+		JSONObject sourceJsonObject = new JSONObject(map);
+		JSONArray orderDetailJsonArray = sourceJsonObject.getJSONArray("onlyReturnGoodOrderDetailForm");
+		int O_ID = sourceJsonObject.getInt("O_ID");
+		for (int i = 0; i < orderDetailJsonArray.length(); i++) {
+			int onlyReturnNum = orderDetailJsonArray.getJSONObject(i).getInt("onlyReturnNum");
+			int OD_RealNum = orderDetailJsonArray.getJSONObject(i).getInt("OD_RealNum");
+			int num = orderDetailJsonArray.getJSONObject(i).getInt("num");
+			int OD_ID = orderDetailJsonArray.getJSONObject(i).getInt("OD_ID");
+			int F_ID = orderDetailJsonArray.getJSONObject(i).getInt("id");
+			if (onlyReturnNum > 0) {
+				if (num -onlyReturnNum == 0) {
+					// 删除该项
+					orderDetailMapper.deleteByOD_ID(OD_ID);
+				} else {
+					// 更新realNum 和 num
+					orderDetailMapper.updateRealNumAndNumByOD_ID(OD_ID, num- onlyReturnNum, OD_RealNum - onlyReturnNum);
+				}
+				// 商家主动退点，说明库存没了，所以将该商品库存设置为0
+				foodMapper.updateStockByFID(0, F_ID);
+			}
+		}
+		List<OrderAdd> orderAdds = orderAddMapper.getByO_ID(O_ID);
+		for (OrderAdd orderAdd : orderAdds) {
+			float nowOATotlePrice = 0.00f;
+			List<OrderDetail> orderDetails = orderDetailMapper.getByOA_ID(orderAdd.getOA_ID());
+			for (OrderDetail orderDetail : orderDetails) {
+				nowOATotlePrice += orderDetail.getOD_RealPrice() * orderDetail.getOD_RealNum();
+			}
+			orderAddMapper.updateTotlePrice(orderAdd.getOA_ID(), nowOATotlePrice);
+		}
+
+		// 更新order ,orderadd 的总金额（不更新总数了，用不到的字段，让他乱吧)
+		List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(O_ID);
+		float nowOrderTotlePrice = 0.00f;
+		for (OrderDetail orderDetail : orderDetails) {
+			nowOrderTotlePrice += orderDetail.getOD_RealPrice() * orderDetail.getOD_RealNum();
+		}
+		ordersMapper.updateTotlePrice(O_ID, nowOrderTotlePrice);
+		// 检查总订单金额是不是为0如果为0,则将订单状态改为未完成
+		if (nowOrderTotlePrice == 0) {
+			ordersMapper.updateO_PayStatueByO_ID(O_ID, 3);
+		}
+
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "仅退点餐品成功!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
 	}
 }

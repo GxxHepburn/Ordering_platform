@@ -15,9 +15,9 @@ import com.gxx.ordering_platform.entity.Orders;
 public interface OrdersMapper {
 
 	@Insert("INSERT INTO orders (O_MID, O_UID, O_TID, O_TotlePrice, O_PayStatue, O_OrderingTime,"
-			+ " O_Remarks, O_TotleNum, O_UniqSearchID) VALUES (#{orders.O_MID}, #{orders.O_UID}, #{orders.O_TID}, "
+			+ " O_Remarks, O_TotleNum, O_UniqSearchID, O_NumberOfDiners) VALUES (#{orders.O_MID}, #{orders.O_UID}, #{orders.O_TID}, "
 			+ "#{orders.O_TotlePrice}, #{orders.O_PayStatue}"
-			+ ", #{orders.O_OrderingTime}, #{orders.O_Remarks}, #{orders.O_TotleNum}, #{orders.O_UniqSearchID})")
+			+ ", #{orders.O_OrderingTime}, #{orders.O_Remarks}, #{orders.O_TotleNum}, #{orders.O_UniqSearchID}, #{orders.O_NumberOfDiners})")
 	@Options(useGeneratedKeys = true, keyProperty = "O_ID")
 	int insert(@Param("orders") Orders orders);
 	
@@ -48,17 +48,17 @@ public interface OrdersMapper {
 	@Select("SELECT * FROM orders WHERE O_UID = #{o_uid} AND O_PayStatue = 2 ORDER BY O_OrderingTime DESC")
 	List<Orders> getOrdersOrderByTimeReturn(@Param("o_uid") int o_uid);
 	
-	@Select("SELECT O_ID, O_MID, O_UID, O_TID, O_TotlePrice, O_PayMethod, O_PayStatue, O_OrderingTime, O_PayTime, "
-			+ "O_OutTradeNo, O_Remarks, O_TotleNum, O_UniqSearchID, O_isPayNow, O_ReturnNum, T_Name, TT_Name FROM orders left join tab on tab.T_ID = orders.O_TID left join tabtype on tabtype.TT_ID = tab.T_TTID WHERE O_UID = #{o_uid} ORDER BY O_OrderingTime DESC")
-	List<Multi_Orders_Tab_Tabtype> getOrdersByUIDOrderByIimeDESC(@Param("o_uid") int o_uid);
+//	@Select("SELECT O_ID, O_MID, O_UID, O_TID, O_TotlePrice, O_PayMethod, O_PayStatue, O_OrderingTime, O_PayTime, "
+//			+ "O_OutTradeNo, O_Remarks, O_TotleNum, O_UniqSearchID, O_isPayNow, O_ReturnNum, T_Name, TT_Name FROM orders left join tab on tab.T_ID = orders.O_TID left join tabtype on tabtype.TT_ID = tab.T_TTID WHERE O_UID = #{o_uid} ORDER BY O_OrderingTime DESC")
+//	List<Multi_Orders_Tab_Tabtype> getOrdersByUIDOrderByIimeDESC(@Param("o_uid") int o_uid);
 	
 	@Select("SELECT O_ID, O_MID, O_UID, O_TID, O_TotlePrice, O_PayMethod, O_PayStatue, O_OrderingTime, O_PayTime, "
-			+ "O_OutTradeNo, O_Remarks, O_TotleNum, O_UniqSearchID, O_isPayNow, O_ReturnNum, T_Name, TT_Name FROM orders left join tab on tab.T_ID = orders.O_TID left join tabtype on tabtype.TT_ID = tab.T_TTID WHERE O_UniqSearchID = #{o_uniqSearchID} ORDER BY O_OrderingTime DESC")
+			+ "O_OutTradeNo, O_Remarks, O_TotleNum, O_UniqSearchID, O_isPayNow, O_ReturnNum, O_NumberOfDiners, T_Name, TT_Name FROM orders left join tab on tab.T_ID = orders.O_TID left join tabtype on tabtype.TT_ID = tab.T_TTID WHERE O_UniqSearchID = #{o_uniqSearchID} ORDER BY O_OrderingTime DESC")
 	List<Multi_Orders_Tab_Tabtype> getOrdersByUniqSearchIDOrderByIimeDESC(@Param("o_uniqSearchID") String o_uniqSearchID);
 	
 	@Select("<script>"
 			+ "SELECT O_ID, O_MID, O_UID, O_TID, O_TotlePrice, O_PayMethod, O_PayStatue, O_OrderingTime, O_PayTime, "
-			+ "O_OutTradeNo, O_Remarks, O_TotleNum, O_UniqSearchID, O_isPayNow, O_ReturnNum, T_Name, TT_Name "
+			+ "O_OutTradeNo, O_Remarks, O_TotleNum, O_UniqSearchID, O_isPayNow, O_ReturnNum, O_NumberOfDiners, T_Name, TT_Name "
 			+ "FROM orders left join tab on tab.T_ID = orders.O_TID left join tabtype on tabtype.TT_ID = tab.T_TTID "
 			+ "WHERE 1=1"
 			+ "<if test='o_uid!=null'>"
@@ -132,4 +132,13 @@ public interface OrdersMapper {
 	
 	@Update("UPDATE orders SET O_TotlePrice = #{o_totlePrice} WHERE O_ID = #{o_id}")
 	void updateTotlePrice(@Param("o_id") int o_id, @Param("o_totlePrice") float o_totlePrice);
+	
+	@Select("SELECT O_ID, O_MID, O_UID, O_TID, O_TotlePrice, O_PayMethod, O_PayStatue, O_OrderingTime, O_PayTime, "
+			+ "O_OutTradeNo, O_Remarks, O_TotleNum, O_UniqSearchID, O_isPayNow, O_ReturnNum, O_NumberOfDiners, T_Name, TT_Name FROM "
+			+ "orders left join tab on tab.T_ID = orders.O_TID left join tabtype on tabtype.TT_ID = tab.T_TTID "
+			+ "WHERE O_ID = #{o_id}")
+	Multi_Orders_Tab_Tabtype getOrderForm(@Param("o_id") int o_id);
+	
+	@Update("UPDATE orders SET O_PayStatue = #{o_payStatue} WHERE O_ID = #{o_id}")
+	void updateO_PayStatueByO_ID(@Param("o_id") int o_id, @Param("o_payStatue") int o_payStatue);
 }

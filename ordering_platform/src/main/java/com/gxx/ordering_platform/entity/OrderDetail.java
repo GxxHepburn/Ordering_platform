@@ -7,6 +7,9 @@ public class OrderDetail {
 
 	private int OD_ID;
 	private int OD_OID;
+	
+	private int OD_OAID;
+	
 	private int OD_FID;
 	private int OD_FoodState;
 	private float OD_RealPrice;

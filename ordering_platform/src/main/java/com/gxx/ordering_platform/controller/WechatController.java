@@ -133,19 +133,27 @@ public class WechatController {
 		String orderSearchId = "";
 		try {
 			orderSearchId = wechatOrderingService.ordering(str);
+			// 对结果进行判断,如果meta=410,直接返回
+			
+			try {
+				// 如果没超卖了，那么new JSOBObject就会报错
+				new JSONObject(orderSearchId);
+			} catch (Exception e) {
+				//下单成功-更新客户端menu
+				WeChatInitMenuService weChatInitMenuService = (WeChatInitMenuService)webApplicationContext.getBean("weChatInitMenuService");
+				
+				String newJsonStr = weChatInitMenuService.initMenu(String.valueOf(mid)).toString();
+				JSONObject newJsonObject = new JSONObject(newJsonStr);
+				newJsonObject.put("orderSearchId", orderSearchId);
+				return newJsonObject.toString();
+			}
+			// 如果没报错，那么说明超卖了，直接return
+			return orderSearchId;
 		} catch (Exception e) {
 			//遇到错误，返回下单失败
-			e.printStackTrace();
 			logger.error(e.toString());
 			return "0";
 		}
-		//下单成功-更新客户端menu
-		WeChatInitMenuService weChatInitMenuService = (WeChatInitMenuService)webApplicationContext.getBean("weChatInitMenuService");
-		
-		String newJsonStr = weChatInitMenuService.initMenu(String.valueOf(mid)).toString();
-		JSONObject newJsonObject = new JSONObject(newJsonStr);
-		newJsonObject.put("orderSearchId", orderSearchId);
-		return newJsonObject.toString();
 	}
 	
 	@PostMapping(value = "/loggedIn/add",produces="application/json;charset=UTF-8")
@@ -153,18 +161,26 @@ public class WechatController {
 	public String add(@RequestBody String str) {
 		JSONObject jsonObject = new JSONObject(str);
 		int mid = jsonObject.getInt("mid");
+		String addReturnString = "";
 		//加菜逻辑
 		try {
-			wechatOrderingService.add(str);
+			addReturnString = wechatOrderingService.add(str);
+			try {
+				new JSONObject(addReturnString);
+			} catch (Exception e) {
+				// TODO: handle exception
+				//下单成功-更新客户端menu
+				WeChatInitMenuService weChatInitMenuService = (WeChatInitMenuService)webApplicationContext.getBean("weChatInitMenuService");
+				return weChatInitMenuService.initMenu(String.valueOf(mid)).toString();
+			}
+			return addReturnString;
 		} catch (Exception e) {
 			//遇到错误，返回夹菜失败
 			e.printStackTrace();
 			logger.error(e.toString());
 			return "0";
 		}
-		//下单成功-更新客户端menu
-		WeChatInitMenuService weChatInitMenuService = (WeChatInitMenuService)webApplicationContext.getBean("weChatInitMenuService");
-		return weChatInitMenuService.initMenu(String.valueOf(mid)).toString();
+		
 	}
 	
 	@PostMapping(value = "/loggedIn/home",produces="application/json;charset=UTF-8")

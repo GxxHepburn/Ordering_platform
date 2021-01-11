@@ -521,4 +521,25 @@ public class OSMFoodService {
 		
 		return newJsonObject.toString();
 	}
+
+	@Transactional
+	public String onePunchUpGoods(Map<String, Object> map) {
+		String mmngctUserName = (String) map.get("mmngctUserName");
+		
+		//根据mmngctUserName查出merId
+		Mmngct mmngct = mmaMapper.getByUsername(mmngctUserName);
+		int m_ID = mmngct.getMMA_ID();
+		foodMapper.updateStockByM_ID_AND_F_StockNotZero(m_ID);
+		
+		//拼接json
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "一键上货成功");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
+	}
 }
