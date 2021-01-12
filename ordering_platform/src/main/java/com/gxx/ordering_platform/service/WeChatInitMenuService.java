@@ -54,7 +54,7 @@ public class WeChatInitMenuService {
 			foodTypeJsonObject.put("sort", foodType.getFT_Sort());
 			foodTypeJsonObject.put("id", foodType.getFT_ID());
 			
-			List<Food> foods = foodMapper.getByMIDAndFTID(foodType.getFT_ID(), foodType.getFT_MID());
+			List<Food> foods = foodMapper.getByMIDAndFTIDWithoutDisable(foodType.getFT_ID(), foodType.getFT_MID());
 			JSONArray foodsJsonArray = new JSONArray();
 			foods.stream().forEach(food -> {
 				JSONObject foodJsonObject = new JSONObject();

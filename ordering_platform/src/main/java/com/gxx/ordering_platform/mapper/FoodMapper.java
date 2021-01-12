@@ -16,8 +16,8 @@ import com.gxx.ordering_platform.entity.Orders;
 
 public interface FoodMapper {
 
-	@Select("SELECT * FROM food WHERE F_FTID = #{f_ftid} AND F_MID = #{f_mid}")
-	List<Food> getByMIDAndFTID(@Param("f_ftid") int f_ftid,@Param("f_mid") int f_mid);
+	@Select("SELECT * FROM food WHERE F_FTID = #{f_ftid} AND F_MID = #{f_mid} AND F_Statue = 1")
+	List<Food> getByMIDAndFTIDWithoutDisable(@Param("f_ftid") int f_ftid,@Param("f_mid") int f_mid);
 	
 	@Select("SELECT * FROM food WHERE F_ID = #{f_id}")
 	Food getByFoodId(@Param("f_id") int f_id);
