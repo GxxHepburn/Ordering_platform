@@ -11,7 +11,7 @@ public class Food {
 	private String F_Name;
 	private String F_ImageUrl;
 	private float F_Price;
-	private int F_Status;
+	private int F_Statue;
 	private String F_Unit;
 	private int F_Stock;
 	private int F_SalesVolume;

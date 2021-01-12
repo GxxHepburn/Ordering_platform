@@ -85,8 +85,8 @@ public interface OrdersMapper {
 			+ "<if test='payStatus!=null'>"
 			+ " AND O_PayStatue = #{payStatus}"
 			+ "</if>"
-			+ " ORDER BY O_OrderingTime DESC "
-			+ "limit #{limitStart}, #{pagesizeInt}"
+			+ " ORDER BY O_OrderingTime DESC"
+			+ " limit #{limitStart}, #{pagesizeInt}"
 			+ "</script>")
 	List<Multi_Orders_Tab_Tabtype> getOrdersByUIDTabIDTabtypeIDOorderTimePayTimeOrderByIimeDESC(
 			@Param("o_uid") Integer o_uid, @Param("o_tid") Integer o_tid, @Param("tt_id") Integer tt_tid,

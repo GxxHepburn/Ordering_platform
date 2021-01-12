@@ -37,77 +37,6 @@ public class OSMFoodService {
 	@Autowired FoodSpecificationsMapper foodSpecificationsMapper;
 	
 	@Autowired FoodTypeMapper foodTypeMapper;
-
-	@Transactional
-	public String goods(Map<String, Object> map) {
-		
-		// 待完善的query 检索功能-包含检索名称、分类、tag三项
-		String query = (String) map.get("query");
-		int pagenumInt = (int) map.get("pagenum");
-		int pagesizeInt = (int) map.get("pagesize");
-		String mmngctUserName = (String) map.get("mmngctUserName");
-		
-		//根据mmngctUserName查出merId
-		Mmngct mmngct = mmaMapper.getByUsername(mmngctUserName);
-		int m_ID = mmngct.getMMA_ID();
-		
-		int limitStart = (pagenumInt - 1) * pagesizeInt;
-		
-		List<Food> foods = foodMapper.getBtMID(m_ID, limitStart, pagesizeInt, query);
-		
-		//拼接json
-		JSONObject newJsonObject = new JSONObject();
-		
-		JSONObject metaJsonObject = new JSONObject();
-		metaJsonObject.put("status", 200);
-		metaJsonObject.put("msg", "获取成功");
-		
-		JSONArray foodsJsonArray = new JSONArray();
-		
-		for (Food food : foods) {
-			JSONObject foodJsonObject = new JSONObject();
-			foodJsonObject.put("F_ID", food.getF_ID());
-			foodJsonObject.put("F_FTID", food.getF_FTID());
-			// 获取该商品对应的分类名称
-			
-			String foodTypeName = foodTypeMapper.getByFTID(food.getF_FTID()).getFT_Name();
-			foodJsonObject.put("F_FTName", foodTypeName);
-			
-			foodJsonObject.put("F_MID", food.getF_MID());
-			foodJsonObject.put("F_Name", food.getF_Name());
-			foodJsonObject.put("F_ImageUrl", food.getF_ImageUrl());
-			foodJsonObject.put("F_Price", food.getF_Price());
-			foodJsonObject.put("F_Statue", food.getF_Status());
-			foodJsonObject.put("F_Unit", food.getF_Unit());
-			foodJsonObject.put("F_Stock", food.getF_Stock());  
-			foodJsonObject.put("F_SalesVolume", food.getF_SalesVolume());
-			foodJsonObject.put("F_Tag", food.getF_Tag());
-			foodJsonObject.put("F_Sort", food.getF_Sort());
-			
-			// 获取该food对应的property
-			List<FoodProperty> foodProperties = foodPropertyMapper.getByMIDAndFTIDAndFID(food.getF_MID(), food.getF_FTID(), food.getF_ID());
-			JSONArray proesJsonArray = new JSONArray(foodProperties);
-			foodJsonObject.put("F_Properties", proesJsonArray);
-			
-			// 获取该food对应的spec
-			List<FoodSpecifications> foodSpecifications = foodSpecificationsMapper.getByMIDAndFTIDAndFID(food.getF_MID(), food.getF_FTID(), food.getF_ID());
-			JSONArray specsJsonArray = new JSONArray(foodSpecifications);
-			foodJsonObject.put("F_Specs", specsJsonArray);
-			
-			foodsJsonArray.put(foodJsonObject);
-		}
-		
-		JSONObject dataJsonObject = new JSONObject();
-		dataJsonObject.put("goods", foodsJsonArray);
-		
-		int foodsTotal = foodMapper.getTotalByMID(m_ID, query);
-		dataJsonObject.put("total", foodsTotal);
-		
-		newJsonObject.put("data", dataJsonObject);
-		newJsonObject.put("meta", metaJsonObject);
-		
-		return newJsonObject.toString();
-	}
 	
 	public String uploadFoodImg(MultipartFile file) {
 		// 生成唯一地址,以及存储的绝对地址
@@ -349,6 +278,7 @@ public class OSMFoodService {
 		food.setF_Unit(f_unit);
 		food.setF_Stock(f_stock);
 		food.setF_Tag(f_tag);
+		food.setF_Statue(1);
 		
 		// 先对food表操作
 		foodMapper.insert(food);
@@ -450,14 +380,16 @@ public class OSMFoodService {
 	
 	@Transactional
 	public String searchGoods(Map<String, Object> map) {
-		if ("".equals(map.get("FT_ID"))) {
-			return goods(map);
-		}
 		// 待完善的query 检索功能-包含检索名称、分类、tag三项
 		String query = (String) map.get("query");
 		int pagenumInt = (int) map.get("pagenum");
 		int pagesizeInt = (int) map.get("pagesize");
-		int FT_ID = Integer.parseInt(map.get("FT_ID").toString());
+		Integer FT_ID = null;
+		try {
+			FT_ID = Integer.parseInt(map.get("FT_ID").toString());
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		String mmngctUserName = (String) map.get("mmngctUserName");
 		
 		//根据mmngctUserName查出merId
@@ -466,7 +398,7 @@ public class OSMFoodService {
 		
 		int limitStart = (pagenumInt - 1) * pagesizeInt;
 		
-		List<Food> foods = foodMapper.getBtMIDWithFT_ID(m_ID, FT_ID, limitStart, pagesizeInt, query);
+		List<Food> foods = foodMapper.getBtMID(m_ID, FT_ID, limitStart, pagesizeInt, query);
 		
 		//拼接json
 		JSONObject newJsonObject = new JSONObject();
@@ -490,7 +422,7 @@ public class OSMFoodService {
 			foodJsonObject.put("F_Name", food.getF_Name());
 			foodJsonObject.put("F_ImageUrl", food.getF_ImageUrl());
 			foodJsonObject.put("F_Price", food.getF_Price());
-			foodJsonObject.put("F_Statue", food.getF_Status());
+			foodJsonObject.put("F_Statue", food.getF_Statue());
 			foodJsonObject.put("F_Unit", food.getF_Unit());
 			foodJsonObject.put("F_Stock", food.getF_Stock());  
 			foodJsonObject.put("F_SalesVolume", food.getF_SalesVolume());
@@ -513,7 +445,7 @@ public class OSMFoodService {
 		JSONObject dataJsonObject = new JSONObject();
 		dataJsonObject.put("goods", foodsJsonArray);
 		
-		int foodsTotal = foodMapper.getTotalByMID(m_ID, query);
+		int foodsTotal = foodMapper.getTotalByMID(m_ID, FT_ID, query);
 		dataJsonObject.put("total", foodsTotal);
 		
 		newJsonObject.put("data", dataJsonObject);
@@ -537,6 +469,24 @@ public class OSMFoodService {
 		JSONObject metaJsonObject = new JSONObject();
 		metaJsonObject.put("status", 200);
 		metaJsonObject.put("msg", "一键上货成功");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
+	}
+
+	@Transactional
+	public String changeFoodStatue(Map<String, Object> map) {
+		int F_ID = Integer.valueOf(map.get("F_ID").toString());
+		int F_Statue = Integer.valueOf(map.get("F_Statue").toString());
+		
+		foodMapper.updateFoodStatueByF_ID(F_ID, F_Statue);
+		//拼接json
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "修改商品状态成功");
 		
 		newJsonObject.put("meta", metaJsonObject);
 		

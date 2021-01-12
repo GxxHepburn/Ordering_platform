@@ -135,12 +135,6 @@ public class OSMController {
 		return oSMOrderDetailService.orderDetails(O_ID);
 	}
 	
-	@PostMapping("/goods")
-	@ResponseBody
-	public String goods(@RequestBody Map<String, Object> map) {
-		return oSMFoodService.goods(map);
-	}
-	
 	@PostMapping(value = "/uploadFoodImg", produces="application/json;charset=UTF-8")
 	@ResponseBody
 	public String uploadFoodImg(@RequestParam("file") MultipartFile file) {
@@ -395,6 +389,29 @@ public class OSMController {
 		JSONObject metaJsonObject = new JSONObject();
 		metaJsonObject.put("status", 500);
 		metaJsonObject.put("msg", "获取失败");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
+	
+	@PostMapping(value = "/changeFoodStatue", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String changeFoodStatue(@RequestBody Map<String, Object> map) {
+		try {
+			return oSMFoodService.changeFoodStatue(map);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "修改商品状态失败!");
 		
 		newJsonObject.put("meta", metaJsonObject);
 		return newJsonObject.toString();

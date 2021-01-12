@@ -38,15 +38,30 @@ public interface FoodMapper {
 	@Update("UPDATE food SET F_SalesVolume = #{f_salesvolume} WHERE F_ID = #{f_id}")
 	boolean updateSalesVolumeByFID(@Param("f_salesvolume") int f_salesvolume,@Param("f_id") int f_id);
 	
-	@Select("SELECT * FROM food WHERE F_MID = #{f_mid} AND F_Name like concat(#{query}, '%') limit #{limitStart}, #{pagesize}")
-	List<Food> getBtMID(@Param("f_mid") int f_mid, @Param("limitStart") int limitStart, @Param("pagesize") int pagesize, @Param("query") String query);
+	@Select("<script>"
+			+ "SELECT * FROM food "
+			+ "WHERE 1=1"
+			+ " AND F_MID = #{f_mid}"
+			+ "<if test='ft_id!=null'>"
+			+ " AND F_FTID = #{ft_id}"
+			+ "</if>"
+			+ " AND F_Name like concat(#{query}, '%')"
+			+ " limit #{limitStart}, #{pagesize}"
+			+ "</script>")
+	List<Food> getBtMID(@Param("f_mid") int f_mid, @Param("ft_id") Integer ft_id, @Param("limitStart") int limitStart, @Param("pagesize") int pagesize, @Param("query") String query);
 	
-	@Select("SELECT * FROM food WHERE F_MID = #{f_mid} AND F_FTID = #{f_ftid} AND F_Name like concat(#{query}, '%') limit #{limitStart}, #{pagesize}")
-	List<Food> getBtMIDWithFT_ID(@Param("f_mid") int f_mid, @Param("f_ftid") int f_ftid, @Param("limitStart") int limitStart, @Param("pagesize") int pagesize, @Param("query") String query);
 	
 	
-	@Select("SELECT COUNT(*) FROM food WHERE F_MID = #{f_mid} AND F_Name like concat(#{query}, '%')")
-	int getTotalByMID(@Param("f_mid") int f_mid, @Param("query") String query);
+	@Select("<script>"
+			+ "SELECT COUNT(*) FROM food "
+			+ "WHERE 1=1"
+			+ " AND F_MID = #{f_mid}"
+			+ "<if test='ft_id!=null'>"
+			+ " AND F_FTID = #{ft_id}"
+			+ "</if>"
+			+ " AND F_Name like concat(#{query}, '%')"
+			+ "</script>")
+	int getTotalByMID(@Param("f_mid") int f_mid, @Param("ft_id") Integer ft_id, @Param("query") String query);
 	
 	// 修改商品信息
 	@Update("UPDATE food SET F_FTID = #{f_ftid}, F_Name = #{f_name}, F_ImageUrl = #{f_imageUrl},"
@@ -66,8 +81,8 @@ public interface FoodMapper {
 	void deleteFoodByFID(@Param("f_id") int f_id);
 	
 	// 添加商品
-	@Insert("INSERT INTO food (F_FTID, F_MID, F_Name, F_ImageUrl, F_Price, F_Unit, F_Stock, F_Tag) VALUES (#{food.F_FTID},"
-			+ " #{food.F_MID}, #{food.F_Name}, #{food.F_ImageUrl}, #{food.F_Price}, #{food.F_Unit}, #{food.F_Stock}, #{food.F_Tag})")
+	@Insert("INSERT INTO food (F_FTID, F_MID, F_Name, F_ImageUrl, F_Price, F_Unit, F_Stock, F_Tag, F_Statue) VALUES (#{food.F_FTID},"
+			+ " #{food.F_MID}, #{food.F_Name}, #{food.F_ImageUrl}, #{food.F_Price}, #{food.F_Unit}, #{food.F_Stock}, #{food.F_Tag}, #{food.F_Statue})")
 	@Options(useGeneratedKeys = true, keyProperty = "F_ID")
 	Integer insert(@Param("food") Food food);
 	
@@ -76,4 +91,7 @@ public interface FoodMapper {
 	
 	@Update("UPDATE food SET F_Stock = -1 WHERE F_MID = #{m_id} AND F_Stock = 0")
 	void updateStockByM_ID_AND_F_StockNotZero(@Param("m_id") int m_id);
+	
+	@Update("UPDATE food SET F_Statue = #{f_statue} WHERE F_ID = #{f_id}")
+	void updateFoodStatueByF_ID(@Param("f_id") int f_id, @Param("f_statue") int f_statue);
 }
