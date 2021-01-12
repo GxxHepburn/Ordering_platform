@@ -27,6 +27,18 @@ public class OSMUsersService {
 	@Transactional
 	public String users(String query, String pagenum, String pagesize, String mmngctUserName) throws JSONException, GeneralSecurityException {
 		
+		// 解密
+		if (!"".equals(query)) {
+			try {
+				query = EncryptionAndDeciphering.deciphering(query);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				query = "";
+			}
+		} else {
+			query = null;
+		}
+		
 		int pagenumInt = Integer.valueOf(pagenum);
 		int pagesizeInt = Integer.valueOf(pagesize);
 		
@@ -66,6 +78,7 @@ public class OSMUsersService {
 			jsonObject.put("U_LoginTime", simpleDateFormat.format(multi_WechatUser_Order.getU_LoginTime()));
 			jsonObject.put("U_RegisterTime", simpleDateFormat.format(multi_WechatUser_Order.getU_RegisterTime()));
 			jsonObject.put("O_OrderingTime", simpleDateFormat.format(multi_WechatUser_Order.getO_OrderingTime()));
+			jsonObject.put("U_Status", multi_WechatUser_Order.getU_Status());
 			
 			userJsonArray.put(jsonObject);
 		}

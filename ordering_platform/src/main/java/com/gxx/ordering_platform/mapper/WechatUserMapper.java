@@ -18,13 +18,33 @@ public interface WechatUserMapper {
 	@Update("UPDATE wechat_user SET U_LoginTime = #{wechatUser.U_LoginTime} WHERE U_OpenId = #{wechatUser.U_OpenId}")
 	boolean updateLoginTimeByOpenId(@Param("wechatUser") WechatUser wechatUser);
 	
-	@Insert("INSERT INTO wechat_user (U_OpenId, U_RegisterTime, U_LoginTime) VALUES (#{wechatUser.U_OpenId}, "
-			+ "#{wechatUser.U_RegisterTime}, #{wechatUser.U_LoginTime})")
+	@Insert("INSERT INTO wechat_user (U_OpenId, U_RegisterTime, U_LoginTime, U_Status) VALUES (#{wechatUser.U_OpenId}, "
+			+ "#{wechatUser.U_RegisterTime}, #{wechatUser.U_LoginTime}, 1)")
 	boolean insert(@Param("wechatUser") WechatUser wechatUser);
 	
-	@Select("SELECT U_ID, U_OpenId, U_RegisterTime, U_LoginTime, MAX(O_OrderingTime) AS O_OrderingTime from orders INNER JOIN wechat_user WHERE wechat_user.U_ID = orders.O_UID AND orders.O_MID = #{o_mid} AND U_OpenId like concat(#{u_openid}, '%') GROUP BY wechat_user.U_ID ORDER BY orders.O_OrderingTime limit #{limitStart}, #{pagesize}")
+	@Select("<script>"
+			+ "SELECT U_ID, U_OpenId, U_RegisterTime, U_LoginTime, U_Status, MAX(O_OrderingTime) AS O_OrderingTime from orders INNER JOIN wechat_user "
+			+ "WHERE 1=1"
+			+ " AND wechat_user.U_ID = orders.O_UID"
+			+ " AND orders.O_MID = #{o_mid}"
+			+ "<if test='u_openid!=null'>"
+			+ " AND U_OpenId =#{u_openid}"
+			+ "</if>"
+			+ " GROUP BY wechat_user.U_ID ORDER BY orders.O_OrderingTime limit #{limitStart}, #{pagesize}"
+			+ "</script>")
 	List<Multi_WechatUser_Orders> getByUOpenIdLike(@Param("o_mid") int o_mid, @Param("u_openid") String u_openid, @Param("limitStart") int limitStart, @Param("pagesize") int pagesize);
 	
-	@Select("SELECT COUNT(DISTINCT U_ID) FROM orders INNER JOIN wechat_user WHERE wechat_user.U_ID = orders.O_UID  AND orders.O_MID = #{o_mid} AND U_OpenId like concat(#{u_openid}, '%')")
+	@Select("<script>"
+			+ "SELECT COUNT(DISTINCT U_ID) FROM orders INNER JOIN wechat_user "
+			+ "WHERE 1=1"
+			+ " AND wechat_user.U_ID = orders.O_UID"
+			+ " AND orders.O_MID = #{o_mid}"
+			+ "<if test='u_openid!=null'>"
+			+ " AND U_OpenId =#{u_openid}"
+			+ "</if>"
+			+ "</script>")
 	int getTotalByOpenIdLike(@Param("o_mid") int o_mid, @Param("u_openid") String u_openid);
+	
+	@Update("UPDATE wechat_user SET U_Status = #{u_status} WHERE U_ID = #{u_id}")
+	void changStatusByUID(@Param("u_id") int u_id, @Param("u_status") int u_status);
 }

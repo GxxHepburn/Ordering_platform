@@ -62,6 +62,7 @@ public class WechatController {
 		
 		
 		String UOPENID = null;
+		// 微信小程序获取用户在本小程序中唯一的openid
 		try {
 			UOPENID =  wechatLoginService.singin(APPID, APPSECRET, wechatCode.code);
 		} catch (Exception e) {
@@ -69,8 +70,9 @@ public class WechatController {
 			return "0";
 		}
 		logger.info("/login_openid: " + UOPENID);
-		//看看用户是否存在，若不存在，则初始化用户表，如果存在就更新登陆时间
 		
+		// 我们自己系统中业务，与腾讯无关
+		//看看用户是否存在，若不存在，则初始化用户表，如果存在就更新登陆时间
 		WechatUser wechatUser = wechatLoginService.getUserByUOpenId(UOPENID);
 //		logger.info("wechatUser: " + wechatUser);
 		Date date = new Date();
@@ -92,6 +94,10 @@ public class WechatController {
 			if (updateStatus == false) {
 				logger.error("WechatLoginController_WechatLoginService_updateWechatUserByUOpenId: "
 						+ "更新Wechat用户登陆时间失败");
+			}
+			// 查看用户U_Status是否为0，如果为0，则返回0，小程序不检查是，因为持有的openid为0，小程序什么也做不了
+			if (wechatUser.getU_Status() == 0) {
+				return "0";
 			}
 		}
 		return UOPENID;

@@ -13,4 +13,6 @@ public class Multi_WechatUser_Orders {
 	private Date U_LoginTime;
 	
 	private Date O_OrderingTime;
+	
+	private int U_Status;
 }

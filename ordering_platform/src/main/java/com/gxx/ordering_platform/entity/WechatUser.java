@@ -11,4 +11,5 @@ public class WechatUser {
 	private String U_OpenId;
 	private Date U_RegisterTime;
 	private Date U_LoginTime;
+	private int U_Status;
 }
