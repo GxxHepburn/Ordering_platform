@@ -141,4 +141,7 @@ public interface OrdersMapper {
 	
 	@Update("UPDATE orders SET O_PayStatue = #{o_payStatue} WHERE O_ID = #{o_id}")
 	void updateO_PayStatueByO_ID(@Param("o_id") int o_id, @Param("o_payStatue") int o_payStatue);
+	
+	@Select("SELECT * FROM orders WHERE O_OutTradeNo = #{o_outTradeNo}")
+	Orders getOrderByO_OutTradeNo(@Param("o_outTradeNo") String o_outTradeNo);
 }

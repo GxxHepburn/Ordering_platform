@@ -16,7 +16,11 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gxx.ordering_platform.entity.Orders;
+import com.gxx.ordering_platform.entity.Pay;
+import com.gxx.ordering_platform.entity.WxPayNotifyV0;
 import com.gxx.ordering_platform.mapper.OrdersMapper;
+import com.gxx.ordering_platform.mapper.PayMapper;
 import com.gxx.ordering_platform.wxPaySDK.MerchantWXPayConfig;
 import com.gxx.ordering_platform.wxPaySDK.ServiceWXPayConfig;
 import com.gxx.ordering_platform.wxPaySDK.WXPay;
@@ -66,6 +70,9 @@ public class WxPayService {
 	@Autowired
 	OrdersMapper ordersMapper;
 	
+	@Autowired
+	PayMapper payMapper;
+	
 	public void updateIsPay(String searchId, int isPay) {
 		ordersMapper.updateIsPay(searchId, isPay);
 	}
@@ -85,7 +92,7 @@ public class WxPayService {
 		paraMap.put("spbill_create_ip", ipAddress);
 		paraMap.put("total_fee", "1");
 		paraMap.put("trade_type", "JSAPI");
-		logger.info("paraMap: " + paraMap);
+//		logger.info("paraMap: " + paraMap);
 		
 		final String SUCCESS_NOTIFY = "https://www.donghuastar.com/wxpay/success";
 		boolean useSandbox = false;
@@ -94,7 +101,7 @@ public class WxPayService {
 		Map<String, String> map = wxPay.unifiedOrder(wxPay.fillRequestData(paraMap), 15000, 15000);
 		
 		String prePayId = (String) map.get("prepay_id");
-		logger.info("xmlStr为: " + map);
+//		logger.info("xmlStr为: " + map);
 		
 		
 		Map<String, String> payMap = new HashMap<String, String>();
@@ -116,7 +123,7 @@ public class WxPayService {
 		}
 		payMap.put("paySign", paySign);
 		
-		logger.info("payMap: " + payMap);
+//		logger.info("payMap: " + payMap);
 		return payMap;
 	}
 	
@@ -148,7 +155,7 @@ public class WxPayService {
 		paraMap.put("trade_type", "JSAPI");
 		paraMap.put("sub_appid", this.service_sub_appid);
 		paraMap.put("sub_mch_id", this.service_sub_mch_id);
-		logger.info("paraMap: " + paraMap);
+//		logger.info("paraMap: " + paraMap);
 		
 		final String SUCCESS_NOTIFY = "https://www.donghuastar.com/wxpay/success";
 		boolean useSandbox = false;
@@ -157,7 +164,6 @@ public class WxPayService {
 		Map<String, String> map = wxPay.unifiedOrder(wxPay.fillRequestData(paraMap), 15000, 15000);
 		
 		String prePayId = (String) map.get("prepay_id");
-		logger.info("xmlStr为： " + map);
 		
 		Map<String, String> payMap = new HashMap<String, String>();
 		payMap.put("appId", this.appId);
@@ -168,11 +174,51 @@ public class WxPayService {
 		payMap.put("package", "prepay_id=" + prePayId);
 		
 		String paySign = null;
-		logger.info(this.ServiceMchKey);
+//		logger.info(this.ServiceMchKey);
 		paySign = WXPayUtil.generateSignature(payMap, this.ServiceMchKey, WXPayConstants.SignType.HMACSHA256);
 		payMap.put("paySign", paySign);
 		
-		logger.info("payMap: " + payMap);
+//		logger.info("payMap: " + payMap);
 		return payMap;
+	}
+
+	@Transactional
+	public void insertPay(WxPayNotifyV0 param) {
+		String O_OutTrade_No= param.getOut_trade_no();
+		// 插入之前先检查
+		Pay pay = payMapper.getByO_OutTrade_No(O_OutTrade_No);
+		if (pay != null) {
+			return;
+		}
+				
+		Orders order = ordersMapper.getOrderByO_OutTradeNo(O_OutTrade_No);
+		
+		pay = new Pay();
+		pay.setP_MID(order.getO_MID());
+		pay.setP_OID(order.getO_ID());
+		pay.setP_UID(order.getO_UID());
+		
+		pay.setP_Appid(param.getAppid());
+		pay.setP_Attach(param.getAttach());
+		pay.setP_Bank_Type(param.getBank_type());
+		pay.setP_Fee_Type(param.getFee_type());
+		pay.setP_Is_Subscribe(param.getIs_subscribe());
+		pay.setP_Mch_Id(param.getMch_id());
+		pay.setP_Nonce_Str(param.getNonce_str());
+		pay.setP_Openid(param.getOpenid());
+		pay.setP_Out_Trade_No(param.getOut_trade_no());
+		pay.setP_Result_Code(param.getResult_code());
+		pay.setP_Return_Code(param.getReturn_code());
+		pay.setP_Sign(param.getSign());
+		pay.setP_Time_End(param.getTime_end());
+		pay.setP_Totle_Fee(param.getTotal_fee());
+		pay.setP_Coupon_Fee(param.getCoupon_fee());
+		pay.setP_Coupon_Count(param.getCoupon_count());
+		pay.setP_Coupon_Type(param.getCoupon_type());
+		pay.setP_Coupon_Id(param.getCoupon_id());
+		pay.setP_Trade_Type(param.getTrade_type());
+		pay.setP_Transaction_Id(param.getTransaction_id());
+		
+		payMapper.insert(pay);
 	}
 }

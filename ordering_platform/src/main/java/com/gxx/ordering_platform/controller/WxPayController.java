@@ -43,7 +43,7 @@ public class WxPayController {
 	public String servicePay(HttpServletRequest request, @PathVariable String openId, @RequestBody String str) {
 		
 		//首先检查payStatus
-		logger.info(str);
+//		logger.info(str);
 		JSONObject jsonObject = new JSONObject(str);
 		String searchId = jsonObject.getString("searchId");
 		boolean payStatus = wechatOrderingService.getPayStatus(searchId);
@@ -102,21 +102,24 @@ public class WxPayController {
 		return new JSONObject(payMap).toString();
 	}
 	
+	// 微信会发很多次success通知
 	@RequestMapping(value = "/success", produces = MediaType.TEXT_PLAIN_VALUE)
 	@ResponseBody
 	public String success(HttpServletRequest request, @RequestBody WxPayNotifyV0 param) {
-		logger.info("success: " + param.toString());
-		logger.info("return_code: " + param.getReturn_code());
+//		logger.info("success: " + param.toString());
+//		logger.info("return_code: " + param.getReturn_code());
 		//修改isPayNow，同时设置payStatus,payTime
 		Date payTime = new Date();
 		wxPayService.updatePaied(param.getOut_trade_no(), 0, 1, payTime);
+		
+		wxPayService.insertPay(param);
 		
 		Map<String, String> result = new HashMap<String, String>();
 		if ("SUCCESS".equals(param.getReturn_code())) {
 			result.put("return_code", "SUCCESS");
 			result.put("return_msg", "OK");
 		}
-		logger.info(String.valueOf(param));
+//		logger.info(String.valueOf(param));
 		String successReturn = null;
 		try {
 			successReturn =  WXPayUtil.mapToXml(result);
