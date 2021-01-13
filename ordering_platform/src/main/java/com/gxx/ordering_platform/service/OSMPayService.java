@@ -30,6 +30,23 @@ public class OSMPayService {
 		int O_ID = Integer.valueOf(map.get("O_ID").toString());
 		Pay pay = payMapper.getByO_ID(O_ID);
 		
+		if (pay == null) {
+			//拼接json
+			JSONObject newJsonObject = new JSONObject();
+			
+			JSONObject metaJsonObject = new JSONObject();
+			metaJsonObject.put("status", 200);
+			metaJsonObject.put("msg", "成功");
+			
+			JSONObject dataJsonObject = new JSONObject();
+			dataJsonObject.put("orderPayForm", new JSONObject());
+			
+			newJsonObject.put("data", dataJsonObject);
+			newJsonObject.put("meta", metaJsonObject);
+			
+			return newJsonObject.toString();
+		}
+		
 		//拼接json
 		JSONObject newJsonObject = new JSONObject();
 		

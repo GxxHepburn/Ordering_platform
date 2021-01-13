@@ -148,7 +148,7 @@ public class WxPayService {
 		
 		Map<String, String> paraMap = new HashMap<String, String>();
 		paraMap.put("sub_openid", openId);
-		paraMap.put("body", "郭利" + "-test");
+		paraMap.put("body", "商铺名称-消费");
 		paraMap.put("out_trade_no", out_trade_no);
 		paraMap.put("spbill_create_ip", ipAddress);
 		paraMap.put("total_fee", "1"/*total_fee*/);
