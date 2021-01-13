@@ -35,6 +35,7 @@ import com.gxx.ordering_platform.service.OSMFoodTypeService;
 import com.gxx.ordering_platform.service.OSMMerService;
 import com.gxx.ordering_platform.service.OSMOrderDetailService;
 import com.gxx.ordering_platform.service.OSMOrderingService;
+import com.gxx.ordering_platform.service.OSMPayService;
 import com.gxx.ordering_platform.service.OSMTabService;
 import com.gxx.ordering_platform.service.OSMTabTypeService;
 import com.gxx.ordering_platform.service.OSMUsersService;
@@ -88,6 +89,8 @@ public class OSMController {
 	@Autowired OSMTabTypeService oSMTabTypeService;
 	
 	@Autowired OSMWechatUserService oSMWechatUserService;
+	
+	@Autowired OSMPayService oSMPayService;
 	
 	@PostMapping("/login")
 	@ResponseBody
@@ -448,6 +451,29 @@ public class OSMController {
 	public String changeWechatUserStatus(@RequestBody Map<String, Object> map) {
 		try {
 			return oSMWechatUserService.changeWechatUserStatus(map);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "失败!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
+	
+	@PostMapping(value = "/getOrderPayForm", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String getOrderPayForm(@RequestBody Map<String, Object> map) {
+		try {
+			return oSMPayService.getOrderPayForm(map);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
