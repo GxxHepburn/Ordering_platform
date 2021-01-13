@@ -6,6 +6,7 @@ import lombok.Data;
 public class Mmngct {
 
 	private int MMA_ID;
+	private int MMA_MID;
 	private String MMA_UserName;
 	private String MMA_Password;
 	private String MMA_RealName;

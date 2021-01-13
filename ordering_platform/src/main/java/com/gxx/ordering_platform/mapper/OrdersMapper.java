@@ -144,4 +144,10 @@ public interface OrdersMapper {
 	
 	@Select("SELECT * FROM orders WHERE O_OutTradeNo = #{o_outTradeNo}")
 	Orders getOrderByO_OutTradeNo(@Param("o_outTradeNo") String o_outTradeNo);
+	
+	@Select("SELECT O_ID, O_MID, O_UID, O_TID, O_TotlePrice, O_PayMethod, O_PayStatue, O_OrderingTime, O_PayTime, "
+			+ "O_OutTradeNo, O_Remarks, O_TotleNum, O_UniqSearchID, O_isPayNow, O_ReturnNum, O_NumberOfDiners, T_Name, "
+			+ "TT_Name FROM orders left join tab on tab.T_ID = orders.O_TID left join tabtype on tabtype.TT_ID = tab.T_TTID "
+			+ "WHERE O_OutTradeNo = #{p_out_trade_no}")
+	Multi_Orders_Tab_Tabtype getOrderWithTNameAndTTNameByO_OutTradeNo(@Param("p_out_trade_no") String p_out_trade_no);
 }

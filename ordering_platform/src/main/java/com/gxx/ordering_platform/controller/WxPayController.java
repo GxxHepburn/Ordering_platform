@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONObject;
@@ -19,7 +20,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gxx.ordering_platform.entity.Multi_Orders_Tab_Tabtype;
+import com.gxx.ordering_platform.entity.Orders;
 import com.gxx.ordering_platform.entity.WxPayNotifyV0;
+import com.gxx.ordering_platform.handler.OSMOrderingHandler;
+import com.gxx.ordering_platform.mapper.OrdersMapper;
 import com.gxx.ordering_platform.service.WechatOrderingService;
 import com.gxx.ordering_platform.service.WxPayService;
 import com.gxx.ordering_platform.wxPaySDK.WXPayUtil;
@@ -33,6 +38,9 @@ public class WxPayController {
 	
 	@Autowired
 	WechatOrderingService wechatOrderingService;
+	
+	@Autowired
+	OrdersMapper ordersMapper;
 	
 	final Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -102,6 +110,9 @@ public class WxPayController {
 		return new JSONObject(payMap).toString();
 	}
 	
+	@Resource
+	OSMOrderingHandler oSMOrderingHandler;
+	
 	// 微信会发很多次success通知
 	@RequestMapping(value = "/success", produces = MediaType.TEXT_PLAIN_VALUE)
 	@ResponseBody
@@ -113,6 +124,20 @@ public class WxPayController {
 		wxPayService.updatePaied(param.getOut_trade_no(), 0, 1, payTime);
 		
 		wxPayService.insertPay(param);
+		
+		// ，用websocket连接，发送语音播报，前台自动打印客人小票，如果是在接单页面，则刷新接单页面订单数据
+		Multi_Orders_Tab_Tabtype multi_Orders_Tab_Tabtype = ordersMapper.getOrderWithTNameAndTTNameByO_OutTradeNo(param.getOut_trade_no());
+		// 生成语音内容Json
+		JSONObject wbssJsonObject = new JSONObject();
+		wbssJsonObject.put("type", 1);
+		String voiceString = multi_Orders_Tab_Tabtype.getTT_Name() + "," + multi_Orders_Tab_Tabtype.getT_Name() + "的客人支付" + (Float.valueOf(param.getTotal_fee())/100.00f) + "元,感谢您对本店的支持和回顾，欢迎下次光临";
+		wbssJsonObject.put("voiceText", voiceString);
+		try {
+			oSMOrderingHandler.sendTextMessage(multi_Orders_Tab_Tabtype.getO_MID(), wbssJsonObject.toString());
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		Map<String, String> result = new HashMap<String, String>();
 		if ("SUCCESS".equals(param.getReturn_code())) {
