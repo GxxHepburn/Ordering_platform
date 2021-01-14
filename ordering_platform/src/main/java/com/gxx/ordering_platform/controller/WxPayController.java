@@ -129,8 +129,8 @@ public class WxPayController {
 		Multi_Orders_Tab_Tabtype multi_Orders_Tab_Tabtype = ordersMapper.getOrderWithTNameAndTTNameByO_OutTradeNo(param.getOut_trade_no());
 		// 生成语音内容Json
 		JSONObject wbssJsonObject = new JSONObject();
-		wbssJsonObject.put("type", 1);
-		String voiceString = multi_Orders_Tab_Tabtype.getTT_Name() + "," + multi_Orders_Tab_Tabtype.getT_Name() + "的客人支付" + (Float.valueOf(param.getTotal_fee())/100.00f) + "元,感谢您对本店的支持和回顾，欢迎下次光临";
+		wbssJsonObject.put("type", "1");
+		String voiceString = multi_Orders_Tab_Tabtype.getTT_Name() + "," + multi_Orders_Tab_Tabtype.getT_Name() + "的客人支付" + (Float.valueOf(param.getTotal_fee())/100.00f) + "元";
 		wbssJsonObject.put("voiceText", voiceString);
 		try {
 			oSMOrderingHandler.sendTextMessage(multi_Orders_Tab_Tabtype.getO_MID(), wbssJsonObject.toString());

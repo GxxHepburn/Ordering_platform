@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -65,7 +66,10 @@ public class OSMOrderingHandler extends TextWebSocketHandler {
 		System.out.println(s);
 		System.out.println(clients.size());
 		String r = "服务器返回接收到的数据： " + s + "-" + LocalDateTime.now();
-		session.sendMessage(new TextMessage(r));
+		JSONObject textJsonObject = new JSONObject();
+		textJsonObject.put("type", "0");
+		textJsonObject.put("text", r);
+		session.sendMessage(new TextMessage(textJsonObject.toString()));
 		// 修改一下，只相应心跳包------不用了， 因为客户端只向服务器发送心跳包
 		super.handleTextMessage(session, message);
 	}

@@ -65,7 +65,6 @@ import com.gxx.ordering_platform.reamls.ShiroRealm;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import lombok.experimental.var;
 
 @Configuration
 @ComponentScan
@@ -159,6 +158,7 @@ public class AppConfig {
 			AppConfig.SERVICEAPPSECRET = serviceAppSecret;
 		}
 	}
+	
 	
 	@Bean
 	WebSocketConfigurer createWebSocketConfigur(@Autowired OSMOrderingHandler osmOrderingHandler, @Autowired OSMWebSocketSession osmWebSocketSession) {
