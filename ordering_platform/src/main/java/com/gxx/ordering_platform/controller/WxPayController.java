@@ -132,6 +132,7 @@ public class WxPayController {
 		wbssJsonObject.put("type", "1");
 		String voiceString = multi_Orders_Tab_Tabtype.getTT_Name() + "," + multi_Orders_Tab_Tabtype.getT_Name() + "的客人支付" + (Float.valueOf(param.getTotal_fee())/100.00f) + "元";
 		wbssJsonObject.put("voiceText", voiceString);
+		wbssJsonObject.put("O_ID", multi_Orders_Tab_Tabtype.getO_ID());
 		try {
 			oSMOrderingHandler.sendTextMessage(multi_Orders_Tab_Tabtype.getO_MID(), wbssJsonObject.toString());
 		} catch (Exception e1) {

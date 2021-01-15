@@ -63,14 +63,19 @@ public class OSMOrderingHandler extends TextWebSocketHandler {
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 		// TODO Auto-generated method stub
 		String s = message.getPayload();
-		System.out.println(s);
-		System.out.println(clients.size());
-		String r = "服务器返回接收到的数据： " + s + "-" + LocalDateTime.now();
+		JSONObject msgJsonObject = new JSONObject(s);
 		JSONObject textJsonObject = new JSONObject();
-		textJsonObject.put("type", "0");
-		textJsonObject.put("text", r);
+		// 响应心跳包
+		if ("0".equals(msgJsonObject.get("type").toString())) {
+			String r = "服务器返回接收到的心跳包，时间： " + "-" + LocalDateTime.now();
+			textJsonObject.put("type", "0");
+			textJsonObject.put("text", r);
+		} else if ("3".equals(msgJsonObject.get("type").toString())) {
+			String r = "连接测试正常 ";
+			textJsonObject.put("type", "3");
+			textJsonObject.put("voiceText", r);
+		}
 		session.sendMessage(new TextMessage(textJsonObject.toString()));
-		// 修改一下，只相应心跳包------不用了， 因为客户端只向服务器发送心跳包
 		super.handleTextMessage(session, message);
 	}
 	

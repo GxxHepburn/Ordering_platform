@@ -17,4 +17,6 @@ public class OrderAdd {
 	private Date OA_OrderingTime;
 	private int OA_TotleNum;
 	private int OA_ReturnNum;
+	
+	private String OA_IsTaking;
 }
