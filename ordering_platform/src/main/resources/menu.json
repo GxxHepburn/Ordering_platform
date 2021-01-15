@@ -67,6 +67,30 @@
                     "authName": "接单列表",
                     "path": "nowOrders",
                     "children": []
+                },
+                {
+                	"id": 304,
+                    "authName": "最近订单",
+                    "path": "lastOrders",
+                    "children": []
+                },
+                {
+                	"id": 305,
+                    "authName": "退款订单",
+                    "path": "returnOrders",
+                    "children": []
+                },
+                {
+                	"id": 306,
+                    "authName": "交易失败",
+                    "path": "notFiOrders",
+                    "children": []
+                },
+                {
+                	"id": 307,
+                    "authName": "交易成功",
+                    "path": "fiOrders",
+                    "children": []
                 }
             ]
         },
@@ -103,6 +127,31 @@
                 	"id": 606,
                     "authName": "添加分类",
                     "path": "addTabType",
+                    "children": []
+                }
+            ]
+        },
+        {
+        	"id": 701,
+            "authName": "财务管理",
+            "path": "finance",
+            "children": [
+                {
+                    "id": 702,
+                    "authName": "流水记录",
+                    "path": "flowRecord",
+                    "children": []
+                },
+                {
+                	"id": 703,
+                    "authName": "支付记录",
+                    "path": "payRecord",
+                    "children": []
+                },
+                {
+                	"id": 704,
+                    "authName": "退款记录",
+                    "path": "refundRecord",
                     "children": []
                 }
             ]
