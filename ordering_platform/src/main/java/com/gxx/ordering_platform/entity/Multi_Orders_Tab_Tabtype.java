@@ -24,8 +24,6 @@ public class Multi_Orders_Tab_Tabtype {
 	private float O_ReturnNum;
 	private int  O_NumberOfDiners;
 	
-	private String o_IsTaking; 
-	
 	private String T_Name;
 	private String TT_Name;
 }

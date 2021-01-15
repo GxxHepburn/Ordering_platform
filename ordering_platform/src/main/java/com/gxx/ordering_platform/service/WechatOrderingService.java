@@ -96,6 +96,8 @@ public class WechatOrderingService {
 		orderAdd.setOA_TID(tid);
 		orderAdd.setOA_OrderingTime(orderingTime);
 		orderAdd.setOA_TotleNum(totalNum);
+		// 设置接单为0
+		orderAdd.setOA_IsTaking("0");
 		orderAddMapper.insert(orderAdd);
 		
 		float totalReturnPrice = 0.00f;
@@ -231,6 +233,7 @@ public class WechatOrderingService {
 		orderAdd.setOA_TID(orders.getO_TID());
 		orderAdd.setOA_OrderingTime(new Date());
 		orderAdd.setOA_TotleNum(totalNum);
+		orderAdd.setOA_IsTaking("0");
 		orderAddMapper.insert(orderAdd);
 		
 		for(int i=0; i<ordersJsonArray.length(); i++) {

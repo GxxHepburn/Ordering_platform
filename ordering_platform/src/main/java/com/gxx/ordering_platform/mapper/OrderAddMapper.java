@@ -8,13 +8,14 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import com.gxx.ordering_platform.entity.Multi_OrderAdd_Tab_Tabtype_Orders;
 import com.gxx.ordering_platform.entity.OrderAdd;
 
 public interface OrderAddMapper {
 
 	@Insert("INSERT INTO orderadd (OA_OID, OA_Sort, OA_MID, OA_UID, OA_TID, OA_OrderingTime, "
-			+ "OA_TotleNum) VALUES (#{orderAdd.OA_OID}, #{orderAdd.OA_Sort}, #{orderAdd.OA_MID}, "
-			+ "#{orderAdd.OA_UID}, #{orderAdd.OA_TID}, #{orderAdd.OA_OrderingTime}, #{orderAdd.OA_TotleNum})")
+			+ "OA_TotleNum, OA_IsTaking) VALUES (#{orderAdd.OA_OID}, #{orderAdd.OA_Sort}, #{orderAdd.OA_MID}, "
+			+ "#{orderAdd.OA_UID}, #{orderAdd.OA_TID}, #{orderAdd.OA_OrderingTime}, #{orderAdd.OA_TotleNum}, #{orderAdd.OA_IsTaking})")
 	@Options(useGeneratedKeys = true, keyProperty = "OA_ID")
 	int insert(@Param("orderAdd") OrderAdd orderAdd);
 	
@@ -26,4 +27,17 @@ public interface OrderAddMapper {
 	
 	@Select("SELECT * FROM orderadd WHERE OA_OID = #{oa_oid} ORDER BY OA_Sort")
 	List<OrderAdd> getByO_ID(@Param("oa_oid") int oa_oid);
+	
+	@Update("UPDATE orderadd SET OA_IsTaking = #{oa_isTaking} WHERE OA_ID = #{oa_id}")
+	void updateOA_IsTakingByOA_ID(@Param("oa_id") int oa_id, @Param("oa_isTaking") String oa_isTaking);
+	
+	@Select("SELECT * "
+			+ "FROM orderadd left join tab on tab.T_ID = orderadd.OA_TID left join tabtype on tabtype.TT_ID = tab.T_TTID left join orders on orderadd.OA_OID = orders.O_ID "
+			+ "WHERE OA_MID = #{m_id} "
+			+ "AND OA_IsTaking = '1'"
+			+ "limit #{limitStart}, #{pagesize}")
+	List<Multi_OrderAdd_Tab_Tabtype_Orders> getNotTakingByMIDOrderByOrderingTimeDESC(@Param("m_id") int m_id, @Param("limitStart") int limitStart, @Param("pagesize") int pagesize);
+	
+	@Select("SELECT COUNT(*) FROM orderadd WHERE OA_MID = #{m_id} AND OA_IsTaking = '1'")
+	int getNotTakingTotleByMIDOrder(@Param("m_id") int m_id);
 }

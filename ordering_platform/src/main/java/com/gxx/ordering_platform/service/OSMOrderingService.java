@@ -15,12 +15,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gxx.ordering_platform.entity.Mer;
+import com.gxx.ordering_platform.entity.Mmngct;
+import com.gxx.ordering_platform.entity.Multi_OrderAdd_Tab_Tabtype_Orders;
 import com.gxx.ordering_platform.entity.Multi_Orders_Tab_Tabtype;
 import com.gxx.ordering_platform.entity.OrderAdd;
 import com.gxx.ordering_platform.entity.OrderDetail;
 import com.gxx.ordering_platform.entity.WechatUser;
 import com.gxx.ordering_platform.mapper.FoodMapper;
 import com.gxx.ordering_platform.mapper.MerMapper;
+import com.gxx.ordering_platform.mapper.MmaMapper;
 import com.gxx.ordering_platform.mapper.OrderAddMapper;
 import com.gxx.ordering_platform.mapper.OrderDetailMapper;
 import com.gxx.ordering_platform.mapper.OrdersMapper;
@@ -41,6 +44,8 @@ public class OSMOrderingService {
 	@Autowired OrderDetailMapper orderDetailMapper;
 	
 	@Autowired FoodMapper foodMapper;
+	
+	@Autowired MmaMapper mmaMapper;
 	
 	@Transactional
 	public String getOrderForm(Map<String, Object> map) {
@@ -335,6 +340,73 @@ public class OSMOrderingService {
 		metaJsonObject.put("msg", "仅退点餐品成功!");
 		
 		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
+	}
+	
+	@Transactional
+	public String takingOrder(Map<String, Object> map) {
+	
+		int OA_ID = Integer.valueOf(map.get("OA_ID").toString());
+		
+		orderAddMapper.updateOA_IsTakingByOA_ID(OA_ID, "1");
+		
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "接单成功!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
+	}
+	
+	@Transactional
+	public String notTakingOrerAddFormList (Map<String, Object> map) {
+		
+		int pagenumInt = Integer.valueOf(map.get("pagenum").toString());
+		int pagesizeInt = Integer.valueOf(map.get("pagesize").toString());
+		
+		int limitStart = (pagenumInt - 1) * pagesizeInt;
+		
+		String mmngctUserName = (String) map.get("mmngctUserName");
+		
+		//根据mmngctUserName查出merId
+		Mmngct mmngct = mmaMapper.getByUsername(mmngctUserName);
+		int m_ID = mmngct.getMMA_ID();
+		
+		
+		List<Multi_OrderAdd_Tab_Tabtype_Orders> multi_OrderAdd_Tab_Tabtypes_Orderses = orderAddMapper.getNotTakingByMIDOrderByOrderingTimeDESC(m_ID, limitStart, pagesizeInt);
+		
+		int totle = orderAddMapper.getNotTakingTotleByMIDOrder(m_ID);
+		
+		//格式化时间
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "获取未接单列表成功!");
+		
+		JSONObject dataJsonObject = new JSONObject();
+		JSONArray notTakingOrerAddJsonArray = new JSONArray();
+		
+		for (int i = 0; i < multi_OrderAdd_Tab_Tabtypes_Orderses.size(); i++) {
+			JSONObject notTakingOrerAddJSONObject = new JSONObject(multi_OrderAdd_Tab_Tabtypes_Orderses.get(i));
+			notTakingOrerAddJSONObject.put("OA_OrderingTime", simpleDateFormat.format(multi_OrderAdd_Tab_Tabtypes_Orderses.get(i).getOA_OrderingTime()));
+			
+			notTakingOrerAddJsonArray.put(notTakingOrerAddJSONObject);
+		}
+		
+		
+		dataJsonObject.put("notTakingOrerAddFormList", notTakingOrerAddJsonArray);
+		dataJsonObject.put("totle", totle);
+		
+		newJsonObject.put("meta", metaJsonObject);
+		newJsonObject.put("data", dataJsonObject);
 		
 		return newJsonObject.toString();
 	}
