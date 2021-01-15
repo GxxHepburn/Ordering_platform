@@ -378,7 +378,7 @@ public class OSMOrderingService {
 		int m_ID = mmngct.getMMA_ID();
 		
 		
-		List<Multi_OrderAdd_Tab_Tabtype_Orders> multi_OrderAdd_Tab_Tabtypes_Orderses = orderAddMapper.getNotTakingByMIDOrderByOrderingTimeDESC(m_ID, limitStart, pagesizeInt);
+		List<Multi_OrderAdd_Tab_Tabtype_Orders> multi_OrderAdd_Tab_Tabtypes_Orderses = orderAddMapper.getNotTakingByMIDOrderByOrderingTime(m_ID, limitStart, pagesizeInt);
 		
 		int totle = orderAddMapper.getNotTakingTotleByMIDOrder(m_ID);
 		
@@ -397,6 +397,11 @@ public class OSMOrderingService {
 		for (int i = 0; i < multi_OrderAdd_Tab_Tabtypes_Orderses.size(); i++) {
 			JSONObject notTakingOrerAddJSONObject = new JSONObject(multi_OrderAdd_Tab_Tabtypes_Orderses.get(i));
 			notTakingOrerAddJSONObject.put("OA_OrderingTime", simpleDateFormat.format(multi_OrderAdd_Tab_Tabtypes_Orderses.get(i).getOA_OrderingTime()));
+			if (multi_OrderAdd_Tab_Tabtypes_Orderses.get(i).getO_PayTime() == null) {
+				notTakingOrerAddJSONObject.put("o_PayTime", "");
+			} else {
+				notTakingOrerAddJSONObject.put("o_PayTime", simpleDateFormat.format(multi_OrderAdd_Tab_Tabtypes_Orderses.get(i).getO_PayTime()));
+			}
 			
 			notTakingOrerAddJsonArray.put(notTakingOrerAddJSONObject);
 		}

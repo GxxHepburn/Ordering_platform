@@ -360,10 +360,8 @@ public class OSMController {
 		try {
 			return oSMOrderingService.onlyReturnGoods(map);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// 错误信息
@@ -383,10 +381,8 @@ public class OSMController {
 		try {
 			return oSMFoodService.onePunchUpGoods(map);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// 错误信息
@@ -406,10 +402,8 @@ public class OSMController {
 		try {
 			return oSMFoodService.changeFoodStatue(map);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// 错误信息
@@ -429,10 +423,8 @@ public class OSMController {
 		try {
 			return oSMFoodService.onePunchDisableOrAble(map);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// 错误信息
@@ -452,10 +444,8 @@ public class OSMController {
 		try {
 			return oSMWechatUserService.changeWechatUserStatus(map);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// 错误信息
@@ -475,10 +465,8 @@ public class OSMController {
 		try {
 			return oSMPayService.getOrderPayForm(map);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// 错误信息
