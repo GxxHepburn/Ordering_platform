@@ -525,4 +525,27 @@ public class OSMController {
 		newJsonObject.put("meta", metaJsonObject);
 		return newJsonObject.toString();
 	}
+	
+	@PostMapping(value = "/orderFiUnderLine", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String orderFiUnderLine(@RequestBody Map<String, Object> map) {
+		try {
+			return oSMOrderingService.orderFiUnderLine(map);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "失败!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
 }

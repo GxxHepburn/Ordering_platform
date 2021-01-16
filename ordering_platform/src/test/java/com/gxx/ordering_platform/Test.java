@@ -11,19 +11,8 @@ public class Test {
 
 	public static void main(String[] args) {
 
-		String jiami = "";
-		try {
-			jiami = EncryptionAndDeciphering.encryption("o5C-Y5KCm_mMGH2nyb8IVkxUAs50");
-			System.out.println(jiami);
-		} catch (GeneralSecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-			System.err.println(EncryptionAndDeciphering.deciphering(jiami));
-		} catch (GeneralSecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		SimpleDateFormat simpleDateFormatParse = new SimpleDateFormat("yyyyMMddHHmmss");
+		String P_Time_End = simpleDateFormatParse.format(new Date());
+		System.out.println(P_Time_End);
 	}
 }

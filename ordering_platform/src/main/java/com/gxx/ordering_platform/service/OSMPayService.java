@@ -71,8 +71,8 @@ public class OSMPayService {
 		String P_Time_End_String = simpleDateFormat.format(P_Time_End_Date);
 		payJsonObject.put("p_Time_End", P_Time_End_String);
 		payJsonObject.put("p_Totle_Fee", pay.getP_Totle_Fee());
-		payJsonObject.put("p_Fee_Type", "人民币");
-		payJsonObject.put("p_Trade_Type", "JSAPI");
+		payJsonObject.put("p_Fee_Type", pay.getP_Fee_Type());
+		payJsonObject.put("p_Trade_Type", pay.getP_Trade_Type());
 		payJsonObject.put("p_Transaction_Id", pay.getP_Transaction_Id());
 		BankType bankType = bankTypeMapper.getByB_CharCode(pay.getP_Bank_Type());
 		payJsonObject.put("p_Bank_Type", bankType.getB_Name());

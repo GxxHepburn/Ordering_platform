@@ -20,6 +20,7 @@ import com.gxx.ordering_platform.entity.Multi_OrderAdd_Tab_Tabtype_Orders;
 import com.gxx.ordering_platform.entity.Multi_Orders_Tab_Tabtype;
 import com.gxx.ordering_platform.entity.OrderAdd;
 import com.gxx.ordering_platform.entity.OrderDetail;
+import com.gxx.ordering_platform.entity.Pay;
 import com.gxx.ordering_platform.entity.WechatUser;
 import com.gxx.ordering_platform.mapper.FoodMapper;
 import com.gxx.ordering_platform.mapper.MerMapper;
@@ -27,6 +28,7 @@ import com.gxx.ordering_platform.mapper.MmaMapper;
 import com.gxx.ordering_platform.mapper.OrderAddMapper;
 import com.gxx.ordering_platform.mapper.OrderDetailMapper;
 import com.gxx.ordering_platform.mapper.OrdersMapper;
+import com.gxx.ordering_platform.mapper.PayMapper;
 import com.gxx.ordering_platform.mapper.WechatUserMapper;
 import com.gxx.ordering_platform.utils.EncryptionAndDeciphering;
 
@@ -46,6 +48,8 @@ public class OSMOrderingService {
 	@Autowired FoodMapper foodMapper;
 	
 	@Autowired MmaMapper mmaMapper;
+	
+	@Autowired PayMapper payMapper;
 	
 	@Transactional
 	public String getOrderForm(Map<String, Object> map) {
@@ -412,6 +416,52 @@ public class OSMOrderingService {
 		
 		newJsonObject.put("meta", metaJsonObject);
 		newJsonObject.put("data", dataJsonObject);
+		
+		return newJsonObject.toString();
+	}
+	
+	@Transactional
+	public String orderFiUnderLine(Map<String, Object> map) {
+		
+		//在pay中插入一个空的支付记录用来标记线下支付
+		int O_ID = Integer.valueOf(map.get("o_ID").toString());
+		int O_MID = Integer.valueOf(map.get("o_MID").toString());
+		int O_UID = Integer.valueOf(map.get("o_UID").toString());
+		
+		// 格式化P_Time_End时间
+		SimpleDateFormat simpleDateFormatParse = new SimpleDateFormat("yyyyMMddHHmmss");
+		String P_Time_End = simpleDateFormatParse.format(new Date());
+		String P_Totle_Fee = String.valueOf(Integer.valueOf(map.get("o_TotlePrice").toString())*100);
+		String P_Transaction_Id = "";
+		String P_Trade_Type = "线下支付";
+		String P_Bank_Type = "OTHERS";
+		String P_Fee_Type = "CNY";
+		
+		Pay pay = new Pay();
+		pay.setP_MID(O_MID);
+		pay.setP_OID(O_ID);
+		pay.setP_UID(O_UID);
+		
+		pay.setP_Time_End(P_Time_End);
+		pay.setP_Totle_Fee(P_Totle_Fee);
+		pay.setP_Transaction_Id(P_Transaction_Id);
+		pay.setP_Trade_Type(P_Trade_Type);
+		pay.setP_Bank_Type(P_Bank_Type);
+		pay.setP_Fee_Type(P_Fee_Type);
+		
+		payMapper.insert(pay);
+		
+		
+		// 更新orders O_PayStatue 
+		ordersMapper.updateO_PayStatueByO_ID(O_ID, 1);
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "标记线下支付成功!");
+		
+		newJsonObject.put("meta", metaJsonObject);
 		
 		return newJsonObject.toString();
 	}
