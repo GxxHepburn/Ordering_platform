@@ -48,14 +48,14 @@ public class OSMOrderingHandler extends TextWebSocketHandler {
 		session.getAttributes().put("M_ID", mmngct.getMMA_MID());
         clients.put(session.getId(), session);
         // 让商家管理系统上线
-//        oSMMerService.openMer(session.getAttributes().get("name"));
+        oSMMerService.openMer(Integer.valueOf(session.getAttributes().get("M_ID").toString()));
         System.out.println("open wbss " + clients.size());
     }
     
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         // 让商家管理系统下线
-//    	oSMMerService.closeMer(session.getAttributes().get("name"));
+    	oSMMerService.closeMer(Integer.valueOf(session.getAttributes().get("M_ID").toString()));
         clients.remove(session.getId());
     }
 

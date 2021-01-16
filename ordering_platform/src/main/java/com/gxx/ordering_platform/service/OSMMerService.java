@@ -107,4 +107,14 @@ public class OSMMerService {
 		merMapper.updateMerInfo(m_ID, m_Name, m_Address, m_Phone, m_BeginTime, m_EndTime, m_img);
 		return getMerInfo(map);
 	}
+
+	@Transactional
+	public void openMer(int M_ID) {
+		merMapper.updateM_IsInOpenTimeByM_ID(M_ID, 1);
+	}
+	
+	@Transactional
+	public void closeMer(int M_ID) {
+		merMapper.updateM_IsInOpenTimeByM_ID(M_ID, 0);
+	}
 }

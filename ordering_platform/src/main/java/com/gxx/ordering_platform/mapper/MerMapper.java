@@ -17,4 +17,7 @@ public interface MerMapper {
 			 @Param("m_address") String m_address, @Param("m_phone") String m_phone,
 			 @Param("m_beginTime") String m_beginTime, @Param("m_endTime") String m_endTime,
 			 @Param("m_img") String m_img);
+	
+	@Update("UPDATE mer SET M_IsInOpenTime = #{m_isInOpenTime} WHERE M_ID = #{m_id}")
+	void updateM_IsInOpenTimeByM_ID(@Param("m_id") int m_id, @Param("m_isInOpenTime") int m_isInOpenTime);
 }
