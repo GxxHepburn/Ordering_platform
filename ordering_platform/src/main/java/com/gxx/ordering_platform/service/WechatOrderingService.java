@@ -19,6 +19,7 @@ import com.gxx.ordering_platform.entity.Orders;
 import com.gxx.ordering_platform.entity.Tab;
 import com.gxx.ordering_platform.entity.TabType;
 import com.gxx.ordering_platform.entity.WechatUser;
+import com.gxx.ordering_platform.handler.OSMOrderingHandler;
 import com.gxx.ordering_platform.mapper.FoodMapper;
 import com.gxx.ordering_platform.mapper.OrderAddMapper;
 import com.gxx.ordering_platform.mapper.OrderDetailMapper;
@@ -55,6 +56,9 @@ public class WechatOrderingService {
 	WebApplicationContext webApplicationContext;
 
 	final Logger logger = LoggerFactory.getLogger(getClass());
+	
+	@Autowired
+	OSMOrderingHandler oSMOrderingHandler;
 	
 	@Transactional
 	public String ordering(String str) {
@@ -158,6 +162,20 @@ public class WechatOrderingService {
 
 		orderAdd.setOA_TotlePrice(totalPrice - totalReturnPrice);
 		orderAddMapper.updateTotlePrice(orderAdd.getOA_ID(), orderAdd.getOA_TotlePrice());
+		
+		// websocket通知前端
+		JSONObject wbssJsonObject = new JSONObject();
+		wbssJsonObject.put("type", "2");
+		String voiceString = "您有新的订单了,请尽快接单！";
+		wbssJsonObject.put("voiceText", voiceString);
+		wbssJsonObject.put("O_ID", orderAdd.getOA_OID());
+		try {
+			oSMOrderingHandler.sendTextMessage(orderAdd.getOA_MID(), wbssJsonObject.toString());
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		return O_UniqSearchID;
 	}
 	
@@ -285,6 +303,20 @@ public class WechatOrderingService {
 		
 		orderAdd.setOA_TotlePrice(nowTotalPrice - totalReturnPrice);
 		orderAddMapper.updateTotlePrice(orderAdd.getOA_ID(), orderAdd.getOA_TotlePrice());
+		
+		// websocket通知前端
+		JSONObject wbssJsonObject = new JSONObject();
+		wbssJsonObject.put("type", "2");
+		String voiceString = "您有新的订单了,请尽快接单！";
+		wbssJsonObject.put("voiceText", voiceString);
+		wbssJsonObject.put("O_ID", orderAdd.getOA_OID());
+		try {
+			oSMOrderingHandler.sendTextMessage(orderAdd.getOA_MID(), wbssJsonObject.toString());
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		return "-1";
 	}
 	
