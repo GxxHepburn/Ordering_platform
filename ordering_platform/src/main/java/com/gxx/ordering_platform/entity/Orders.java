@@ -19,7 +19,7 @@ public class Orders {
 	private String O_Remarks;
 	private int O_TotleNum;
 	private String O_UniqSearchID;
-	private int O_isPayNow;
+	private int O_IsPayNow;
 	private String O_OutTradeNo;
 	private float O_ReturnNum;
 	private int O_NumberOfDiners;

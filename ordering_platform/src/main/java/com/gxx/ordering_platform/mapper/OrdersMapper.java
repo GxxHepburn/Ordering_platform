@@ -15,9 +15,10 @@ import com.gxx.ordering_platform.entity.Orders;
 public interface OrdersMapper {
 
 	@Insert("INSERT INTO orders (O_MID, O_UID, O_TID, O_TotlePrice, O_PayStatue, O_OrderingTime,"
-			+ " O_Remarks, O_TotleNum, O_UniqSearchID, O_NumberOfDiners) VALUES (#{orders.O_MID}, #{orders.O_UID}, #{orders.O_TID}, "
+			+ " O_Remarks, O_TotleNum, O_UniqSearchID, O_NumberOfDiners, O_IsPayNow) VALUES (#{orders.O_MID}, #{orders.O_UID}, #{orders.O_TID}, "
 			+ "#{orders.O_TotlePrice}, #{orders.O_PayStatue}"
-			+ ", #{orders.O_OrderingTime}, #{orders.O_Remarks}, #{orders.O_TotleNum}, #{orders.O_UniqSearchID}, #{orders.O_NumberOfDiners})")
+			+ ", #{orders.O_OrderingTime}, #{orders.O_Remarks}, #{orders.O_TotleNum}, #{orders.O_UniqSearchID}, #{orders.O_NumberOfDiners}"
+			+ ", #{orders.O_IsPayNow})")
 	@Options(useGeneratedKeys = true, keyProperty = "O_ID")
 	int insert(@Param("orders") Orders orders);
 	
@@ -147,4 +148,7 @@ public interface OrdersMapper {
 			+ "TT_Name FROM orders left join tab on tab.T_ID = orders.O_TID left join tabtype on tabtype.TT_ID = tab.T_TTID "
 			+ "WHERE O_OutTradeNo = #{p_out_trade_no}")
 	Multi_Orders_Tab_Tabtype getOrderWithTNameAndTTNameByO_OutTradeNo(@Param("p_out_trade_no") String p_out_trade_no);
+	
+	@Select("SELECT * FROM orders WHERE O_ID = #{o_id}")
+	Orders getordersByO_ID(@Param("o_id") int o_id);
 }

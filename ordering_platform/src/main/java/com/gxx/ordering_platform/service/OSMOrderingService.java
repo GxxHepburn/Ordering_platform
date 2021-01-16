@@ -20,6 +20,7 @@ import com.gxx.ordering_platform.entity.Multi_OrderAdd_Tab_Tabtype_Orders;
 import com.gxx.ordering_platform.entity.Multi_Orders_Tab_Tabtype;
 import com.gxx.ordering_platform.entity.OrderAdd;
 import com.gxx.ordering_platform.entity.OrderDetail;
+import com.gxx.ordering_platform.entity.Orders;
 import com.gxx.ordering_platform.entity.Pay;
 import com.gxx.ordering_platform.entity.WechatUser;
 import com.gxx.ordering_platform.mapper.FoodMapper;
@@ -422,9 +423,24 @@ public class OSMOrderingService {
 	
 	@Transactional
 	public String orderFiUnderLine(Map<String, Object> map) {
+
+		int O_ID = Integer.valueOf(map.get("o_ID").toString());
+		// 线检查O_isPayNow字段
+		Orders orders = ordersMapper.getordersByO_ID(O_ID);
+		if (orders.getO_IsPayNow() == 1) {
+			JSONObject newJsonObject = new JSONObject();
+			
+			JSONObject metaJsonObject = new JSONObject();
+			metaJsonObject.put("status", 0);
+			metaJsonObject.put("msg", "客户正在付款，请重试!");
+			
+			newJsonObject.put("meta", metaJsonObject);
+			
+			return newJsonObject.toString();
+		}
+		
 		
 		//在pay中插入一个空的支付记录用来标记线下支付
-		int O_ID = Integer.valueOf(map.get("o_ID").toString());
 		int O_MID = Integer.valueOf(map.get("o_MID").toString());
 		int O_UID = Integer.valueOf(map.get("o_UID").toString());
 		

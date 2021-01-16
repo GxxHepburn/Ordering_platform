@@ -89,6 +89,7 @@ public class WechatOrderingService {
 		orders.setO_TotleNum(totalNum);
 		orders.setO_UniqSearchID(O_UniqSearchID);
 		orders.setO_NumberOfDiners(numberOfDiners);
+		orders.setO_IsPayNow(0);
 		
 		ordersMapper.insert(orders);
 		
