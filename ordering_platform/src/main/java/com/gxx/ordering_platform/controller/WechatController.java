@@ -1,8 +1,9 @@
 package com.gxx.ordering_platform.controller;
 
 import java.util.Date;
+import java.util.Map;
 
-
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -223,5 +224,25 @@ public class WechatController {
 	@ResponseBody
 	public String getMer(@RequestBody String str) {
 		return wechatMerService.getMer(str);
+	}
+	
+	@PostMapping(value = "/loggedIn/onReachBottom", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String onReachBottom(@RequestBody Map<String, Object> map) {
+		try {
+			return wechatOrderingService.onReachBottom(map);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "失败!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
 	}
 }

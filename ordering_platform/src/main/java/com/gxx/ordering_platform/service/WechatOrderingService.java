@@ -2,6 +2,7 @@ package com.gxx.ordering_platform.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -359,9 +360,9 @@ public class WechatOrderingService {
 		int o_uid = wechatUserMapper.getByUOpenId(openid).getU_ID();
 		logger.info("o_uid: " + o_uid);
 		logger.info("openid: " + openid);
-		List<Orders> nowOrders = ordersMapper.getOrdersOrderByTimeNow(o_uid);
-		List<Orders> finishedOrders = ordersMapper.getOrdersOrderByTimeFinished(o_uid);
-		List<Orders> returnOrders = ordersMapper.getOrdersOrderByTimeReturn(o_uid);
+		List<Orders> nowOrders = ordersMapper.getOrdersOrderByTimeNow(o_uid, 0, 10);
+		List<Orders> finishedOrders = ordersMapper.getOrdersOrderByTimeFinished(o_uid, 0, 10);
+		List<Orders> returnOrders = ordersMapper.getOrdersOrderByTimeReturn(o_uid, 0, 10);
 		
 		JSONArray nowJsonArray = new JSONArray(nowOrders);
 		JSONArray finishedJsonArray = new JSONArray(finishedOrders);
@@ -441,5 +442,52 @@ public class WechatOrderingService {
 		
 		logger.info("menu: " + weChatInitMenuService.initMenu(String.valueOf(m_id)).toString());
 		return returnJsonObject.toString();
+	}
+	
+	@Transactional
+	public String onReachBottom(Map<String, Object> map) {
+		String openid = map.get("openid").toString();
+		//未完成付款订单-payStatus==0||3,按照时间排序
+		int o_uid = wechatUserMapper.getByUOpenId(openid).getU_ID();
+		
+	    int touchedOrderNum = Integer.valueOf(map.get("touchedOrderNum").toString());
+		int orderLimit = Integer.valueOf(map.get("orderLimit").toString());
+		int limitStart = (orderLimit + 1) * 10;
+		List<Orders> orders = null;
+		if (touchedOrderNum == 1) {
+			orders = ordersMapper.getOrdersOrderByTimeNow(o_uid, limitStart, 10);
+		}
+		if (touchedOrderNum == 2) {
+			orders = ordersMapper.getOrdersOrderByTimeFinished(o_uid, limitStart, 10);
+		}
+		if (touchedOrderNum == 3) {
+			orders = ordersMapper.getOrdersOrderByTimeReturn(o_uid, limitStart, 10);
+		}
+		
+		if (orders.size() == 0) {
+			JSONObject newJsonObject = new JSONObject();
+			
+			JSONObject metaJsonObject = new JSONObject();
+			metaJsonObject.put("status", 0);
+			metaJsonObject.put("msg", "没有更多订单了!");
+			
+			newJsonObject.put("meta", metaJsonObject);
+			
+			return newJsonObject.toString();
+		}
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "加载更多成功!");
+		
+		JSONObject dataJsonObject = new JSONObject();
+		dataJsonObject.put("ordersFormList", new JSONArray(orders));
+		
+		newJsonObject.put("meta", metaJsonObject);
+		newJsonObject.put("data", dataJsonObject);
+		
+		return newJsonObject.toString();
 	}
 }

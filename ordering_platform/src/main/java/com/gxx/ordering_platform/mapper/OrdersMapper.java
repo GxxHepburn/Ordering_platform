@@ -40,14 +40,14 @@ public interface OrdersMapper {
 	@Update("UPDATE orders SET O_isPayNow = #{o_ispaynow} WHERE O_UniqSearchID = #{o_uniqsearchid}")
 	boolean updateIsPay(@Param("o_uniqsearchid") String o_uniqsearchid, @Param("o_ispaynow") int isPay);
 	
-	@Select("SELECT * FROM orders WHERE O_UID = #{o_uid} AND O_PayStatue = 0 OR O_PayStatue = 3 ORDER BY O_OrderingTime DESC")
-	List<Orders> getOrdersOrderByTimeNow(@Param("o_uid") int o_uid);
+	@Select("SELECT * FROM orders WHERE O_UID = #{o_uid} AND O_PayStatue = 0 OR O_PayStatue = 3 ORDER BY O_OrderingTime DESC limit #{limitStart}, #{limitSize}")
+	List<Orders> getOrdersOrderByTimeNow(@Param("o_uid") int o_uid, @Param("limitStart") int limitStart, @Param("limitSize") int limitSize);
 	
-	@Select("SELECT * FROM orders WHERE O_UID = #{o_uid} AND O_PayStatue = 1 ORDER BY O_OrderingTime DESC")
-	List<Orders> getOrdersOrderByTimeFinished(@Param("o_uid") int o_uid);
+	@Select("SELECT * FROM orders WHERE O_UID = #{o_uid} AND O_PayStatue = 1 ORDER BY O_OrderingTime DESC limit #{limitStart}, #{limitSize}")
+	List<Orders> getOrdersOrderByTimeFinished(@Param("o_uid") int o_uid, @Param("limitStart") int limitStart, @Param("limitSize") int limitSize);
 	
-	@Select("SELECT * FROM orders WHERE O_UID = #{o_uid} AND O_PayStatue = 2 ORDER BY O_OrderingTime DESC")
-	List<Orders> getOrdersOrderByTimeReturn(@Param("o_uid") int o_uid);
+	@Select("SELECT * FROM orders WHERE O_UID = #{o_uid} AND O_PayStatue = 2 ORDER BY O_OrderingTime DESC limit #{limitStart}, #{limitSize}")
+	List<Orders> getOrdersOrderByTimeReturn(@Param("o_uid") int o_uid, @Param("limitStart") int limitStart, @Param("limitSize") int limitSize);
 
 	
 	@Select("SELECT O_ID, O_MID, O_UID, O_TID, O_TotlePrice, O_PayMethod, O_PayStatue, O_OrderingTime, O_PayTime, "
