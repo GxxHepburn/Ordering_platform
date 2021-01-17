@@ -458,10 +458,10 @@ public class WechatOrderingService {
 			orders = ordersMapper.getOrdersOrderByTimeNow(o_uid, limitStart, 10);
 		}
 		if (touchedOrderNum == 2) {
-			orders = ordersMapper.getOrdersOrderByTimeFinished(o_uid, limitStart, 10);
+			orders = ordersMapper.getOrdersOrderByTimeReturn(o_uid, limitStart, 10);
 		}
 		if (touchedOrderNum == 3) {
-			orders = ordersMapper.getOrdersOrderByTimeReturn(o_uid, limitStart, 10);
+			orders = ordersMapper.getOrdersOrderByTimeFinished(o_uid, limitStart, 10);
 		}
 		
 		if (orders.size() == 0) {
