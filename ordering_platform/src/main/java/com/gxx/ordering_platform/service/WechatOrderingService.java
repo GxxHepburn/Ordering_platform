@@ -228,6 +228,7 @@ public class WechatOrderingService {
 	}
 	
 	public String add(String str) {
+		
 		//根据orderId,然后insertfood
 		JSONObject jsonObject = new JSONObject(str);
 		JSONArray ordersJsonArray = jsonObject.getJSONArray("orders");
@@ -236,6 +237,25 @@ public class WechatOrderingService {
 		float nowTotalPrice = jsonObject.getFloat("totalPrice");
 		//获取Orders
 		Orders orders = ordersMapper.selectBySearchId(orderSearchId);
+		
+		// 先判断订单是否完结
+		int O_PayStatue = orders.getO_PayStatue();
+		if (O_PayStatue != 0) {
+			JSONObject newJsonObject = new JSONObject();
+			
+			JSONObject metaJsonObject = new JSONObject();
+			metaJsonObject.put("status", 420);
+			metaJsonObject.put("msg", "下单失败");
+			
+			JSONObject dataJsonObject = new JSONObject();
+			dataJsonObject.put("waringMsg", "订单已完结，请重新扫码下单");
+			
+			newJsonObject.put("meta", metaJsonObject);
+			newJsonObject.put("data", dataJsonObject);
+			
+			return newJsonObject.toString();
+		}
+		
 		int totalNum = orders.getO_TotleNum() + nowTotalNum;
 		float totalPrice = orders.getO_TotlePrice() + nowTotalPrice;
 		

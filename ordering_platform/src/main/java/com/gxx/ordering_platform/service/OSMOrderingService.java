@@ -481,4 +481,37 @@ public class OSMOrderingService {
 		
 		return newJsonObject.toString();
 	}
+	
+	@Transactional
+	public String orderNotFiUnderLine(Map<String, Object> map) {
+
+		int O_ID = Integer.valueOf(map.get("o_ID").toString());
+		// 线检查O_isPayNow字段
+		Orders orders = ordersMapper.getordersByO_ID(O_ID);
+		if (orders.getO_IsPayNow() == 1) {
+			JSONObject newJsonObject = new JSONObject();
+			
+			JSONObject metaJsonObject = new JSONObject();
+			metaJsonObject.put("status", 0);
+			metaJsonObject.put("msg", "客户正在付款，请重试!");
+			
+			newJsonObject.put("meta", metaJsonObject);
+			
+			return newJsonObject.toString();
+		}
+		
+		
+		// 更新orders O_PayStatue 
+		ordersMapper.updateO_PayStatueByO_ID(O_ID, 3);
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "标记订单未完成成功!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
+	}
 }
