@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -42,6 +43,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.redis.connection.RedisPassword;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -57,6 +67,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
+import org.terracotta.modules.ehcache.transaction.ReadCommittedClusteredSoftLock;
 
 import com.gxx.ordering_platform.filter.WechatOpenIdFilter;
 import com.gxx.ordering_platform.handler.OSMOrderingHandler;
@@ -64,6 +75,8 @@ import com.gxx.ordering_platform.interceptor.OSMWebSocketSession;
 import com.gxx.ordering_platform.reamls.ShiroRealm;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+
+import redis.clients.jedis.JedisPoolConfig;
 
 
 @Configuration
@@ -73,7 +86,8 @@ import com.zaxxer.hikari.HikariDataSource;
 @EnableWebSocket
 @EnableTransactionManagement
 @PropertySource(value = {"classpath:/jdbc.properties", "classpath:/wechat.properties", 
-		"classpath:/merchantNumber.properties", "classpath:/serviceNumber.properties"}, encoding = "UTF-8")
+		"classpath:/merchantNumber.properties", "classpath:/serviceNumber.properties",
+		"classpath:/redis.properties"}, encoding = "UTF-8")
 public class AppConfig {
 	
 	final Logger logger = LoggerFactory.getLogger(getClass());
@@ -81,10 +95,6 @@ public class AppConfig {
 	public static void main(String[] args) throws LifecycleException {
 		
 		Tomcat tomcat = new Tomcat();
-		
-//		tomcat.setPort(Integer.getInteger("port", 80));
-//		Service service = tomcat.getService();
-//		service.addConnector(getSslConnector());
 		
 		Connector connector = tomcat.getConnector();
 		connector.setURIEncoding("utf-8");
@@ -342,5 +352,72 @@ public class AppConfig {
 		credentialsMatcher.setHashAlgorithmName("MD5");
 		credentialsMatcher.setHashIterations(1024);
 		return credentialsMatcher;
+	}
+	
+	@Bean("jedisPoolConfig")
+	public JedisPoolConfig createJedisPoolConfig(
+			@Value("${redis.maxIdle}") int maxIdle,
+			@Value("${redis.maxTotal}") int maxTotal,
+			@Value("${redis.maxWaitMillis}") long maxWaitMillis,
+			@Value("${redis.minEvictableIdleTimeMillis}") long minEvictableIdleTimeMillis,
+			@Value("${redis.numTestsPerEvictionRun}") int numTestsPerEvictionRun,
+			@Value("${redis.timeBetweenEvictionRunsMillis}") long timeBetweenEvictionRunsMillis,
+			@Value("${redis.testOnBorrow}") boolean testOnBorrow,
+			@Value("${redis.testWhileIdle}") boolean testWhileIdle) {
+		
+		JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+		// 最大空闲数
+		jedisPoolConfig.setMaxIdle(maxIdle);
+		jedisPoolConfig.setMaxTotal(maxTotal);
+		jedisPoolConfig.setMaxWaitMillis(maxWaitMillis);
+		jedisPoolConfig.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
+		jedisPoolConfig.setNumTestsPerEvictionRun(numTestsPerEvictionRun);
+		jedisPoolConfig.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
+		jedisPoolConfig.setTestOnBorrow(testOnBorrow);
+		jedisPoolConfig.setTestWhileIdle(testWhileIdle);
+		
+		return jedisPoolConfig;
+	}
+	
+	@Bean("jedisConnectionFactory")
+	public JedisConnectionFactory createJedisConnectionFactory(
+			@Value("${redis.hostName}") String hostName,
+			@Value("${redis.port}") int port,
+			@Value("${redis.password}") String password,
+			@Value("${redis.timeout}") long timeout,
+			@Value("${redis.database}") int database,
+			@Autowired JedisPoolConfig jedisPoolConfig) {
+		
+		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
+		redisStandaloneConfiguration.setHostName(hostName);
+		redisStandaloneConfiguration.setDatabase(database);
+		redisStandaloneConfiguration.setPassword(password);
+		redisStandaloneConfiguration.setPort(port);
+		JedisClientConfiguration.JedisPoolingClientConfigurationBuilder jedisPoolingClientConfigurationBuilder = 
+				(JedisClientConfiguration.JedisPoolingClientConfigurationBuilder) JedisClientConfiguration.builder();
+		jedisPoolingClientConfigurationBuilder.poolConfig(jedisPoolConfig);
+		JedisClientConfiguration jedisClientConfiguration = jedisPoolingClientConfigurationBuilder.build();
+		JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory(redisStandaloneConfiguration, jedisClientConfiguration);
+		jedisConnectionFactory.afterPropertiesSet();
+		
+		return jedisConnectionFactory;
+	}
+	
+	@Bean("stringRedisTemplate")
+	public StringRedisTemplate initRedisTemplate(@Autowired JedisConnectionFactory jedisConnectionFactory) {		
+		
+		//自定义  Redis 序列化器
+		StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
+		//定义 RedisTemplate 并设置连接工程
+        StringRedisTemplate stringRedisTemplate = new StringRedisTemplate();
+        stringRedisTemplate.setConnectionFactory(jedisConnectionFactory);
+        //设置序列化器
+        stringRedisTemplate.setDefaultSerializer(stringRedisSerializer);
+        stringRedisTemplate.setKeySerializer(stringRedisSerializer);
+        stringRedisTemplate.setValueSerializer(stringRedisSerializer);
+        stringRedisTemplate.setHashKeySerializer(stringRedisSerializer);
+        stringRedisTemplate.setHashValueSerializer(stringRedisSerializer);
+  
+		return stringRedisTemplate;
 	}
 }

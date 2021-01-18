@@ -39,6 +39,7 @@ import com.gxx.ordering_platform.service.OSMTabService;
 import com.gxx.ordering_platform.service.OSMTabTypeService;
 import com.gxx.ordering_platform.service.OSMUsersService;
 import com.gxx.ordering_platform.service.OSMWechatUserService;
+import com.gxx.ordering_platform.utils.RedisUtil;
 
 
 @RestController
