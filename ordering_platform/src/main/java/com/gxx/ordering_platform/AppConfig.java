@@ -87,7 +87,7 @@ import redis.clients.jedis.JedisPoolConfig;
 @EnableTransactionManagement
 @PropertySource(value = {"classpath:/jdbc.properties", "classpath:/wechat.properties", 
 		"classpath:/merchantNumber.properties", "classpath:/serviceNumber.properties",
-		"classpath:/redis.properties"}, encoding = "UTF-8")
+		"classpath:/redis.properties", "classpath:/aliyunMsg.properties"}, encoding = "UTF-8")
 public class AppConfig {
 	
 	final Logger logger = LoggerFactory.getLogger(getClass());

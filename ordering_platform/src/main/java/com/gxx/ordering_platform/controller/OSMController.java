@@ -95,14 +95,22 @@ public class OSMController {
 	
 	@PostMapping("/login")
 	@ResponseBody
-	public String login(@RequestBody String str) {
+	public String login(@RequestBody Map<String, Object> map) {
+		try {
+			return mmaService.login(map);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
 		
-		//获取请求参数-用户名，密码
-		JSONObject requestJsonObject = new JSONObject(str);
-		String username = requestJsonObject.getString("username");
-		String password = requestJsonObject.getString("password");
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "失败!");
 		
-		return mmaService.login(username, password);
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
 	}
 	
 	@GetMapping("/menus")
@@ -555,9 +563,26 @@ public class OSMController {
 	public String orderNotFiUnderLine(@RequestBody Map<String, Object> map) {
 		try {
 			return oSMOrderingService.orderNotFiUnderLine(map);
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "失败!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
+	
+	@PostMapping(value = "/sendCheck", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String sendCheck(@RequestBody Map<String, Object> map) {
+		try {
+			return mmaService.sendCheck(map);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
