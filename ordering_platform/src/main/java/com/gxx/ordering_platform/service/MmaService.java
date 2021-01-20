@@ -1,8 +1,11 @@
 package com.gxx.ordering_platform.service;
 
+import java.security.SecureRandom;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,12 @@ public class MmaService {
 	
 	@Value("${aliyunMsg.accessKeySecret}") String accessKeySecret;
 	
+	@Value("${aliyunMsg.templateCode}") String templateCode;
+	
+	@Value("${aliyunMsg.signName}") String signName;
+	
+	@Value("${aliyunMsg.regionId}") String regionId;
+	
 	public String login(Map<String, Object> map) {
 		//获取请求参数-用户名，密码
 		String username = map.get("username").toString();
@@ -46,6 +55,7 @@ public class MmaService {
 				//设置一个jwt
 				Map<String, Object> claims = new HashMap<String, Object>();
 				claims.put("username", username);
+				// 设置3分钟有效期token
 				String jwtString = JWTUtils.createJwt(username, 180000, claims);
 				
 				Mmngct mmngct = mmaMapper.getByUsername(username);
@@ -101,7 +111,10 @@ public class MmaService {
 	
 	public String sendCheck(Map<String, Object> map) {
 		
+		JSONObject newJsonObject = new JSONObject();
+		
 		String phoneNumbers = map.get("MMA_Phone").toString();
+		String username = map.get("MMA_UserName").toString();
 		DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", accessKeyId, accessKeySecret);
 		IAcsClient client = new DefaultAcsClient(profile);
 		
@@ -110,20 +123,57 @@ public class MmaService {
 		request.setSysDomain("dysmsapi.aliyuncs.com");
 		request.setSysVersion("2017-05-25");
 		request.setSysAction("SendSms");
-		request.putQueryParameter("RegionId", "cn-hangzhou");
+		request.putQueryParameter("RegionId", regionId);
+		
+
+		// 生成6位验证码
+		SecureRandom sr = new SecureRandom();
+		int checkNum = 100000 + sr.nextInt(900000);
+		String checkNumJson = "{ 'code': '" + checkNum + "' }";
 		
 		request.putQueryParameter("PhoneNumbers", phoneNumbers);
-		
+		request.putQueryParameter("TemplateCode", templateCode);
+		request.putQueryParameter("SignName", signName);
+		// 放入验证码
+		request.putQueryParameter("TemplateParam", checkNumJson);
+		CommonResponse response = null;
 		try {
-			CommonResponse response = client.getCommonResponse(request);
-			String getSendStr = response.getData();
-			System.out.println(getSendStr);
-			System.out.println(response.getHttpStatus());
+			response = client.getCommonResponse(request);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
+			JSONObject metaJsonObject = new JSONObject();
+			metaJsonObject.put("status", 505);
+			metaJsonObject.put("msg", "短信服务商出错了，请联系管理员！");
+			
+			newJsonObject.put("meta", metaJsonObject);
+			return newJsonObject.toString();
 		}
-		
-		return "";
+		String getSendStr = response.getData();
+		JSONObject getSendStrJsonObject = new JSONObject(getSendStr);
+		if (!"OK".equals(getSendStrJsonObject.getString("Code"))) {
+			if ("isv.BUSINESS_LIMIT_CONTROL".equals(getSendStrJsonObject.getString("Code"))) {
+				JSONObject metaJsonObject = new JSONObject();
+				metaJsonObject.put("status", 201);
+				metaJsonObject.put("msg", "短信发送频率超限，如有需要，请联系管理员!");
+				newJsonObject.put("meta", metaJsonObject);
+				return newJsonObject.toString();
+			}
+			JSONObject metaJsonObject = new JSONObject();
+			metaJsonObject.put("status", 510);
+			metaJsonObject.put("msg", "系统短信超限或参数错误，请联系管理员!");
+			newJsonObject.put("meta", metaJsonObject);
+			return newJsonObject.toString();
+		}
+		// 根据信息返回给前台，着重注意提示限制短信发送频率
+		// 设置有效时间，存入redis:有效期，3分钟，用户名，验证码
+		JSONObject checkNumRedisJsonObject = new JSONObject();
+		checkNumRedisJsonObject.put("checkNum", checkNum + "");
+		redisUtil.setEx(username, checkNumRedisJsonObject.toString(), 180, TimeUnit.SECONDS);
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "短信发送成功，请注意接收!");
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
 	}
 }
