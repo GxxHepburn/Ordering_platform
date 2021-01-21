@@ -138,7 +138,7 @@ public class MmaService {
 		request.putQueryParameter("TemplateParam", checkNumJson);
 		CommonResponse response = null;
 		try {
-//			response = client.getCommonResponse(request);
+			response = client.getCommonResponse(request);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -149,28 +149,63 @@ public class MmaService {
 			newJsonObject.put("meta", metaJsonObject);
 			return newJsonObject.toString();
 		}
-//		String getSendStr = response.getData();
-//		JSONObject getSendStrJsonObject = new JSONObject(getSendStr);
-//		if (!"OK".equals(getSendStrJsonObject.getString("Code"))) {
-//			if ("isv.BUSINESS_LIMIT_CONTROL".equals(getSendStrJsonObject.getString("Code"))) {
-//				JSONObject metaJsonObject = new JSONObject();
-//				metaJsonObject.put("status", 201);
-//				metaJsonObject.put("msg", "短信发送频率超限，如有需要，请联系管理员!");
-//				newJsonObject.put("meta", metaJsonObject);
-//				return newJsonObject.toString();
-//			}
-//			JSONObject metaJsonObject = new JSONObject();
-//			metaJsonObject.put("status", 510);
-//			metaJsonObject.put("msg", "系统短信超限或参数错误，请联系管理员!");
-//			newJsonObject.put("meta", metaJsonObject);
-//			return newJsonObject.toString();
-//		}
+		String getSendStr = response.getData();
+		JSONObject getSendStrJsonObject = new JSONObject(getSendStr);
+		if (!"OK".equals(getSendStrJsonObject.getString("Code"))) {
+			if ("isv.BUSINESS_LIMIT_CONTROL".equals(getSendStrJsonObject.getString("Code"))) {
+				JSONObject metaJsonObject = new JSONObject();
+				metaJsonObject.put("status", 201);
+				metaJsonObject.put("msg", "短信发送频率超限，如有需要，请联系管理员!");
+				newJsonObject.put("meta", metaJsonObject);
+				return newJsonObject.toString();
+			}
+			JSONObject metaJsonObject = new JSONObject();
+			metaJsonObject.put("status", 510);
+			metaJsonObject.put("msg", "系统短信超限或参数错误，请联系管理员!");
+			newJsonObject.put("meta", metaJsonObject);
+			return newJsonObject.toString();
+		}
 		// 根据信息返回给前台，着重注意提示限制短信发送频率
 		// 设置有效时间，存入redis:有效期，3分钟，用户名，验证码
 		redisUtil.setEx(username, checkNum + "", 180, TimeUnit.SECONDS);
 		JSONObject metaJsonObject = new JSONObject();
 		metaJsonObject.put("status", 200);
 		metaJsonObject.put("msg", "短信发送成功，请注意接收!");
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
+	
+	public String realCheck(Map<String, Object> map) {
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		String username = map.get("MMA_UserName").toString();
+		String checkNum = map.get("checkNum").toString();
+		String redisCheckNum = redisUtil.get(username);
+		if (redisCheckNum == null || "null".equals(redisCheckNum)) {
+			// 返回错误信息，验证码有失效了，过期了
+			JSONObject metaJsonObject = new JSONObject();
+			metaJsonObject.put("status", 403);
+			metaJsonObject.put("msg", "验证码过期，请重试!");
+			newJsonObject.put("meta", metaJsonObject);
+			return newJsonObject.toString();
+		}
+		if (!checkNum.equals(redisCheckNum)) {
+			// 返回验证码错误，请重新输入
+			JSONObject metaJsonObject = new JSONObject();
+			metaJsonObject.put("status", 404);
+			metaJsonObject.put("msg", "验证码错误，请重新输入!");
+			newJsonObject.put("meta", metaJsonObject);
+			return newJsonObject.toString();
+		}
+		// 将，用户名+Useful，验证时间放入redis
+		String key = username + "Useful";
+		redisUtil.setEx(key, "成功验证", 3, TimeUnit.DAYS);
+		// 测试用的
+//		redisUtil.setEx(key, "成功验证", 30, TimeUnit.SECONDS);
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "验证成功!");
 		newJsonObject.put("meta", metaJsonObject);
 		return newJsonObject.toString();
 	}
