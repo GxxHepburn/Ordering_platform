@@ -14,8 +14,6 @@ public class TestController {
 	
 	@GetMapping("/test")
 	public String test() {
-		redisUtil.set("gxx", "very good");
-		System.out.println(redisUtil.get("gxx"));
 		return "";
 	}
 }
