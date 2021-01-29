@@ -622,4 +622,37 @@ public class OSMOrderingService {
 		
 		return newJsonObject.toString();
 	}
+
+	@Transactional
+	public String getOrderReturnFormList(Map<String, Object> map) {
+		
+		int O_ID = Integer.valueOf(map.get("O_ID").toString());
+		
+		List<OrderReturn> orderReturns = orderReturnMapper.getByO_ID(O_ID);
+		JSONArray orderReturnsJsonArray = new JSONArray(orderReturns);
+		
+		//格式化时间
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		for (int i = 0; i <orderReturns.size(); i++) {
+			List<OrderReturnDetail> orderReturnDetails = orderReturnDetailMapper.getByOR_ID(orderReturns.get(i).getOR_ID());
+			JSONArray orderReturnDetailsJsonArray = new JSONArray(orderReturnDetails);
+			
+			orderReturnsJsonArray.getJSONObject(i).put("OR_ReturnTime", simpleDateFormat.format(orderReturns.get(i).getOR_ReturnTime()));
+			orderReturnsJsonArray.getJSONObject(i).put("orderReturnDetails", orderReturnDetailsJsonArray);
+		}
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "获取成功");
+		
+		JSONObject dataJsonObject = new JSONObject();
+		dataJsonObject.put("orderReturnFormList", orderReturnsJsonArray);
+		
+		newJsonObject.put("data", dataJsonObject);
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
 }

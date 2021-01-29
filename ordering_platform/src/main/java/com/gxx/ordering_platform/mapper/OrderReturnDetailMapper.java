@@ -1,8 +1,12 @@
 package com.gxx.ordering_platform.mapper;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
+import com.gxx.ordering_platform.entity.OrderReturn;
 import com.gxx.ordering_platform.entity.OrderReturnDetail;
 
 public interface OrderReturnDetailMapper {
@@ -13,4 +17,7 @@ public interface OrderReturnDetailMapper {
 			+ "#{orderReturnDetail.ORD_Spec}, #{orderReturnDetail.ORD_PropOne}, #{orderReturnDetail.ORD_PropTwo}, "
 			+ "#{orderReturnDetail.ORD_Num}, #{orderReturnDetail.ORD_FName})")
 	void insert(@Param("orderReturnDetail") OrderReturnDetail orderReturnDetail);
+	
+	@Select("SELECT * FROM orderreturndetail WHERE ORD_ORID = #{or_id}")
+	List<OrderReturnDetail> getByOR_ID(@Param("or_id") int or_id);
 }

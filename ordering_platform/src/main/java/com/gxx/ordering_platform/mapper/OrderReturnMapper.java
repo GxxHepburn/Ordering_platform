@@ -1,5 +1,7 @@
 package com.gxx.ordering_platform.mapper;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
@@ -21,4 +23,7 @@ public interface OrderReturnMapper {
 	
 	@Update("UPDATE orderreturn SET OR_TotlePrice = #{or_totlePrice} WHERE OR_ID = #{or_id}")
 	void updateTotlePrice(@Param("or_id") int or_id, @Param("or_totlePrice") float or_totlePrice);
+	
+	@Select("SELECT * FROM orderreturn WHERE OR_OID = #{o_id}")
+	List<OrderReturn> getByO_ID(@Param("o_id") int o_id);
 }
