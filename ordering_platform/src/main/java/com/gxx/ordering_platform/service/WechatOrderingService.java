@@ -278,6 +278,7 @@ public class WechatOrderingService {
 		
 		for(int i=0; i<ordersJsonArray.length(); i++) {
 			JSONObject orderDetailJsonObject = ordersJsonArray.getJSONObject(i);
+			System.out.println(orderDetailJsonObject);
 			OrderDetail orderDetail = getByOrdersJsonArray(orders, orderAdd, orderDetailJsonObject);
 			logger.info("OD_FID: " + orderDetail.getOD_FID());
 			int nowStock = foodMapper.getStockByFID(orderDetail.getOD_FID());

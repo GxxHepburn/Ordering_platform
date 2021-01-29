@@ -20,6 +20,8 @@ import com.gxx.ordering_platform.entity.Multi_OrderAdd_Tab_Tabtype_Orders;
 import com.gxx.ordering_platform.entity.Multi_Orders_Tab_Tabtype;
 import com.gxx.ordering_platform.entity.OrderAdd;
 import com.gxx.ordering_platform.entity.OrderDetail;
+import com.gxx.ordering_platform.entity.OrderReturn;
+import com.gxx.ordering_platform.entity.OrderReturnDetail;
 import com.gxx.ordering_platform.entity.Orders;
 import com.gxx.ordering_platform.entity.Pay;
 import com.gxx.ordering_platform.entity.WechatUser;
@@ -28,6 +30,8 @@ import com.gxx.ordering_platform.mapper.MerMapper;
 import com.gxx.ordering_platform.mapper.MmaMapper;
 import com.gxx.ordering_platform.mapper.OrderAddMapper;
 import com.gxx.ordering_platform.mapper.OrderDetailMapper;
+import com.gxx.ordering_platform.mapper.OrderReturnDetailMapper;
+import com.gxx.ordering_platform.mapper.OrderReturnMapper;
 import com.gxx.ordering_platform.mapper.OrdersMapper;
 import com.gxx.ordering_platform.mapper.PayMapper;
 import com.gxx.ordering_platform.mapper.WechatUserMapper;
@@ -51,6 +55,10 @@ public class OSMOrderingService {
 	@Autowired MmaMapper mmaMapper;
 	
 	@Autowired PayMapper payMapper;
+	
+	@Autowired OrderReturnMapper orderReturnMapper;
+	
+	@Autowired OrderReturnDetailMapper orderReturnDetailMapper;
 	
 	@Transactional
 	public String getOrderForm(Map<String, Object> map) {
@@ -509,6 +517,106 @@ public class OSMOrderingService {
 		JSONObject metaJsonObject = new JSONObject();
 		metaJsonObject.put("status", 200);
 		metaJsonObject.put("msg", "标记订单未完成成功!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
+	}
+	
+	@Transactional
+	public String returnGoodsWithMoney(Map<String, Object> map) {
+		
+		JSONObject sourceJsonObject = new JSONObject(map);
+		JSONArray returnGoodWithMoneyOrderDetailFormJsonArray = sourceJsonObject.getJSONArray("returnGoodWithMoneyOrderDetailForm");
+		int O_ID = sourceJsonObject.getInt("O_ID");
+		Orders orders = ordersMapper.getordersByO_ID(O_ID);
+		//插入一个orderReturn，先获取sort，然后插入，最后更新退款总价
+		OrderReturn orderReturn = new OrderReturn();
+		int count = orderReturnMapper.selectCountByOR_OID(O_ID);
+		orderReturn.setOR_OID(O_ID);
+		orderReturn.setOR_Sort(1 + count);
+		orderReturn.setOR_MID(orders.getO_MID());
+		orderReturn.setOR_UID(orders.getO_UID());
+		orderReturn.setOR_TID(orders.getO_TID());
+		//OR_TotlePrice,等会更新
+		orderReturn.setOR_ReturnTime(new Date());
+		orderReturnMapper.insert(orderReturn);
+		
+		// 插入orderReturnDetail
+		
+		
+		JSONArray newJsonArray = new JSONArray();
+		// 将所有的orderDetailJSONArray合并到一起
+		for (int i = 0; i < returnGoodWithMoneyOrderDetailFormJsonArray.length(); i++) {
+//			newJsonArray.(returnGoodWithMoneyOrderDetailFormJsonArray.getJSONObject(i).getJSONArray("orderDetails"));
+			for (int j = 0; j < returnGoodWithMoneyOrderDetailFormJsonArray.getJSONObject(i).getJSONArray("orderDetails").length(); j++) {
+				newJsonArray.put(returnGoodWithMoneyOrderDetailFormJsonArray.getJSONObject(i).getJSONArray("orderDetails").get(j));
+			}
+		}
+		System.out.println(newJsonArray);
+		float nowORTotlePrice = 0.00f;
+		// 修改orderDetail
+		for (int i = 0; i < newJsonArray.length(); i++) {
+			int onlyReturnNum = newJsonArray.getJSONObject(i).getInt("returnNum");
+			int OD_RealNum = newJsonArray.getJSONObject(i).getInt("OD_RealNum");
+			int num = newJsonArray.getJSONObject(i).getInt("OD_Num");
+			int OD_ID = newJsonArray.getJSONObject(i).getInt("OD_ID");
+			int F_ID = newJsonArray.getJSONObject(i).getInt("OD_FID");
+			if (onlyReturnNum > 0) {
+				// 更新realNum 和 num
+				orderDetailMapper.updateRealNumAndNumByOD_ID(OD_ID, num, OD_RealNum - onlyReturnNum);
+				// 商家主动退点，说明库存没了，所以将该商品库存设置为0
+				foodMapper.updateStockByFID(0, F_ID);
+				// 插入orderReturnDetail
+				OrderReturnDetail orderReturnDetail = new OrderReturnDetail();
+				orderReturnDetail.setORD_ORID(orderReturn.getOR_ID());
+				orderReturnDetail.setORD_OID(orderReturn.getOR_OID());
+				orderReturnDetail.setORD_FID(newJsonArray.getJSONObject(i).getInt("OD_FID"));
+				orderReturnDetail.setORD_FoodState(newJsonArray.getJSONObject(i).getInt("OD_FoodState"));
+				orderReturnDetail.setORD_RealPrice(newJsonArray.getJSONObject(i).getFloat("OD_RealPrice"));
+				orderReturnDetail.setORD_Spec(newJsonArray.getJSONObject(i).getString("OD_Spec"));
+				orderReturnDetail.setORD_PropOne(newJsonArray.getJSONObject(i).getString("OD_PropOne"));
+				orderReturnDetail.setORD_PropTwo(newJsonArray.getJSONObject(i).getString("OD_PropTwo"));
+				orderReturnDetail.setORD_Num(newJsonArray.getJSONObject(i).getInt("returnNum"));
+				orderReturnDetail.setORD_FName(newJsonArray.getJSONObject(i).getString("OD_FName"));
+				nowORTotlePrice += orderReturnDetail.getORD_RealPrice() * orderReturnDetail.getORD_Num();
+				// 插入orderReturnDetail
+				orderReturnDetailMapper.insert(orderReturnDetail);
+			}
+		}
+		// 修改orderreturn总价
+		orderReturnMapper.updateTotlePrice(orderReturn.getOR_ID(), nowORTotlePrice);
+		
+		// 修改orderadd总价
+		List<OrderAdd> orderAdds = orderAddMapper.getByO_ID(O_ID);
+		for (OrderAdd orderAdd : orderAdds) {
+			float nowOATotlePrice = 0.00f;
+			List<OrderDetail> orderDetails = orderDetailMapper.getByOA_ID(orderAdd.getOA_ID());
+			for (OrderDetail orderDetail : orderDetails) {
+				nowOATotlePrice += orderDetail.getOD_RealPrice() * orderDetail.getOD_RealNum();
+			}
+			orderAddMapper.updateTotlePrice(orderAdd.getOA_ID(), nowOATotlePrice);
+		}
+		
+		// 更新order ,orderadd 的总金额（不更新总数了，用不到的字段，让他乱吧)
+		List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(O_ID);
+		float nowOrderTotlePrice = 0.00f;
+		for (OrderDetail orderDetail : orderDetails) {
+			nowOrderTotlePrice += orderDetail.getOD_RealPrice() * orderDetail.getOD_RealNum();
+		}
+		ordersMapper.updateTotlePrice(O_ID, nowOrderTotlePrice);
+		// 检查总订单金额是不是为0如果为0,则将订单状态改为未完成
+		if (nowOrderTotlePrice == 0) {
+			ordersMapper.updateO_PayStatueByO_ID(O_ID, 3);
+		} else {
+			ordersMapper.updateO_PayStatueByO_ID(O_ID, 2);
+		}
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "退款成功!");
 		
 		newJsonObject.put("meta", metaJsonObject);
 		
