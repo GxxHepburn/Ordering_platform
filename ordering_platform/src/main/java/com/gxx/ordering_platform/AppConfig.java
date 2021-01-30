@@ -92,7 +92,7 @@ public class AppConfig {
 	
 	final Logger logger = LoggerFactory.getLogger(getClass());
 
-	public static void main(String[] args) throws LifecycleException {
+	public static void main(String[] args) throws Exception {
 		
 		Tomcat tomcat = new Tomcat();
 		
@@ -110,26 +110,29 @@ public class AppConfig {
 		tomcat.getServer().await();
 	}
 	
-	private static void getSslConnector(Connector connector) {
+	private static void getSslConnector(Connector connector) throws IOException {
 	    connector.setPort(8443);
 	    connector.setSecure(true);
 	    connector.setScheme("https");
 	    connector.setAttribute("sslkeyAlias", "tomcat");
 	    
-	    InputStream inputStream = AppConfig.class.getClassLoader().getResourceAsStream("pfx-password.properties");
-	    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 	    String password = "";
-	    try {
-			password = bufferedReader.readLine();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	    String path = "";
+	    try (InputStream inputStream = AppConfig.class.getClassLoader().getResourceAsStream("pfx-password.properties"); 
+	    		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
+		    try {
+				password = bufferedReader.readLine();
+				path = bufferedReader.readLine();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    }
 	    
 	    connector.setAttribute("keystorePass", password);
 	    connector.setAttribute("keystoreType", "PKCS12");
 	    connector.setAttribute("keystoreFile",
-	            "C:/Ordering_platform_workspace/Ordering_platform/ordering_platform/src/main/resources/4282031_www.donghuastar.com.pfx");
+	            path);
 	    connector.setAttribute("clientAuth", "false");
 	    connector.setAttribute("sslProtocol", "TLS");
 	    connector.setAttribute("maxThreads", "200");

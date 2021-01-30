@@ -4,8 +4,10 @@ import java.security.GeneralSecurityException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -59,6 +61,8 @@ public class OSMOrderingService {
 	@Autowired OrderReturnMapper orderReturnMapper;
 	
 	@Autowired OrderReturnDetailMapper orderReturnDetailMapper;
+	
+	@Autowired WxPayService wxPayService;
 	
 	@Transactional
 	public String getOrderForm(Map<String, Object> map) {
@@ -544,7 +548,6 @@ public class OSMOrderingService {
 		
 		// 插入orderReturnDetail
 		
-		
 		JSONArray newJsonArray = new JSONArray();
 		// 将所有的orderDetailJSONArray合并到一起
 		for (int i = 0; i < returnGoodWithMoneyOrderDetailFormJsonArray.length(); i++) {
@@ -553,7 +556,6 @@ public class OSMOrderingService {
 				newJsonArray.put(returnGoodWithMoneyOrderDetailFormJsonArray.getJSONObject(i).getJSONArray("orderDetails").get(j));
 			}
 		}
-		System.out.println(newJsonArray);
 		float nowORTotlePrice = 0.00f;
 		// 修改orderDetail
 		for (int i = 0; i < newJsonArray.length(); i++) {
@@ -611,6 +613,27 @@ public class OSMOrderingService {
 		} else {
 			ordersMapper.updateO_PayStatueByO_ID(O_ID, 2);
 		}
+		// 先判断，是不是在线支付，如果是，则向微信请求，如果不是，则直接返回，提示商家，这是线下支付，请商家人工退款
+		
+		// 向微信支付申请退款,然后后台根据是否成功提交，来显示
+		// 如果成功提交，则该退款信息显示，提交退款成功，请稍后查看退款详情
+		// 如果提交退款失败，则根据具体原因提示商家，退款失败，转为人工退款，需要商家核实之后，自行转账！
+		
+		//准备退款参数
+		String out_refund_no = UUID.randomUUID().toString().replaceAll("-", "");
+		Pay pay = payMapper.getByO_ID(O_ID);
+		String out_trade_no = pay.getP_Out_Trade_No();
+		String totle_fee = pay.getP_Totle_Fee();
+		int refund_fee_int = (int)(nowORTotlePrice*100);
+		String refund_fee = String.valueOf(refund_fee_int);
+		
+		try {
+			wxPayService.returnMoneyFromWechat(out_trade_no, out_refund_no, totle_fee, refund_fee);
+		} catch (Exception e) {
+			// 必须要抛出，否则事务不触发
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
 		
 		JSONObject newJsonObject = new JSONObject();
 		
@@ -655,4 +678,5 @@ public class OSMOrderingService {
 		newJsonObject.put("meta", metaJsonObject);
 		return newJsonObject.toString();
 	}
+
 }

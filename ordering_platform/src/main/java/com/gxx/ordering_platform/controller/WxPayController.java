@@ -116,28 +116,36 @@ public class WxPayController {
 	// 微信会发很多次success通知
 	@RequestMapping(value = "/success", produces = MediaType.TEXT_PLAIN_VALUE)
 	@ResponseBody
+	@Transactional
 	public String success(HttpServletRequest request, @RequestBody WxPayNotifyV0 param) {
 //		logger.info("success: " + param.toString());
 //		logger.info("return_code: " + param.getReturn_code());
-		//修改isPayNow，同时设置payStatus,payTime
-		Date payTime = new Date();
-		wxPayService.updatePaied(param.getOut_trade_no(), 0, 1, payTime);
+		// 先判断是否处理过，如果处理过，就跳过
+		Orders orders = ordersMapper.getOrderByO_OutTradeNo(param.getOut_trade_no());
+		System.out.println("收到");
+		if (orders.getO_PayStatue() == 0) {
+			System.out.println("内部收到");
 		
-		wxPayService.insertPay(param);
-		
-		// ，用websocket连接，发送语音播报，前台自动打印客人小票，如果是在接单页面，则刷新接单页面订单数据
-		Multi_Orders_Tab_Tabtype multi_Orders_Tab_Tabtype = ordersMapper.getOrderWithTNameAndTTNameByO_OutTradeNo(param.getOut_trade_no());
-		// 生成语音内容Json
-		JSONObject wbssJsonObject = new JSONObject();
-		wbssJsonObject.put("type", "1");
-		String voiceString = multi_Orders_Tab_Tabtype.getTT_Name() + "," + multi_Orders_Tab_Tabtype.getT_Name() + "的客人支付" + (Float.valueOf(param.getTotal_fee())/100.00f) + "元";
-		wbssJsonObject.put("voiceText", voiceString);
-		wbssJsonObject.put("O_ID", multi_Orders_Tab_Tabtype.getO_ID());
-		try {
-			oSMOrderingHandler.sendTextMessage(multi_Orders_Tab_Tabtype.getO_MID(), wbssJsonObject.toString());
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			//修改isPayNow，同时设置payStatus,payTime
+			Date payTime = new Date();
+			wxPayService.updatePaied(param.getOut_trade_no(), 0, 1, payTime);
+			
+			wxPayService.insertPay(param);
+			
+			// ，用websocket连接，发送语音播报，前台自动打印客人小票，如果是在接单页面，则刷新接单页面订单数据
+			Multi_Orders_Tab_Tabtype multi_Orders_Tab_Tabtype = ordersMapper.getOrderWithTNameAndTTNameByO_OutTradeNo(param.getOut_trade_no());
+			// 生成语音内容Json
+			JSONObject wbssJsonObject = new JSONObject();
+			wbssJsonObject.put("type", "1");
+			String voiceString = multi_Orders_Tab_Tabtype.getTT_Name() + "," + multi_Orders_Tab_Tabtype.getT_Name() + "的客人支付" + (Float.valueOf(param.getTotal_fee())/100.00f) + "元";
+			wbssJsonObject.put("voiceText", voiceString);
+			wbssJsonObject.put("O_ID", multi_Orders_Tab_Tabtype.getO_ID());
+			try {
+				oSMOrderingHandler.sendTextMessage(multi_Orders_Tab_Tabtype.getO_MID(), wbssJsonObject.toString());
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 		
 		Map<String, String> result = new HashMap<String, String>();

@@ -1,5 +1,7 @@
 package com.gxx.ordering_platform.wxPaySDK;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.slf4j.Logger;
@@ -7,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.gxx.ordering_platform.AppConfig;
 import com.gxx.ordering_platform.wxPaySDK.IWXPayDomain.DomainInfo;
 
 @Component
@@ -22,6 +25,15 @@ public class ServiceWXPayConfig extends WXPayConfig {
 	
 	@Value("${serviceNumber.mchKey}")
 	String service_mchKey;
+	
+	private byte[] certData;
+
+	public ServiceWXPayConfig() throws Exception {
+		try (InputStream inputStream = AppConfig.class.getClassLoader().getResourceAsStream("13028224_wxpay_apiclient_cert.p12");) {
+			this.certData = new byte[10240];
+			inputStream.read(this.certData);
+		}
+	}
 
 	@Override
 	String getAppID() {
@@ -43,8 +55,9 @@ public class ServiceWXPayConfig extends WXPayConfig {
 
 	@Override
 	InputStream getCertStream() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		ByteArrayInputStream certBis = new ByteArrayInputStream(this.certData);
+        return certBis;
 	}
 
 	@Override
