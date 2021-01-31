@@ -632,7 +632,7 @@ public class OSMController {
 		
 		JSONObject metaJsonObject = new JSONObject();
 		metaJsonObject.put("status", 500);
-		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		metaJsonObject.put("msg", "供应商技术错误！请核实系统是否退款后，再谨慎人工退款，防止重复退款，因操作不当造成损失，商家自负!");
 		
 		newJsonObject.put("meta", metaJsonObject);
 		return newJsonObject.toString();

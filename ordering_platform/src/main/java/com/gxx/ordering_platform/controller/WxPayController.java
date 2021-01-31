@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,10 +28,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gxx.ordering_platform.entity.Multi_Orders_Tab_Tabtype;
 import com.gxx.ordering_platform.entity.Orders;
+import com.gxx.ordering_platform.entity.Refund;
 import com.gxx.ordering_platform.entity.WxPayNotifyV0;
 import com.gxx.ordering_platform.entity.WxRefundNotifyV0;
 import com.gxx.ordering_platform.handler.OSMOrderingHandler;
 import com.gxx.ordering_platform.mapper.OrdersMapper;
+import com.gxx.ordering_platform.mapper.RefundMapper;
 import com.gxx.ordering_platform.service.WechatOrderingService;
 import com.gxx.ordering_platform.service.WxPayService;
 import com.gxx.ordering_platform.wxPaySDK.WXPayUtil;
@@ -47,6 +50,9 @@ public class WxPayController {
 	
 	@Autowired
 	OrdersMapper ordersMapper;
+	
+	@Autowired
+	RefundMapper refundMapper;
 	
 	@Value("${serviceNumber.mchKey}")
 	private String mchKey;
@@ -183,15 +189,13 @@ public class WxPayController {
 	@ResponseBody
 	@Transactional
 	public String returnSuccess(HttpServletRequest request, @RequestBody WxRefundNotifyV0 param) {
-		// 防止重复
 		
-		System.out.println("WxRefundNotifyV0: " + param);
 		
 		Map<String, String> result = new HashMap<String, String>();
+		result.put("return_code", "SUCCESS");
 		if ("SUCCESS".equals(param.getReturn_code())) {
-			result.put("return_code", "SUCCESS");
-			result.put("return_msg", "OK");
 			
+			result.put("return_msg", "OK");
 			// 解密
 			String req_info = param.getReq_info();
 			try {
@@ -202,9 +206,30 @@ public class WxPayController {
 				byte[] decoded = cipher.doFinal(decodeReqInfo);
 				String decryptInfo = new String(decoded, "UTF-8");
 				Map<String, String> reqInfoMap = WXPayUtil.xmlToMap(decryptInfo);
+				
+				// 根据refund_id查询退款记录，然后根据记录判断是否处理过，如果处理过，则什么也不做，否则，update退款记录
+				String refund_id = reqInfoMap.get("refund_id");
+				Refund refund = refundMapper.getByRefund_id(refund_id);
+				if (refund.getR_Refund_Status() == null) {
+					// 只有第一次收到通知时，才处理
+					String settlement_total_fee = reqInfoMap.get("settlement_total_fee");
+					String refund_request_source = reqInfoMap.get("refund_request_source");
+					String refund_status = reqInfoMap.get("refund_status");
+					String settlement_refund_fee = reqInfoMap.get("settlement_refund_fee");
+					String success_time = reqInfoMap.get("success_time");
+					String refund_recv_accout =  reqInfoMap.get("refund_recv_accout");
+					String refund_account = reqInfoMap.get("refund_account");
+					
+					refundMapper.updateReturnSuccess(settlement_total_fee, refund_request_source, 
+							refund_status, settlement_refund_fee, success_time, refund_recv_accout, 
+							refund_account, refund.getR_ID());
+					// 当接单时，并且页面停留在当前订单详情页面时，更新退款记录
+				}
+				
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				// 手动回滚
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			}
 		}
 		String successReturn = null;

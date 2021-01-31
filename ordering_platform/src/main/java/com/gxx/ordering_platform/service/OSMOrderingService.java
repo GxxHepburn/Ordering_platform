@@ -27,6 +27,7 @@ import com.gxx.ordering_platform.entity.OrderReturn;
 import com.gxx.ordering_platform.entity.OrderReturnDetail;
 import com.gxx.ordering_platform.entity.Orders;
 import com.gxx.ordering_platform.entity.Pay;
+import com.gxx.ordering_platform.entity.Refund;
 import com.gxx.ordering_platform.entity.WechatUser;
 import com.gxx.ordering_platform.mapper.FoodMapper;
 import com.gxx.ordering_platform.mapper.MerMapper;
@@ -37,6 +38,7 @@ import com.gxx.ordering_platform.mapper.OrderReturnDetailMapper;
 import com.gxx.ordering_platform.mapper.OrderReturnMapper;
 import com.gxx.ordering_platform.mapper.OrdersMapper;
 import com.gxx.ordering_platform.mapper.PayMapper;
+import com.gxx.ordering_platform.mapper.RefundMapper;
 import com.gxx.ordering_platform.mapper.WechatUserMapper;
 import com.gxx.ordering_platform.utils.EncryptionAndDeciphering;
 
@@ -64,6 +66,8 @@ public class OSMOrderingService {
 	@Autowired OrderReturnDetailMapper orderReturnDetailMapper;
 	
 	@Autowired WxPayService wxPayService;
+	
+	@Autowired RefundMapper refundMapper;
 	
 	@Transactional
 	public String getOrderForm(Map<String, Object> map) {
@@ -568,8 +572,8 @@ public class OSMOrderingService {
 			if (onlyReturnNum > 0) {
 				// 更新realNum 和 num
 				orderDetailMapper.updateRealNumAndNumByOD_ID(OD_ID, num, OD_RealNum - onlyReturnNum);
-				// 商家主动退点，说明库存没了，所以将该商品库存设置为0
-				foodMapper.updateStockByFID(0, F_ID);
+				// 商家主动退点，说明库存没了，所以将该商品库存设置为0-------这一条不适用于退款，只适用于仅退点商品
+//				foodMapper.updateStockByFID(0, F_ID);
 				// 插入orderReturnDetail
 				OrderReturnDetail orderReturnDetail = new OrderReturnDetail();
 				orderReturnDetail.setORD_ORID(orderReturn.getOR_ID());
@@ -618,8 +622,18 @@ public class OSMOrderingService {
 		Pay pay = payMapper.getByO_ID(O_ID);
 		String msg = "";
 		int status = 200;
+		// 初始化退款表
+		Refund refund = new Refund();
+		refund.setR_MID(pay.getP_MID());
+		refund.setR_UID(pay.getP_UID());
+		refund.setR_OID(pay.getP_OID());
+		refund.setR_PID(pay.getP_ID());
+		refund.setR_ORID(orderReturn.getOR_ID());
+		
 		if ("线下支付".equals(pay.getP_Trade_Type())) {
 			msg = "退菜成功！本单为线下支付，请尽快人工退款！";
+			// 设置退款
+			refund.setR_Is_OfLine(1);
 		} else {
 			// 向微信支付申请退款,然后后台根据是否成功提交，来显示
 			// 如果成功提交，则该退款信息显示，提交退款成功，请稍后查看退款详情
@@ -634,16 +648,74 @@ public class OSMOrderingService {
 			Map<String, String> resultMap = null;
 			try {
 				resultMap = wxPayService.returnMoneyFromWechat(out_trade_no, out_refund_no, totle_fee, refund_fee);
-				msg = "退菜成功！提交退款成功！";
-			} catch (Exception e) {
-				e.printStackTrace();
-				// 手动回滚,不要回滚,提交失败，仍然要退菜的
-//				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+				System.out.println(resultMap);
+			} catch (Exception exception) {
+				exception.printStackTrace();
 				msg = "退菜成功！提交退款失败，请人工退款！";
+				refund.setR_Is_OfLine(0);
 				status = 201;
+				
+				// 插入退款记录,在returnSuccess中update退款记录
+				try {
+					refundMapper.insert(refund);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					msg = "退菜成功！提交退款失败，请人工退款！插入退款记录失败！请联系管理员！";
+					e.printStackTrace();
+				}
+				
+				JSONObject newJsonObject = new JSONObject();
+				
+				JSONObject metaJsonObject = new JSONObject();
+				metaJsonObject.put("status", status);
+				metaJsonObject.put("msg", msg);
+				
+				newJsonObject.put("meta", metaJsonObject);
+				
+				return newJsonObject.toString();
 			}
-//			System.out.println("resultMap: " + resultMap);
+			
+			if ("FAIL".equals(resultMap.get("return_code"))) {
+				// 提交失败
+				msg = "退菜成功！提交退款失败，请人工退款! 错误原因:" + resultMap.get("err_code_des");
+				refund.setR_Is_OfLine(0);
+				status = 201;
+				
+			} else {
+				msg = "退菜成功！提交退款成功！";
+				
+				refund.setR_Is_OfLine(1);
+				refund.setR_Transaction_Id(resultMap.get("transaction_id"));
+				refund.setR_Out_Trade_No(resultMap.get("out_trade_no"));
+				refund.setR_Out_Refund_No("out_refund_no");
+				refund.setR_Refund_Id(resultMap.get("refund_id"));
+				refund.setR_Refund_Fee(resultMap.get("refund_fee"));
+				refund.setR_Total_Fee(resultMap.get("total_fee"));
+				
+				refund.setR_Nonce_Str(resultMap.get("nonce_str"));
+				refund.setR_Sign(resultMap.get("sign"));
+				refund.setR_Return_Msg(resultMap.get("return_msg"));
+				refund.setR_Mch_Id(resultMap.get("mch_id"));
+				refund.setR_Sub_Mch_Id(resultMap.get("sub_mch_id"));
+				refund.setR_Cash_Fee(resultMap.get("cash_fee"));
+				refund.setR_Coupon_Refund_Fee(resultMap.get("coupon_refund_fee"));
+				refund.setR_Refund_Channel(resultMap.get("refund_channel"));
+				refund.setR_Appid(resultMap.get("appid"));
+				refund.setR_Result_Code(resultMap.get("result_code"));
+				refund.setR_Coupon_Refund_Count(resultMap.get("coupon_refund_count"));
+				refund.setR_Cash_Refund_Fee(resultMap.get("cash_refund_fee"));
+				refund.setR_Return_Code(resultMap.get("return_code"));
+			}
 		}
+		// 插入退款记录,在returnSuccess中update退款记录
+		try {
+			refundMapper.insert(refund);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			msg = msg + "插入退款记录失败!请联系管理员!";
+			e.printStackTrace();
+		}
+
 		JSONObject newJsonObject = new JSONObject();
 		
 		JSONObject metaJsonObject = new JSONObject();
