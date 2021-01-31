@@ -223,7 +223,19 @@ public class WxPayController {
 					refundMapper.updateReturnSuccess(settlement_total_fee, refund_request_source, 
 							refund_status, settlement_refund_fee, success_time, refund_recv_accout, 
 							refund_account, refund.getR_ID());
-					// 当接单时，并且页面停留在当前订单详情页面时，更新退款记录
+					
+					
+					// 当接单时，并且页面停留在当前订单详情页面时，更新退款记录-websocket
+					JSONObject wbssJsonObject = new JSONObject();
+					wbssJsonObject.put("type", "4");
+					wbssJsonObject.put("O_ID", refund.getR_OID());
+					try {
+						oSMOrderingHandler.sendTextMessage(refund.getR_MID(), wbssJsonObject.toString());
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
 				}
 				
 			} catch (Exception e) {
