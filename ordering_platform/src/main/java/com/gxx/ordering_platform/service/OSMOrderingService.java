@@ -15,6 +15,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.gxx.ordering_platform.entity.Mer;
 import com.gxx.ordering_platform.entity.Mmngct;
@@ -614,32 +615,40 @@ public class OSMOrderingService {
 			ordersMapper.updateO_PayStatueByO_ID(O_ID, 2);
 		}
 		// 先判断，是不是在线支付，如果是，则向微信请求，如果不是，则直接返回，提示商家，这是线下支付，请商家人工退款
-		
-		// 向微信支付申请退款,然后后台根据是否成功提交，来显示
-		// 如果成功提交，则该退款信息显示，提交退款成功，请稍后查看退款详情
-		// 如果提交退款失败，则根据具体原因提示商家，退款失败，转为人工退款，需要商家核实之后，自行转账！
-		
-		//准备退款参数
-		String out_refund_no = UUID.randomUUID().toString().replaceAll("-", "");
 		Pay pay = payMapper.getByO_ID(O_ID);
-		String out_trade_no = pay.getP_Out_Trade_No();
-		String totle_fee = pay.getP_Totle_Fee();
-		int refund_fee_int = (int)(nowORTotlePrice*100);
-		String refund_fee = String.valueOf(refund_fee_int);
-		
-		try {
-			wxPayService.returnMoneyFromWechat(out_trade_no, out_refund_no, totle_fee, refund_fee);
-		} catch (Exception e) {
-			// 必须要抛出，否则事务不触发
-			e.printStackTrace();
-			throw new RuntimeException();
+		String msg = "";
+		int status = 200;
+		if ("线下支付".equals(pay.getP_Trade_Type())) {
+			msg = "退菜成功！本单为线下支付，请尽快人工退款！";
+		} else {
+			// 向微信支付申请退款,然后后台根据是否成功提交，来显示
+			// 如果成功提交，则该退款信息显示，提交退款成功，请稍后查看退款详情
+			// 如果提交退款失败，则根据具体原因提示商家，退款失败，转为人工退款，需要商家核实之后，自行转账！
+			
+			//准备退款参数
+			String out_refund_no = UUID.randomUUID().toString().replaceAll("-", "");
+			String out_trade_no = pay.getP_Out_Trade_No();
+			String totle_fee = pay.getP_Totle_Fee();
+			int refund_fee_int = (int)(nowORTotlePrice*100);
+			String refund_fee = String.valueOf(refund_fee_int);
+			Map<String, String> resultMap = null;
+			try {
+				resultMap = wxPayService.returnMoneyFromWechat(out_trade_no, out_refund_no, totle_fee, refund_fee);
+				msg = "退菜成功！提交退款成功！";
+			} catch (Exception e) {
+				e.printStackTrace();
+				// 手动回滚,不要回滚,提交失败，仍然要退菜的
+//				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+				msg = "退菜成功！提交退款失败，请人工退款！";
+				status = 201;
+			}
+//			System.out.println("resultMap: " + resultMap);
 		}
-		
 		JSONObject newJsonObject = new JSONObject();
 		
 		JSONObject metaJsonObject = new JSONObject();
-		metaJsonObject.put("status", 200);
-		metaJsonObject.put("msg", "退款成功!");
+		metaJsonObject.put("status", status);
+		metaJsonObject.put("msg", msg);
 		
 		newJsonObject.put("meta", metaJsonObject);
 		

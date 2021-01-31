@@ -14,13 +14,13 @@ public class MerchantWXPayConfig extends WXPayConfig {
 	final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Value("${wechat.appId}")
-	String appId;
+	private String appId;
 	
 	@Value("${merchantNumber.mchId}")
-	String mchId;
+	private String mchId;
 	
 	@Value("${merchantNumber.mchKey}")
-	String mchKey;
+	private String mchKey;
 	
 	@Override
 	String getAppID() {

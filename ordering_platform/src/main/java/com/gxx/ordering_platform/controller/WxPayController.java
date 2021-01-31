@@ -1,16 +1,21 @@
 package com.gxx.ordering_platform.controller;
 
+import java.security.Security;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gxx.ordering_platform.entity.Multi_Orders_Tab_Tabtype;
 import com.gxx.ordering_platform.entity.Orders;
 import com.gxx.ordering_platform.entity.WxPayNotifyV0;
+import com.gxx.ordering_platform.entity.WxRefundNotifyV0;
 import com.gxx.ordering_platform.handler.OSMOrderingHandler;
 import com.gxx.ordering_platform.mapper.OrdersMapper;
 import com.gxx.ordering_platform.service.WechatOrderingService;
@@ -41,6 +47,11 @@ public class WxPayController {
 	
 	@Autowired
 	OrdersMapper ordersMapper;
+	
+	@Value("${serviceNumber.mchKey}")
+	private String mchKey;
+	
+	private 
 	
 	final Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -153,12 +164,10 @@ public class WxPayController {
 			result.put("return_code", "SUCCESS");
 			result.put("return_msg", "OK");
 		}
-//		logger.info(String.valueOf(param));
 		String successReturn = null;
 		try {
 			successReturn =  WXPayUtil.mapToXml(result);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return successReturn;
@@ -168,5 +177,42 @@ public class WxPayController {
 	@ResponseBody
 	public void fail(@PathVariable String searchId) {
 		wxPayService.updateIsPay(searchId, 0);
+	}
+	
+	@RequestMapping(value = "/returnSuccess", produces = MediaType.TEXT_PLAIN_VALUE)
+	@ResponseBody
+	@Transactional
+	public String returnSuccess(HttpServletRequest request, @RequestBody WxRefundNotifyV0 param) {
+		// 防止重复
+		
+		System.out.println("WxRefundNotifyV0: " + param);
+		
+		Map<String, String> result = new HashMap<String, String>();
+		if ("SUCCESS".equals(param.getReturn_code())) {
+			result.put("return_code", "SUCCESS");
+			result.put("return_msg", "OK");
+			
+			// 解密
+			String req_info = param.getReq_info();
+			try {
+				String keyMD5 = WXPayUtil.MD5(mchKey).toLowerCase();
+				byte[] decodeReqInfo = Base64.getDecoder().decode(req_info);
+				Cipher cipher = Cipher.getInstance("AES/ECB/PKCS7Padding", "BC");
+				cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(keyMD5.getBytes(), "AES"));
+				byte[] decoded = cipher.doFinal(decodeReqInfo);
+				String decryptInfo = new String(decoded, "UTF-8");
+				Map<String, String> reqInfoMap = WXPayUtil.xmlToMap(decryptInfo);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		String successReturn = null;
+		try {
+			successReturn =  WXPayUtil.mapToXml(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return successReturn;
 	}
 }

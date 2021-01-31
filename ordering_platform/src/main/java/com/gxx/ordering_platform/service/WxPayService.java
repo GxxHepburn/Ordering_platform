@@ -34,30 +34,30 @@ public class WxPayService {
 	final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Value("${merchantNumber.body}")
-	String body;
+	private String body;
 	
 	@Value("${wechat.appId}")
-	String appId;
+	private String appId;
 	
 	@Value("${merchantNumber.mchKey}")
-	String mchKey;
+	private String mchKey;
 	
 	//---------------------------------------------------
 	
 	@Value("${serviceNumber.appid}")
-	String service_appid;
+	private String service_appid;
 	
 	@Value("${serviceNumber.mch_id}")
-	String service_mch_id;
+	private String service_mch_id;
 	
 	@Value("${serviceNumber.sub_appid}")
-	String service_sub_appid;
+	private String service_sub_appid;
 	
 	@Value("${serviceNumber.sub_mch_id}")
-	String service_sub_mch_id;
+	private String service_sub_mch_id;
 	
 	@Value("${serviceNumber.mchKey}")
-	String ServiceMchKey;
+	private String ServiceMchKey;
 	
 	
 	@Autowired
@@ -181,43 +181,24 @@ public class WxPayService {
 	}
 	
 	// 商家客户端退款
-	public void returnMoneyFromWechat(String out_trade_no, String out_refund_no, String totle_fee, String refund_fee) throws Exception {
+	public Map<String, String> returnMoneyFromWechat(String out_trade_no, String out_refund_no, String totle_fee, String refund_fee) throws Exception {
 		Map<String, String> paraMap = new HashMap<String, String>();
 		paraMap.put("sub_appid", this.service_sub_appid);
 		paraMap.put("sub_mch_id", this.service_sub_mch_id);
-		System.out.println("out_trade_no： " + out_trade_no);
 		paraMap.put("out_trade_no", out_trade_no);
 		paraMap.put("out_refund_no", out_refund_no);
-//		paraMap.put("totle_fee", totle_fee);
+//		paraMap.put("total_fee", totle_fee);
 //		paraMap.put("refund_fee", refund_fee);
-		paraMap.put("totle_fee", "1");
+		paraMap.put("total_fee", "1");
 		paraMap.put("refund_fee", "1");
 		
 		final String SUCCESS_NOTIFY = "https://www.donghuastar.com/wxpay/retturnSuccess";
 		boolean useSandbox = false;
 		WXPay wxPay = new WXPay(serviceWXPayConfig , SUCCESS_NOTIFY, false, useSandbox);
 		
-		Map<String, String> resultap = wxPay.refund(wxPay.fillRequestData(paraMap), 15000, 15000);
+		Map<String, String> resultap = wxPay.refund(paraMap, 15000, 15000);
 		
-		System.out.println(resultap);
-		throw new RuntimeException();
-		
-		
-//		Map<String, String> refundMap = new HashMap<String, String>();
-//		refundMap.put("appId", this.appId);
-//		
-//		refundMap.put("timeStamp", WXPayUtil.getCurrentTimestamp() + "");
-		
-//		refundMap.put("nonceStr", WXPayUtil.generateNonceStr());
-//		refundMap.put("signType", WXPayConstants.HMACSHA256);
-		
-////		refundMap.put("package", "prepay_id=" + prePayId);
-//		
-//		String paySign = null;
-//		paySign = WXPayUtil.generateSignature(refundMap, this.ServiceMchKey, WXPayConstants.SignType.HMACSHA256);
-//		refundMap.put("paySign", paySign);
-//		
-//		return refundMap;
+		return resultap;
 	}
 
 	@Transactional

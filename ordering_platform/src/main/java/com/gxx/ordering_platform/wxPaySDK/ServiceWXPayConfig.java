@@ -18,13 +18,13 @@ public class ServiceWXPayConfig extends WXPayConfig {
 	final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Value("${serviceNumber.appid}")
-	String service_appid;
+	private String service_appid;
 	
 	@Value("${serviceNumber.mch_id}")
-	String service_mch_id;
+	private String service_mch_id;
 	
 	@Value("${serviceNumber.mchKey}")
-	String service_mchKey;
+	private String service_mchKey;
 	
 	private byte[] certData;
 

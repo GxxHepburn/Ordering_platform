@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.security.Security;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,6 +34,7 @@ import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
@@ -108,6 +110,11 @@ public class AppConfig {
 		ctx.setResources(resources);
 		tomcat.start();
 		tomcat.getServer().await();
+	}
+	
+	{
+		// 全局注册，只需一次，所以移动到appconfig中
+		Security.addProvider(new BouncyCastleProvider());
 	}
 	
 	private static void getSslConnector(Connector connector) throws IOException {
