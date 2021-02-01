@@ -14,4 +14,6 @@ public class Mmngct {
 	private String MMA_LastLoginTime;
 	private String MMA_Phone;
 	private String MMA_Email;
+	
+	private String MMA_Trade_Password;
 }

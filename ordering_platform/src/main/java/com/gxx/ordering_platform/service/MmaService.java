@@ -19,6 +19,7 @@ import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.IAcsClient;
 import com.aliyuncs.http.MethodType;
 import com.aliyuncs.profile.DefaultProfile;
+import com.gxx.ordering_platform.entity.Mer;
 import com.gxx.ordering_platform.entity.Mmngct;
 import com.gxx.ordering_platform.mapper.MmaMapper;
 import com.gxx.ordering_platform.utils.JWTUtils;
@@ -207,6 +208,34 @@ public class MmaService {
 		metaJsonObject.put("status", 200);
 		metaJsonObject.put("msg", "验证成功!");
 		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
+
+	@Transactional
+	public String checkTradePassword(Map<String, Object> map) {
+		
+		String tradePas = map.get("tradePas").toString();
+		String mma_username = map.get("mmngctUserName").toString();
+		Mmngct mmngct = mmaMapper.getByUsername(mma_username);
+		
+		
+		String msg = "";
+		int status = 200;
+		if (tradePas.equals(mmngct.getMMA_Trade_Password())) {
+			// 密码正确
+			msg = "OK";
+		} else {
+			// 密码错误
+			msg = "交易密码错误!";
+			status = 100;
+		}
+		
+		JSONObject newJsonObject = new JSONObject();
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", status);
+		metaJsonObject.put("msg", msg);
+		newJsonObject.put("meta", metaJsonObject);
+		
 		return newJsonObject.toString();
 	}
 }
