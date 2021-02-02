@@ -613,11 +613,15 @@ public class OSMOrderingService {
 		}
 		ordersMapper.updateTotlePrice(O_ID, nowOrderTotlePrice);
 		// 检查总订单金额是不是为0如果为0,则将订单状态改为未完成
-		if (nowOrderTotlePrice == 0) {
-			ordersMapper.updateO_PayStatueByO_ID(O_ID, 3);
-		} else {
-			ordersMapper.updateO_PayStatueByO_ID(O_ID, 2);
-		}
+//		if (nowOrderTotlePrice == 0) {
+//			ordersMapper.updateO_PayStatueByO_ID(O_ID, 3);
+//		} else {
+//			ordersMapper.updateO_PayStatueByO_ID(O_ID, 2);
+//		}
+		
+		// 还是应该将其列入退款项目中去
+		ordersMapper.updateO_PayStatueByO_ID(O_ID, 2);
+		
 		// 先判断，是不是在线支付，如果是，则向微信请求，如果不是，则直接返回，提示商家，这是线下支付，请商家人工退款
 		Pay pay = payMapper.getByO_ID(O_ID);
 		String msg = "";
