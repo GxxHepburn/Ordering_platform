@@ -35,6 +35,7 @@ import com.gxx.ordering_platform.service.OSMMerService;
 import com.gxx.ordering_platform.service.OSMOrderDetailService;
 import com.gxx.ordering_platform.service.OSMOrderingService;
 import com.gxx.ordering_platform.service.OSMPayService;
+import com.gxx.ordering_platform.service.OSMRefundService;
 import com.gxx.ordering_platform.service.OSMTabService;
 import com.gxx.ordering_platform.service.OSMTabTypeService;
 import com.gxx.ordering_platform.service.OSMUsersService;
@@ -92,6 +93,8 @@ public class OSMController {
 	@Autowired OSMWechatUserService oSMWechatUserService;
 	
 	@Autowired OSMPayService oSMPayService;
+	
+	@Autowired OSMRefundService oSMRefundService;
 	
 	@PostMapping("/login")
 	@ResponseBody
@@ -663,6 +666,26 @@ public class OSMController {
 	public String checkTradePassword(@RequestBody Map<String, Object> map) {
 		try {
 			return mmaService.checkTradePassword(map);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
+	
+	@PostMapping(value = "/getRefundFormList", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String getRefundFormList(@RequestBody Map<String, Object> map) {
+		try {
+			return oSMRefundService.getRefundFormList(map);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -38,6 +38,8 @@ public class Refund {
 	private String R_Success_Time;
 	private String R_Settlement_Total_Fee;
 	private String R_Refund_Request_Source;
+	
+	
 	private String R_Refund_Status;
 	private String R_Settlement_Refund_Fee;
 	private String R_Refund_Recv_Account;

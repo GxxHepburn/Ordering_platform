@@ -139,9 +139,7 @@ public class WxPayController {
 //		logger.info("return_code: " + param.getReturn_code());
 		// 先判断是否处理过，如果处理过，就跳过
 		Orders orders = ordersMapper.getOrderByO_OutTradeNo(param.getOut_trade_no());
-		System.out.println("收到");
 		if (orders.getO_PayStatue() == 0) {
-			System.out.println("内部收到");
 		
 			//修改isPayNow，同时设置payStatus,payTime
 			Date payTime = new Date();

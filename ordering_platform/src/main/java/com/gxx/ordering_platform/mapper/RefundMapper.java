@@ -1,5 +1,7 @@
 package com.gxx.ordering_platform.mapper;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -45,4 +47,7 @@ public interface RefundMapper {
 			@Param("refund_recv_accout") String refund_recv_accout, 
 			@Param("refund_account") String refund_account, 
 			@Param("r_id") int r_id);
+	
+	@Select("SELECT * FROM refund WHERE R_OID = #{o_id} ORDER BY R_Submit_Time")
+	List<Refund> getByO_IdOrderByR_Submit_Time(@Param("o_id") int o_id);
 }
