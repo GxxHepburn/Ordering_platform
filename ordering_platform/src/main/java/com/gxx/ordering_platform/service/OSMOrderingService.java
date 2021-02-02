@@ -1,6 +1,7 @@
 package com.gxx.ordering_platform.service;
 
 import java.security.GeneralSecurityException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -633,12 +634,56 @@ public class OSMOrderingService {
 		refund.setR_OID(pay.getP_OID());
 		refund.setR_PID(pay.getP_ID());
 		refund.setR_ORID(orderReturn.getOR_ID());
+		refund.setR_Submit_Time(new Date().toString());
 		
 		if ("线下支付".equals(pay.getP_Trade_Type())) {
 			msg = "退菜成功！本单为线下支付，请尽快人工退款！";
 			// 设置退款
-			refund.setR_Is_OfLine(1);
+			refund.setR_Is_OfLine(0);
 		} else {
+			// 根据支付时间，确定能不能退款
+			// 格式化P_Time_End时间
+			SimpleDateFormat simpleDateFormatParse = new SimpleDateFormat("yyyyMMddHHmmss");
+			Date P_Time_End_Date = null;
+			try {
+				P_Time_End_Date = simpleDateFormatParse.parse(pay.getP_Time_End());
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			Date nowDate = new Date();
+			
+			long timeDiff = nowDate.getTime() - P_Time_End_Date.getTime();
+			int timeHour = 6;
+			int minutesOneHour = 60;
+			int secondesOneHour = 60;
+			int millisecondedOneSecond = 1000;
+			
+			if (timeDiff > timeHour*minutesOneHour*secondesOneHour*millisecondedOneSecond) {
+				// 超过系统允许退款最大时间6小时
+				msg = "退菜成功！本单超过系统允许退款最大时间6小时，请人工退款！";
+				// 设置退款
+				refund.setR_Is_OfLine(0);
+				
+				// 插入退款记录,在returnSuccess中update退款记录
+				try {
+					refundMapper.insert(refund);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					msg = "退菜成功！本单超过系统允许退款最大时间6小时，请人工退款！插入退款记录失败！请联系管理员！";
+					e.printStackTrace();
+				}
+				
+				JSONObject newJsonObject = new JSONObject();
+				
+				JSONObject metaJsonObject = new JSONObject();
+				metaJsonObject.put("status", status);
+				metaJsonObject.put("msg", msg);
+				
+				newJsonObject.put("meta", metaJsonObject);
+				
+				return newJsonObject.toString();		
+			}
 			// 向微信支付申请退款,然后后台根据是否成功提交，来显示
 			// 如果成功提交，则该退款信息显示，提交退款成功，请稍后查看退款详情
 			// 如果提交退款失败，则根据具体原因提示商家，退款失败，转为人工退款，需要商家核实之后，自行转账！
