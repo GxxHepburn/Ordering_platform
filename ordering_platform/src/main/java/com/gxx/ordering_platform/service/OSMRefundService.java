@@ -1,10 +1,13 @@
 package com.gxx.ordering_platform.service;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,6 +28,7 @@ public class OSMRefundService {
 		List<Refund> refunds = refundMapper.getByO_IdOrderByR_Submit_Time(O_ID);
 		
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat parseDate = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.US);
 		
 		
 		JSONObject newJsonObject = new JSONObject();
@@ -54,7 +58,16 @@ public class OSMRefundService {
 			refundItemJsonObject.put("R_Refund_Id", refund.getR_Refund_Id());
 			refundItemJsonObject.put("R_Refund_Fee", refund.getR_Refund_Fee());
 			refundItemJsonObject.put("R_Total_Fee", refund.getR_Total_Fee());
-			refundItemJsonObject.put("R_Submit_Time", refund.getR_Submit_Time());
+			try {
+				// 该字段如果为空，前端也自动为空
+				refundItemJsonObject.put("R_Submit_Time", format.format(parseDate.parse(refund.getR_Submit_Time())));
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			refundItemJsonObject.put("R_Return_Msg", refund.getR_Return_Msg());
 			refundItemJsonObject.put("R_Result_Code", refund.getR_Result_Code());
 			refundItemJsonObject.put("R_Return_Code", refund.getR_Return_Code());

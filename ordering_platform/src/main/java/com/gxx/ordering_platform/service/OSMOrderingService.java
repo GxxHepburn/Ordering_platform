@@ -697,7 +697,6 @@ public class OSMOrderingService {
 			Map<String, String> resultMap = null;
 			try {
 				resultMap = wxPayService.returnMoneyFromWechat(out_trade_no, out_refund_no, totle_fee, refund_fee);
-				System.out.println(resultMap);
 			} catch (Exception exception) {
 				exception.printStackTrace();
 				msg = "退菜成功！提交退款失败，请人工退款！";
@@ -736,7 +735,7 @@ public class OSMOrderingService {
 				refund.setR_Is_OfLine(1);
 				refund.setR_Transaction_Id(resultMap.get("transaction_id"));
 				refund.setR_Out_Trade_No(resultMap.get("out_trade_no"));
-				refund.setR_Out_Refund_No("out_refund_no");
+				refund.setR_Out_Refund_No(resultMap.get("out_refund_no"));
 				refund.setR_Refund_Id(resultMap.get("refund_id"));
 				refund.setR_Refund_Fee(resultMap.get("refund_fee"));
 				refund.setR_Total_Fee(resultMap.get("total_fee"));
