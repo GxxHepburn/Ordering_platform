@@ -85,4 +85,13 @@ public class OSMRefundService {
 		
 		return newJsonObject.toString();
 	}
+	
+	@Transactional
+	public String refundQuery (Map<String, Object> map) {
+		int R_ID = Integer.valueOf(map.get("R_ID").toString());
+		Refund refund = refundMapper.getByR_ID(R_ID);
+		
+		
+		return "";
+	}
 }

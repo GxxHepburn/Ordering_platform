@@ -29,7 +29,7 @@ public interface RefundMapper {
 	void insert(@Param("refund") Refund refund);
 	
 	@Select("SELECT * FROM refund WHERE R_Refund_Id = #{refund_id}")
-	Refund getByRefund_id(@Param("refund_id") String refdund_id);
+	Refund getByRefund_id(@Param("refund_id") String refund_id);
 	
 	@Update("UPDATE refund SET R_Settlement_Total_Fee = #{settlement_total_fee}, "
 			+ "R_Refund_Request_Source = #{refund_request_source}, "
@@ -50,4 +50,7 @@ public interface RefundMapper {
 	
 	@Select("SELECT * FROM refund WHERE R_OID = #{o_id} ORDER BY R_Submit_Time")
 	List<Refund> getByO_IdOrderByR_Submit_Time(@Param("o_id") int o_id);
+	
+	@Select("SELECT * FROM refund WHERE R_ID = #{r_id}")
+	Refund getByR_ID(@Param("r_id") int r_id);
 }
