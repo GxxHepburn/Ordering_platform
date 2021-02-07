@@ -2,6 +2,7 @@ package com.gxx.ordering_platform.service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -43,10 +44,56 @@ public class OSMRefundService {
 		JSONObject dataJsonObject = new JSONObject();
 		JSONArray refundsJsonArray = new JSONArray();
 		for (int i = 0; i < refunds.size(); i++) {
+
+			Refund refund = refunds.get(i);
+			// 判断是否需要查询
+			if (refund.getR_Is_OfLine() == 1 && refund.getR_Refund_Status() == null) {
+				// 查询同时更新到数据库中
+				long R_Submit_Time = 0l;
+				try {
+					R_Submit_Time = parseDate.parse(refund.getR_Submit_Time()).getTime();
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				int hours = 72;
+				int secondsOfHour = 60 * 60;
+				int millisOfSeconde = 1000;
+				/*hours * secondsOfHour * millisOfSeconde*/
+				if (R_Submit_Time + hours * secondsOfHour * millisOfSeconde < new Date().getTime()) {
+					Map<String, String> resultap = null;
+					try {
+						resultap = wxPayService.refundQuery(refund);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					// 更新数据库
+					String settlement_total_fee = resultap.get("settlement_total_fee");
+					String refund_request_source = resultap.get("refund_request_source");
+					String refund_status = resultap.get("refund_status_0");
+					String settlement_refund_fee = resultap.get("settlement_refund_fee");
+					String success_time = resultap.get("refund_success_time_0");
+					String refund_recv_accout =  resultap.get("refund_recv_accout_0");
+					String refund_account = resultap.get("refund_account_0");
+					
+					refundMapper.updateReturnSuccess(settlement_total_fee, refund_request_source, 
+							refund_status, settlement_refund_fee, success_time, refund_recv_accout, 
+							refund_account, refund.getR_ID());
+					// 替换refund
+					refund.setR_Settlement_Total_Fee(settlement_total_fee);
+					refund.setR_Refund_Request_Source(refund_request_source);
+					refund.setR_Refund_Status(refund_status);
+					refund.setR_Settlement_Refund_Fee(settlement_refund_fee);
+					refund.setR_Success_Time(success_time);
+					refund.setR_Refund_Recv_Account(refund_recv_accout);
+					refund.setR_Refund_Account(refund_account);
+				}
+			}
+			
 			JSONObject refundItemJsonObject = new JSONObject();
 			
 			// mybatis 对于字段为空的string映射为字符串"null"
-			Refund refund = refunds.get(i);
 			refundItemJsonObject.put("R_ID", refund.getR_ID());
 			refundItemJsonObject.put("R_MID", refund.getR_MID());
 			refundItemJsonObject.put("R_UID", refund.getR_UID());
