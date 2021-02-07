@@ -21,6 +21,9 @@ public class OSMRefundService {
 	
 	@Autowired 
 	RefundMapper refundMapper;
+	
+	@Autowired
+	WxPayService wxPayService;
 
 	@Transactional
 	public String getRefundFormList (Map<String, Object> map) {
@@ -91,7 +94,38 @@ public class OSMRefundService {
 		int R_ID = Integer.valueOf(map.get("R_ID").toString());
 		Refund refund = refundMapper.getByR_ID(R_ID);
 		
+		// 先判断是否需要查询
+		if (refund.getR_Refund_Status() == null) {
+			Map<String, String> resultap = null;
+			try {
+				resultap = wxPayService.refundQuery(refund);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				throw new RuntimeException();
+			}
+			String settlement_total_fee = resultap.get("settlement_total_fee");
+			String refund_request_source = resultap.get("refund_request_source");
+			String refund_status = resultap.get("refund_status_0");
+			String settlement_refund_fee = resultap.get("settlement_refund_fee");
+			String success_time = resultap.get("refund_success_time_0");
+			String refund_recv_accout =  resultap.get("refund_recv_accout_0");
+			String refund_account = resultap.get("refund_account_0");
+			
+			refundMapper.updateReturnSuccess(settlement_total_fee, refund_request_source, 
+					refund_status, settlement_refund_fee, success_time, refund_recv_accout, 
+					refund_account, refund.getR_ID());
+		}
 		
-		return "";
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "查询退款到账成功");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
 	}
 }

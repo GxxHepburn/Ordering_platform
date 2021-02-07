@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.gxx.ordering_platform.entity.Orders;
 import com.gxx.ordering_platform.entity.Pay;
+import com.gxx.ordering_platform.entity.Refund;
 import com.gxx.ordering_platform.entity.WxPayNotifyV0;
 import com.gxx.ordering_platform.mapper.OrdersMapper;
 import com.gxx.ordering_platform.mapper.PayMapper;
@@ -200,7 +201,17 @@ public class WxPayService {
 		
 		return resultap;
 	}
-
+	// 退款查询
+	public Map<String, String> refundQuery (Refund refund) throws Exception {
+		Map<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("refund_id", refund.getR_Refund_Id());
+		paraMap.put("sub_mch_id", this.service_sub_mch_id);
+		boolean useSandbox = false;
+		WXPay wxPay = new WXPay(serviceWXPayConfig, false, useSandbox);
+		Map<String, String> resultap = wxPay.refundQuery(paraMap, 15000, 15000);
+		return resultap;
+	}
+	
 	@Transactional
 	public void insertPay(WxPayNotifyV0 param) {
 		String O_OutTrade_No= param.getOut_trade_no();

@@ -613,12 +613,7 @@ public class OSMOrderingService {
 			nowOrderTotlePrice += orderDetail.getOD_RealPrice() * orderDetail.getOD_RealNum();
 		}
 		ordersMapper.updateTotlePrice(O_ID, nowOrderTotlePrice);
-		// 检查总订单金额是不是为0如果为0,则将订单状态改为未完成
-//		if (nowOrderTotlePrice == 0) {
-//			ordersMapper.updateO_PayStatueByO_ID(O_ID, 3);
-//		} else {
-//			ordersMapper.updateO_PayStatueByO_ID(O_ID, 2);
-//		}
+		
 		
 		// 还是应该将其列入退款项目中去
 		ordersMapper.updateO_PayStatueByO_ID(O_ID, 2);
