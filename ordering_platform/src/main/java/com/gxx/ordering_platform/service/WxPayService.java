@@ -256,7 +256,23 @@ public class WxPayService {
 		
 		System.out.println("searchId: " + searchId);
 		// 向数据库插入一个支付记录，包含P_MID, P_OID, P_UID, P_Out_Trade_No, P_Submit_Time
+		Orders orders = ordersMapper.getOrdersByUniqSearchID(searchId);
+		int O_ID = orders.getO_ID();
+		int O_MID = orders.getO_MID();
+		int O_UID = orders.getO_UID();
+		String O_OutTradeNo = orders.getO_OutTradeNo();
+		Date nowDate = new Date();
+		String nowString = nowDate.toString();
 		
-		return "";
+		payMapper.insertClientPay();
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "发送支付信号成功");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
 	}
 }

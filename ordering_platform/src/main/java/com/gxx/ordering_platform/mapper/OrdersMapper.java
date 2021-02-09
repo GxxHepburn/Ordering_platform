@@ -151,4 +151,7 @@ public interface OrdersMapper {
 	
 	@Select("SELECT * FROM orders WHERE O_ID = #{o_id}")
 	Orders getordersByO_ID(@Param("o_id") int o_id);
+	
+	@Select("SELECT * FROM orders WHERE O_UniqSearchID = #{searchId}")
+	Orders getOrdersByUniqSearchID(@Param("searchId") String searchId);
 }
