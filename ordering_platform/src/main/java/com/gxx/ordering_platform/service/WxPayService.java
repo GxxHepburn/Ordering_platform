@@ -250,4 +250,13 @@ public class WxPayService {
 		
 		payMapper.insert(pay);
 	}
+	
+	@Transactional
+	public String clientPay (String searchId) {
+		
+		System.out.println("searchId: " + searchId);
+		// 向数据库插入一个支付记录，包含P_MID, P_OID, P_UID, P_Out_Trade_No, P_Submit_Time
+		
+		return "";
+	}
 }
