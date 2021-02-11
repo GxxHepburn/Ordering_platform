@@ -264,7 +264,7 @@ public class WxPayService {
 		Date nowDate = new Date();
 		String nowString = nowDate.toString();
 		
-		payMapper.insertClientPay();
+		payMapper.insertClientPay(O_ID, O_MID, O_UID, O_OutTradeNo, nowString);
 		
 		JSONObject newJsonObject = new JSONObject();
 		

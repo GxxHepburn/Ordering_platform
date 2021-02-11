@@ -131,7 +131,7 @@ public class WxPayController {
 	OSMOrderingHandler oSMOrderingHandler;
 	
 	// 微信会发很多次success通知
-	@RequestMapping(value = "/success", produces = MediaType.TEXT_PLAIN_VALUE)
+//	@RequestMapping(value = "/success", produces = MediaType.TEXT_PLAIN_VALUE)
 	@ResponseBody
 	@Transactional
 	public String success(HttpServletRequest request, @RequestBody WxPayNotifyV0 param) {
