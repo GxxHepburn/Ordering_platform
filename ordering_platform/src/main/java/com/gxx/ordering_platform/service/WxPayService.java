@@ -254,7 +254,7 @@ public class WxPayService {
 	@Transactional
 	public String clientPay (String searchId) {
 		
-		System.out.println("searchId: " + searchId);
+		System.out.println("===============================================searchId: " + searchId);
 		// 向数据库插入一个支付记录，包含P_MID, P_OID, P_UID, P_Out_Trade_No, P_Submit_Time
 		Orders orders = ordersMapper.getOrdersByUniqSearchID(searchId);
 		int O_ID = orders.getO_ID();

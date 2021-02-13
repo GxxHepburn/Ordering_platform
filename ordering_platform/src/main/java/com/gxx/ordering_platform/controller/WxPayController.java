@@ -254,6 +254,7 @@ public class WxPayController {
 	@RequestMapping(value = "/clientPay/{searchId}")
 	@ResponseBody
 	public String clientPay(@PathVariable String searchId) {
+		System.out.println("-----------------------------------searchId: " + searchId);
 		try {
 			return wxPayService.clientPay(searchId);
 		} catch (Exception e) {
