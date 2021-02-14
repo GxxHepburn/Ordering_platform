@@ -718,7 +718,7 @@ public class OSMOrderingService {
 				return newJsonObject.toString();
 			}
 			
-			if ("FAIL".equals(resultMap.get("return_code"))) {
+			if ("FAIL".equals(resultMap.get("result_code"))) {
 				// 提交失败
 				msg = "退菜成功！提交退款失败，请人工退款! 错误原因:" + resultMap.get("err_code_des");
 				refund.setR_Is_OfLine(0);

@@ -152,7 +152,7 @@ public class WxPayService {
 		paraMap.put("body", "商铺名称-消费");
 		paraMap.put("out_trade_no", out_trade_no);
 		paraMap.put("spbill_create_ip", ipAddress);
-		paraMap.put("total_fee", "1"/*total_fee*/);
+		paraMap.put("total_fee", "2"/*total_fee*/);
 		paraMap.put("trade_type", "JSAPI");
 		paraMap.put("sub_appid", this.service_sub_appid);
 		paraMap.put("sub_mch_id", this.service_sub_mch_id);
@@ -189,7 +189,7 @@ public class WxPayService {
 		paraMap.put("out_refund_no", out_refund_no);
 //		paraMap.put("total_fee", totle_fee);
 //		paraMap.put("refund_fee", refund_fee);
-		paraMap.put("total_fee", "1");
+		paraMap.put("total_fee", "2");
 		paraMap.put("refund_fee", "1");
 		
 		final String SUCCESS_NOTIFY = "https://www.donghuastar.com/wxpay/retturnSuccess";
