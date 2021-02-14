@@ -26,9 +26,4 @@ public interface PayMapper {
 	@Select("SELECT * FROM pay WHERE P_OID = #{o_id}")
 	Pay getByO_ID(@Param("o_id") int o_id);
 	
-	
-	@Insert("INSERT INTO pay (P_OID, P_MID, P_UID, P_Out_Trade_No, P_Submit_Time) "
-			+ "VALUES (#{o_id}, #{o_mid}, #{o_uid}, #{o_outTradeNo}, #{o_submitTime})")
-	void insertClientPay(@Param("o_id") int o_id, @Param("o_mid") int o_mid, @Param("o_uid") int o_uid, 
-			@Param("o_outTradeNo") String o_outTradeNo, @Param("o_submitTime") String o_submitTime);
 }
