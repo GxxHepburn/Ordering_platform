@@ -159,4 +159,19 @@ public interface OrdersMapper {
 	
 	@Select("SELECT * FROM orders WHERE O_UniqSearchID = #{searchId}")
 	Orders getOrdersByUniqSearchID(@Param("searchId") String searchId);
+	
+	
+	@Select("SELECT O_ID, O_MID, O_UID, O_TID, O_TotlePrice, O_PayMethod, O_PayStatue, O_OrderingTime, O_PayTime, "
+			+ "O_OutTradeNo, O_Remarks, O_TotleNum, O_UniqSearchID, O_isPayNow, O_ReturnNum, O_NumberOfDiners, T_Name, TT_Name FROM "
+			+ "orders left join tab on tab.T_ID = orders.O_TID left join tabtype on tabtype.TT_ID = tab.T_TTID "
+			+ "WHERE O_MID = #{m_id} "
+			+ "AND O_OrderingTime >= #{lastDate} "
+			+ "ORDER BY O_OrderingTime DESC "
+			+ "limit #{limitStart}, #{pagesizeInt}")
+	List<Multi_Orders_Tab_Tabtype> getLastOrdersByMIDDESC(@Param("m_id") int m_id, @Param("lastDate") Date lastDate,
+			@Param("limitStart") int limitStart, @Param("pagesizeInt") int pagesizeInt);
+	
+	@Select("SELECT COUNT(*) FROM orders left join tab on tab.T_ID = orders.O_TID left join tabtype on tabtype.TT_ID = tab.T_TTID "
+			+ "WHERE O_MID = #{m_id} AND O_OrderingTime >= #{lastDate}")
+	int getLastOrdersTotal(@Param("m_id") int m_id, @Param("lastDate") Date lastDate);
 }
