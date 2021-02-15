@@ -810,7 +810,6 @@ public class OSMOrderingService {
 		return newJsonObject.toString();
 	}
 
-
 	@Transactional
 	public String getLastOrderFormList(Map<String, Object> map) {
 		
