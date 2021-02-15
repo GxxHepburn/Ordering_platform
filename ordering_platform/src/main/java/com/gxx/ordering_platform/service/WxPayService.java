@@ -16,10 +16,12 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gxx.ordering_platform.entity.Mer;
 import com.gxx.ordering_platform.entity.Orders;
 import com.gxx.ordering_platform.entity.Pay;
 import com.gxx.ordering_platform.entity.Refund;
 import com.gxx.ordering_platform.entity.WxPayNotifyV0;
+import com.gxx.ordering_platform.mapper.MerMapper;
 import com.gxx.ordering_platform.mapper.OrdersMapper;
 import com.gxx.ordering_platform.mapper.PayMapper;
 import com.gxx.ordering_platform.wxPaySDK.MerchantWXPayConfig;
@@ -73,6 +75,9 @@ public class WxPayService {
 	
 	@Autowired
 	PayMapper payMapper;
+	
+	@Autowired
+	MerMapper merMapper;
 	
 	public void updateIsPay(String searchId, int isPay) {
 		ordersMapper.updateIsPay(searchId, isPay);
@@ -139,7 +144,10 @@ public class WxPayService {
 		int total_fee_int = (int)(total_fee_float*100);
 		String total_fee = String.valueOf(total_fee_int);
 		//先检查orders里这个字段是否有数据，如果有，说明支付过，失败了。继续使用这个out_trade_no进行支付
-		String out_trade_no = ordersMapper.selectBySearchId(searchId).getO_OutTradeNo();
+		Orders orders = ordersMapper.selectBySearchId(searchId);
+		String out_trade_no = orders.getO_OutTradeNo();
+		Mer mer = merMapper.getMerByMID(orders.getO_MID());
+		String M_Name = mer.getM_Name();
 		if (out_trade_no == null) {
 			out_trade_no = UUID.randomUUID().toString().replaceAll("-", "");
 		}
@@ -149,7 +157,7 @@ public class WxPayService {
 		
 		Map<String, String> paraMap = new HashMap<String, String>();
 		paraMap.put("sub_openid", openId);
-		paraMap.put("body", "商铺名称-消费");
+		paraMap.put("body", M_Name + "-消费");
 		paraMap.put("out_trade_no", out_trade_no);
 		paraMap.put("spbill_create_ip", ipAddress);
 		paraMap.put("total_fee", "2"/*total_fee*/);
