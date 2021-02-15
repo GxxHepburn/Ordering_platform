@@ -2,6 +2,7 @@ package com.gxx.ordering_platform;
 
 import java.security.Security;
 import java.util.Base64;
+import java.util.Date;
 import java.util.Map;
 
 import javax.crypto.Cipher;
@@ -15,6 +16,6 @@ public class Test {
 
 	
 	public static void main(String[] args) throws Exception {
-		
+		System.out.println(new Date());
 	}
 }

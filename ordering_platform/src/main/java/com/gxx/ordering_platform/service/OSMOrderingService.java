@@ -4,7 +4,9 @@ import java.security.GeneralSecurityException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,9 +113,15 @@ public class OSMOrderingService {
 
 	@Transactional
 	public String getOrderFormList(Map<String, Object> map) throws GeneralSecurityException {
-		int pagenumInt = (int) map.get("pagenum");
-		int pagesizeInt = (int) map.get("pagesize");
+		int pagenumInt = Integer.valueOf(map.get("pagenum").toString());
+		int pagesizeInt = Integer.valueOf(map.get("pagesize").toString());
 		int limitStart = (pagenumInt - 1) * pagesizeInt;
+		
+		String mmngctUserName = map.get("mmngctUserName").toString();
+		//根据mmngctUserName查出merId
+		Mmngct mmngct = mmaMapper.getByUsername(mmngctUserName);
+		int m_ID = mmngct.getMMA_ID();
+		
 		// 先进行空值判断过滤
 		String O_UniqSearchID = map.get("O_UniqSearchID").toString();
 		String U_OpenId = map.get("U_OpenId").toString();
@@ -133,7 +141,6 @@ public class OSMOrderingService {
 		if (!"".equals(PayStatusString)) {
 			PayStatus = Integer.valueOf(PayStatusString);
 		}
-		//TD
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS Z");
 		
 		Date orderStartTimeDate = null;
@@ -201,9 +208,9 @@ public class OSMOrderingService {
 				U_ID = wechatUser.getU_ID();
 			} 
 			multi_Orders_Tab_Tabtypes = ordersMapper.getOrdersByUIDTabIDTabtypeIDOorderTimePayTimeOrderByIimeDESC(U_ID,
-					TabId, TabTypeId, datesList.get(0), datesList.get(1), datesList.get(2), datesList.get(3), limitStart, pagesizeInt, PayStatus);
+					TabId, TabTypeId, datesList.get(0), datesList.get(1), datesList.get(2), datesList.get(3), m_ID, limitStart, pagesizeInt, PayStatus);
 			total = ordersMapper.getOrdersTotalByUIDTabIDTabtypeIDOorderTimePayTime(U_ID,
-					TabId, TabTypeId, datesList.get(0), datesList.get(1), datesList.get(2), datesList.get(3), PayStatus);
+					TabId, TabTypeId, datesList.get(0), datesList.get(1), datesList.get(2), datesList.get(3), m_ID, PayStatus);
 		}
 		
 		JSONObject newJsonObject = new JSONObject();
@@ -803,4 +810,43 @@ public class OSMOrderingService {
 		return newJsonObject.toString();
 	}
 
+
+	@Transactional
+	public String getLastOrderFormList(Map<String, Object> map) {
+		
+		int pagenumInt = Integer.valueOf(map.get("pagenum").toString());
+		int pagesizeInt = Integer.valueOf(map.get("pagesize").toString());
+		int limitStart = (pagenumInt - 1) * pagesizeInt;
+		
+		String mmngctUserName = map.get("mmngctUserName").toString();
+		//根据mmngctUserName查出merId
+		Mmngct mmngct = mmaMapper.getByUsername(mmngctUserName);
+		int m_ID = mmngct.getMMA_ID();
+		// 获取最近24小时订单
+		Date nowDate = new Date();
+		Calendar calendar = new GregorianCalendar();
+		calendar.setTime(nowDate);
+		calendar.add(Calendar.DATE, -1);
+		Date lastDate = calendar.getTime();
+		
+		List<Multi_Orders_Tab_Tabtype> multi_Orders_Tab_Tabtypes = null;
+		int total = 0;
+		multi_Orders_Tab_Tabtypes = ordersMapper.getLastOrdersByMIDDESC(m_ID, lastDate, limitStart, pagesizeInt);
+		total = ordersMapper.getLastOrdersTotal(m_ID, lastDate);
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "获取成功");
+		
+		JSONObject dataJsonObject = new JSONObject();
+		dataJsonObject.put("orderFormList", listToString(multi_Orders_Tab_Tabtypes));
+		dataJsonObject.put("total", total);
+		
+		newJsonObject.put("data", dataJsonObject);
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
+	}
 }

@@ -37,6 +37,7 @@ public interface OrdersMapper {
 			+ "O_PayTime = #{o_paytime}, O_PayStatue = #{o_paystatue} WHERE O_OutTradeNo = #{o_outtradeno}")
 	boolean updatePaied(@Param("o_outtradeno")String o_outtradeno,@Param("o_ispaynow") int isPayNow, 
 			@Param("o_paystatue") int payStatues, @Param("o_paytime") Date payTime);
+	
 	@Update("UPDATE orders SET O_isPayNow = #{o_ispaynow} WHERE O_UniqSearchID = #{o_uniqsearchid}")
 	boolean updateIsPay(@Param("o_uniqsearchid") String o_uniqsearchid, @Param("o_ispaynow") int isPay);
 	
@@ -83,6 +84,7 @@ public interface OrdersMapper {
 			+ "<if test='payStatus!=null'>"
 			+ " AND O_PayStatue = #{payStatus}"
 			+ "</if>"
+			+ " AND O_MID = #{m_id}"
 			+ " ORDER BY O_OrderingTime DESC"
 			+ " limit #{limitStart}, #{pagesizeInt}"
 			+ "</script>")
@@ -90,6 +92,7 @@ public interface OrdersMapper {
 			@Param("o_uid") Integer o_uid, @Param("o_tid") Integer o_tid, @Param("tt_id") Integer tt_tid,
 			@Param("orderStartTime") Date orderStartTime, @Param("orderEndTime") Date orderEndTime,
 			@Param("payStartTime") Date payStartTime, @Param("payEndTime") Date payEndTime,
+			@Param("m_id") int m_id,
 			@Param("limitStart") int limitStart, @Param("pagesizeInt") int pagesizeInt,
 			@Param("payStatus") Integer PayStatus);
 	
@@ -121,11 +124,13 @@ public interface OrdersMapper {
 			+ "<if test='payStatus!=null'>"
 			+ " AND O_PayStatue = #{payStatus}"
 			+ "</if>"
+			+ " AND O_MID = #{m_id}"
 			+ "</script>")
 	int getOrdersTotalByUIDTabIDTabtypeIDOorderTimePayTime(
 			@Param("o_uid") Integer o_uid, @Param("o_tid") Integer o_tid, @Param("tt_id") Integer tt_tid,
 			@Param("orderStartTime") Date orderStartTime, @Param("orderEndTime") Date orderEndTime,
 			@Param("payStartTime") Date payStartTime, @Param("payEndTime") Date payEndTime,
+			@Param("m_id") int m_id,
 			@Param("payStatus") Integer PayStatus);
 	
 	@Update("UPDATE orders SET O_TotlePrice = #{o_totlePrice} WHERE O_ID = #{o_id}")
