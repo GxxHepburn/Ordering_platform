@@ -849,43 +849,8 @@ public class OSMOrderingService {
 		return newJsonObject.toString();
 	}
 	
-	
 	@Transactional
-	public String getNotPayOrderFormList(Map<String, Object> map) {
-		
-		int pagenumInt = Integer.valueOf(map.get("pagenum").toString());
-		int pagesizeInt = Integer.valueOf(map.get("pagesize").toString());
-		int limitStart = (pagenumInt - 1) * pagesizeInt;
-		
-		String mmngctUserName = map.get("mmngctUserName").toString();
-		//根据mmngctUserName查出merId
-		Mmngct mmngct = mmaMapper.getByUsername(mmngctUserName);
-		int m_ID = mmngct.getMMA_ID();
-		
-		List<Multi_Orders_Tab_Tabtype> multi_Orders_Tab_Tabtypes = null;
-		int total = 0;
-		multi_Orders_Tab_Tabtypes = ordersMapper.getOrdersByMIDANDPayStatusDESC(m_ID, 0, limitStart, pagesizeInt);
-		total = ordersMapper.getOrdersTotalByMIDANDPayStatus(m_ID, 0);
-		
-		JSONObject newJsonObject = new JSONObject();
-		
-		JSONObject metaJsonObject = new JSONObject();
-		metaJsonObject.put("status", 200);
-		metaJsonObject.put("msg", "获取成功");
-		
-		JSONObject dataJsonObject = new JSONObject();
-		dataJsonObject.put("orderFormList", listToString(multi_Orders_Tab_Tabtypes));
-		dataJsonObject.put("total", total);
-		
-		newJsonObject.put("data", dataJsonObject);
-		newJsonObject.put("meta", metaJsonObject);
-		
-		return newJsonObject.toString();
-	}
-	
-	
-	@Transactional
-	public String getReturnAndNotFiAndFiOrderFormList(Map<String, Object> map) {
+	public String getNotPayReturnAndNotFiAndFiOrderFormList(Map<String, Object> map) {
 		
 		int pagenumInt = Integer.valueOf(map.get("pagenum").toString());
 		int pagesizeInt = Integer.valueOf(map.get("pagesize").toString());
@@ -929,8 +894,8 @@ public class OSMOrderingService {
 		}
 		List<Multi_Orders_Tab_Tabtype> multi_Orders_Tab_Tabtypes = null;
 		int total = 0;
-		multi_Orders_Tab_Tabtypes = ordersMapper.getReturnAndNotFiAndFiOrdersByMIDANDOrderingTimeDESC(m_ID, requireDate, payStatus, limitStart, pagesizeInt);
-		total = ordersMapper.getReturnAndNotFiAndFiOrdersTotalByMIDANDOrderingTime(m_ID, requireDate, payStatus);
+		multi_Orders_Tab_Tabtypes = ordersMapper.getNotPayReturnAndNotFiAndFiOrdersByMIDANDOrderingTimeDESC(m_ID, requireDate, payStatus, limitStart, pagesizeInt);
+		total = ordersMapper.getNReturnAndNotFiAndFiOrdersTotalByMIDANDOrderingTime(m_ID, requireDate, payStatus);
 		
 		JSONObject newJsonObject = new JSONObject();
 		

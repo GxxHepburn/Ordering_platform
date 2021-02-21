@@ -197,12 +197,12 @@ public interface OrdersMapper {
 			+ "AND O_PayStatue = #{payStatus} "
 			+ "ORDER BY O_OrderingTime DESC "
 			+ "limit #{limitStart}, #{pagesizeInt}")
-	List<Multi_Orders_Tab_Tabtype> getReturnAndNotFiAndFiOrdersByMIDANDOrderingTimeDESC(@Param("m_id") int m_id, @Param("orderingStartTime") Date orderingStartTime,
+	List<Multi_Orders_Tab_Tabtype> getNotPayReturnAndNotFiAndFiOrdersByMIDANDOrderingTimeDESC(@Param("m_id") int m_id, @Param("orderingStartTime") Date orderingStartTime,
 			@Param("payStatus") int payStatus, @Param("limitStart") int limitStart, @Param("pagesizeInt") int pagesizeInt);
 	
 	@Select("SELECT COUNT(*) FROM orders left join tab on tab.T_ID = orders.O_TID left join tabtype on tabtype.TT_ID = tab.T_TTID "
 			+ "WHERE O_MID = #{m_id} "
 			+ "AND O_OrderingTime >= #{orderingStartTime} "
 			+ "AND O_PayStatue = #{payStatus} ")
-	int getReturnAndNotFiAndFiOrdersTotalByMIDANDOrderingTime(@Param("m_id") int m_id, @Param("orderingStartTime") Date orderingStartTime, @Param("payStatus") int payStatus);
+	int getNReturnAndNotFiAndFiOrdersTotalByMIDANDOrderingTime(@Param("m_id") int m_id, @Param("orderingStartTime") Date orderingStartTime, @Param("payStatus") int payStatus);
 }
