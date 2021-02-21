@@ -759,11 +759,11 @@ public class OSMController {
 		return newJsonObject.toString();
 	}
 	
-	@PostMapping(value = "/getReturnOrderFormList", produces="application/json;charset=UTF-8")
+	@PostMapping(value = "/getReturnAndNotFiAndFiOrderFormList", produces="application/json;charset=UTF-8")
 	@ResponseBody
-	public String getReturnOrderFormList(@RequestBody Map<String, Object> map) {
+	public String getReturnAndNotFiAndFiOrderFormList(@RequestBody Map<String, Object> map) {
 		try {
-			return oSMOrderingService.getReturnOrderFormList(map);
+			return oSMOrderingService.getReturnAndNotFiAndFiOrderFormList(map);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

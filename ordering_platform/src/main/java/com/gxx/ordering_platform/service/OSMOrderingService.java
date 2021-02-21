@@ -885,7 +885,7 @@ public class OSMOrderingService {
 	
 	
 	@Transactional
-	public String getReturnOrderFormList(Map<String, Object> map) {
+	public String getReturnAndNotFiAndFiOrderFormList(Map<String, Object> map) {
 		
 		int pagenumInt = Integer.valueOf(map.get("pagenum").toString());
 		int pagesizeInt = Integer.valueOf(map.get("pagesize").toString());
@@ -897,6 +897,8 @@ public class OSMOrderingService {
 		int m_ID = mmngct.getMMA_ID();
 		
 		int timeStatus = Integer.valueOf(map.get("timeStatus").toString());
+		
+		int payStatus = Integer.valueOf(map.get("payStatus").toString());
 		
 		Date requireDate = null;
 		Date nowDate = new Date();
@@ -927,8 +929,8 @@ public class OSMOrderingService {
 		}
 		List<Multi_Orders_Tab_Tabtype> multi_Orders_Tab_Tabtypes = null;
 		int total = 0;
-		multi_Orders_Tab_Tabtypes = ordersMapper.getReturnOrdersByMIDANDOrderingTimeDESC(m_ID, requireDate, limitStart, pagesizeInt);
-		total = ordersMapper.getReturnOrdersTotalByMIDANDOrderingTime(m_ID, requireDate);
+		multi_Orders_Tab_Tabtypes = ordersMapper.getReturnAndNotFiAndFiOrdersByMIDANDOrderingTimeDESC(m_ID, requireDate, payStatus, limitStart, pagesizeInt);
+		total = ordersMapper.getReturnAndNotFiAndFiOrdersTotalByMIDANDOrderingTime(m_ID, requireDate, payStatus);
 		
 		JSONObject newJsonObject = new JSONObject();
 		
