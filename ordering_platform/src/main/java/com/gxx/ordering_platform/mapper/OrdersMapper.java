@@ -188,4 +188,21 @@ public interface OrdersMapper {
 	@Select("SELECT COUNT(*) FROM orders left join tab on tab.T_ID = orders.O_TID left join tabtype on tabtype.TT_ID = tab.T_TTID "
 			+ "WHERE O_MID = #{m_id} AND O_PayStatue = #{payStatus}")
 	int getOrdersTotalByMIDANDPayStatus(@Param("m_id") int m_id, @Param("payStatus") int payStatus);
+	
+	@Select("SELECT O_ID, O_MID, O_UID, O_TID, O_TotlePrice, O_PayMethod, O_PayStatue, O_OrderingTime, O_PayTime, "
+			+ "O_OutTradeNo, O_Remarks, O_TotleNum, O_UniqSearchID, O_isPayNow, O_ReturnNum, O_NumberOfDiners, T_Name, TT_Name FROM "
+			+ "orders left join tab on tab.T_ID = orders.O_TID left join tabtype on tabtype.TT_ID = tab.T_TTID "
+			+ "WHERE O_MID = #{m_id} "
+			+ "AND O_OrderingTime >= #{orderingStartTime} "
+			+ "AND O_PayStatue = 2 "
+			+ "ORDER BY O_OrderingTime DESC "
+			+ "limit #{limitStart}, #{pagesizeInt}")
+	List<Multi_Orders_Tab_Tabtype> getReturnOrdersByMIDANDOrderingTimeDESC(@Param("m_id") int m_id, @Param("orderingStartTime") Date orderingStartTime,
+			@Param("limitStart") int limitStart, @Param("pagesizeInt") int pagesizeInt);
+	
+	@Select("SELECT COUNT(*) FROM orders left join tab on tab.T_ID = orders.O_TID left join tabtype on tabtype.TT_ID = tab.T_TTID "
+			+ "WHERE O_MID = #{m_id} "
+			+ "AND O_OrderingTime >= #{orderingStartTime} "
+			+ "AND O_PayStatue = 2")
+	int getReturnOrdersTotalByMIDANDOrderingTime(@Param("m_id") int m_id, @Param("orderingStartTime") Date orderingStartTime);
 }

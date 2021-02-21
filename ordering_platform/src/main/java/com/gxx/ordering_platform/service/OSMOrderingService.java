@@ -882,4 +882,67 @@ public class OSMOrderingService {
 		
 		return newJsonObject.toString();
 	}
+	
+	
+	@Transactional
+	public String getReturnOrderFormList(Map<String, Object> map) {
+		
+		int pagenumInt = Integer.valueOf(map.get("pagenum").toString());
+		int pagesizeInt = Integer.valueOf(map.get("pagesize").toString());
+		int limitStart = (pagenumInt - 1) * pagesizeInt;
+		
+		String mmngctUserName = map.get("mmngctUserName").toString();
+		//根据mmngctUserName查出merId
+		Mmngct mmngct = mmaMapper.getByUsername(mmngctUserName);
+		int m_ID = mmngct.getMMA_ID();
+		
+		int timeStatus = Integer.valueOf(map.get("timeStatus").toString());
+		
+		Date requireDate = null;
+		Date nowDate = new Date();
+		Calendar calendar = new GregorianCalendar();
+		
+		// 处理时间
+		if (timeStatus == 0) {
+			long requireTimeStamp = 0l;
+			requireDate = new Date(requireTimeStamp);
+		}
+		
+		if (0 < timeStatus && timeStatus <= 3) {
+			calendar.setTime(nowDate);
+			calendar.add(Calendar.DATE, -timeStatus);
+			requireDate = calendar.getTime();
+		}
+		
+		if (timeStatus == 4) {
+			calendar.setTime(nowDate);
+			calendar.add(Calendar.DATE, -7);
+			requireDate = calendar.getTime();
+		}
+		
+		if (timeStatus == 5) {
+			calendar.setTime(nowDate);
+			calendar.add(Calendar.DATE, -30);
+			requireDate = calendar.getTime();
+		}
+		List<Multi_Orders_Tab_Tabtype> multi_Orders_Tab_Tabtypes = null;
+		int total = 0;
+		multi_Orders_Tab_Tabtypes = ordersMapper.getReturnOrdersByMIDANDOrderingTimeDESC(m_ID, requireDate, limitStart, pagesizeInt);
+		total = ordersMapper.getReturnOrdersTotalByMIDANDOrderingTime(m_ID, requireDate);
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "获取成功");
+		
+		JSONObject dataJsonObject = new JSONObject();
+		dataJsonObject.put("orderFormList", listToString(multi_Orders_Tab_Tabtypes));
+		dataJsonObject.put("total", total);
+		
+		newJsonObject.put("data", dataJsonObject);
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
+	}
 }
