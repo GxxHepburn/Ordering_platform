@@ -242,6 +242,8 @@ public class OSMPayService {
 			}
 			
 			payJsonArray.getJSONObject(i).put("p_Time_End", P_Time_End_String);
+			BankType bankType = bankTypeMapper.getByB_CharCode(multi_Pay_Orders_Tab_TabType.getP_Bank_Type());
+			payJsonArray.getJSONObject(i).put("p_Bank_Type", bankType.getB_Name());
 		}
 		
 		JSONObject newJsonObject = new JSONObject();
