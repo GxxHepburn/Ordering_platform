@@ -47,4 +47,27 @@ public interface WechatUserMapper {
 	
 	@Update("UPDATE wechat_user SET U_Status = #{u_status} WHERE U_ID = #{u_id}")
 	void changStatusByUID(@Param("u_id") int u_id, @Param("u_status") int u_status);
+	
+	@Select("<script>"
+			+ "SELECT U_ID, U_OpenId, U_RegisterTime, U_LoginTime, U_Status, MAX(O_OrderingTime) AS O_OrderingTime from orders INNER JOIN wechat_user "
+			+ "WHERE 1=1"
+			+ " AND wechat_user.U_ID = orders.O_UID"
+			+ " AND orders.O_MID = #{o_mid}"
+			+ "<if test='u_id!=null'>"
+			+ " AND U_ID =#{u_id}"
+			+ "</if>"
+			+ " GROUP BY wechat_user.U_ID ORDER BY orders.O_OrderingTime limit #{limitStart}, #{pagesize}"
+			+ "</script>")
+	List<Multi_WechatUser_Orders> getByUID(@Param("o_mid") int o_mid, @Param("u_id") Integer u_id, @Param("limitStart") int limitStart, @Param("pagesize") int pagesize);
+	
+	@Select("<script>"
+			+ "SELECT COUNT(DISTINCT U_ID) FROM orders INNER JOIN wechat_user "
+			+ "WHERE 1=1"
+			+ " AND wechat_user.U_ID = orders.O_UID"
+			+ " AND orders.O_MID = #{o_mid}"
+			+ "<if test='u_id!=null'>"
+			+ " AND U_ID =#{u_id}"
+			+ "</if>"
+			+ "</script>")
+	int getTotalByUID(@Param("o_mid") int o_mid,  @Param("u_id") Integer u_id);
 }

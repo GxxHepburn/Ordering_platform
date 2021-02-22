@@ -3,17 +3,22 @@ package com.gxx.ordering_platform.service;
 import java.security.GeneralSecurityException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gxx.ordering_platform.entity.Mmngct;
 import com.gxx.ordering_platform.entity.Multi_WechatUser_Orders;
+import com.gxx.ordering_platform.entity.Orders;
 import com.gxx.ordering_platform.mapper.MmaMapper;
+import com.gxx.ordering_platform.mapper.OrdersMapper;
 import com.gxx.ordering_platform.mapper.WechatUserMapper;
 import com.gxx.ordering_platform.utils.EncryptionAndDeciphering;
 
@@ -23,9 +28,20 @@ public class OSMUsersService {
 	@Autowired MmaMapper mmaMapper;
 	
 	@Autowired WechatUserMapper wechatUserMapper;
+	
+	@Autowired OrdersMapper ordersMapper;
+	
+	final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Transactional
-	public String users(String query, String pagenum, String pagesize, String mmngctUserName) throws JSONException, GeneralSecurityException {
+	public String users(Map<String, Object> map) throws JSONException, GeneralSecurityException {
+		
+		String query = map.get("query").toString();
+		String pagenum = map.get("pagenum").toString();
+		String pagesize = map.get("pagesize").toString();
+		String mmngctUserName = map.get("mmngctUserName").toString();
+		String O_UniqSearchId = map.get("O_UniqSearchId").toString();
+		int touchButton = Integer.valueOf(map.get("touchButton").toString());
 		
 		// 解密
 		if (!"".equals(query)) {
@@ -48,9 +64,31 @@ public class OSMUsersService {
 		
 		
 		int limitStart = (pagenumInt - 1) * pagesizeInt;
-		List<Multi_WechatUser_Orders> multi_WechatUser_Orders = wechatUserMapper.getByUOpenIdLike(mID, query, limitStart, pagesizeInt);
 		
-		int totalNeedWechatUsers = wechatUserMapper.getTotalByOpenIdLike(mID, query);
+		List<Multi_WechatUser_Orders> multi_WechatUser_Orders = null;
+		int totalNeedWechatUsers = 0;
+		
+		if (touchButton == 1) {
+			multi_WechatUser_Orders = wechatUserMapper.getByUOpenIdLike(mID, query, limitStart, pagesizeInt);
+			
+			totalNeedWechatUsers = wechatUserMapper.getTotalByOpenIdLike(mID, query);
+		} else if (touchButton == 2) {
+			Orders orders = ordersMapper.getOrdersByUniqSearchID(O_UniqSearchId);
+			Integer U_ID = null;
+			try {
+				U_ID = orders.getO_UID();
+			} catch (Exception e) {
+				logger.info("订单号错误!");
+				if (!"".equals(O_UniqSearchId)) {
+					U_ID = 0;
+				}
+			}
+			
+			multi_WechatUser_Orders = wechatUserMapper.getByUID(mID, U_ID, limitStart, pagesizeInt);
+			
+			totalNeedWechatUsers = wechatUserMapper.getTotalByUID(mID, U_ID);
+		}
+		
 		
 		JSONObject newJsonObject = new JSONObject();
 		

@@ -122,12 +122,12 @@ public class OSMController {
 		return this.mensJsonString;
 	}
 	
-	@GetMapping("/users")
+	@PostMapping(value = "/users", produces="application/json;charset=UTF-8")
 	@ResponseBody
-	public String users(String query, String pagenum, String pagesize, String mmngctUserName){
+	public String users(@RequestBody Map<String, Object> map){
 		
 		try {
-			return oSMUsersService.users(query, pagenum, pagesize, mmngctUserName);
+			return oSMUsersService.users(map);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
