@@ -209,7 +209,11 @@ public class OSMOrderingService {
 			// 订单号不为空，直接根据订单号，查询订单
 			if (!"".equals(O_UniqSearchID)) {
 				multi_Orders_Tab_Tabtypes = ordersMapper.getOrdersByUniqSearchIDOrderByIimeDESC(O_UniqSearchID);
-				total = 1;
+				if (multi_Orders_Tab_Tabtypes.size() == 0) {
+					total = 0;
+				} else {
+					total = 1;
+				}
 			} else {
 				if (!"".equals(U_OpenId)) {
 					// 有商户号
@@ -235,7 +239,6 @@ public class OSMOrderingService {
 		if (touchButton == 2) {
 			String outTradeNo = map.get("OutTradeNo").toString();
 			Pay pay = payMapper.getByO_OutTrade_No(outTradeNo);
-			System.out.println(pay);
 			Integer O_ID = null;
 			if (pay == null) {
 				if (!"".equals(outTradeNo)) {
