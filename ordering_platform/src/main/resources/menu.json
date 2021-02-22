@@ -143,12 +143,6 @@
             "path": "finance",
             "children": [
                 {
-                    "id": 702,
-                    "authName": "流水记录",
-                    "path": "flowRecord",
-                    "children": []
-                },
-                {
                 	"id": 703,
                     "authName": "支付记录",
                     "path": "payRecord",

@@ -1,9 +1,13 @@
 package com.gxx.ordering_platform.mapper;
 
+import java.util.Date;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import com.gxx.ordering_platform.entity.Multi_Pay_Orders_Tab_TabType;
 import com.gxx.ordering_platform.entity.Pay;
 
 public interface PayMapper {
@@ -26,4 +30,74 @@ public interface PayMapper {
 	@Select("SELECT * FROM pay WHERE P_OID = #{o_id}")
 	Pay getByO_ID(@Param("o_id") int o_id);
 	
+	@Select("<script>"
+			+ "SELECT * FROM pay left join orders on orders.O_ID = pay.P_OID left join tab on tab.T_ID = orders.O_TID "
+			+ "left join tabtype on tabtype.TT_ID = tab.T_TTID "
+			+ "WHERE P_MID = #{m_id} "
+			+ "<if test='u_id!=null'>"
+			+ " AND P_UID = #{u_id}"
+			+ "</if>"
+			+ "<if test='o_id!=null'>"
+			+ " AND P_OID = #{o_id}"
+			+ "</if>"
+			+ "<if test='outTradeNo!=null'>"
+			+ " AND P_Out_Trade_No = #{outTradeNo}"
+			+ "</if>"
+			+ "<if test='transactionId!=null'>"
+			+ " AND P_Transaction_Id = #{transactionId}"
+			+ "</if>"
+			+ "<if test='tabId!=null'>"
+			+ " AND orders.O_TID = #{tabId}"
+			+ "</if>"
+			+ "<if test='tabTypeId!=null'>"
+			+ " AND tabtype.TT_ID = #{tabTypeId}"
+			+ "</if>"
+			+ "<if test='payStartTime!=null'>"
+			+ " AND P_Time_End &gt;= #{payStartTime}"
+			+ "</if>"
+			+ "<if test='payEndTime!=null'>"
+			+ " AND P_Time_End &lt;= #{payEndTime}"
+			+ "</if>"
+			+ " ORDER BY P_Time_End DESC"
+			+ " limit #{limitStart}, #{pagesizeInt}"
+			+ "</script>")
+	List<Multi_Pay_Orders_Tab_TabType> getByUID_UniqSearchID_OutTradeNo_TransactionId_PayTime_TabId_TabTypeId(@Param("m_id") Integer m_id, 
+			@Param("u_id") Integer u_id, @Param("o_id") Integer o_id, @Param("outTradeNo") String outTradeNo, 
+			@Param("transactionId") String transactionId, @Param("payStartTime") String payStartTime, 
+			@Param("payEndTime") String payEndTime, @Param("tabTypeId") Integer tabTypeId, @Param("tabId") Integer tabId, 
+			@Param("limitStart") Integer limitStart, @Param("pagesizeInt") Integer pagesizeInt);
+	
+	@Select("<script>"
+			+ "SELECT COUNT(*) FROM pay left join orders on orders.O_ID = pay.P_OID left join tab on tab.T_ID = orders.O_TID "
+			+ "left join tabtype on tabtype.TT_ID = tab.T_TTID "
+			+ "WHERE P_MID = #{m_id} "
+			+ "<if test='u_id!=null'>"
+			+ " AND P_UID = #{u_id}"
+			+ "</if>"
+			+ "<if test='o_id!=null'>"
+			+ " AND P_OID = #{o_id}"
+			+ "</if>"
+			+ "<if test='outTradeNo!=null'>"
+			+ " AND P_Out_Trade_No = #{outTradeNo}"
+			+ "</if>"
+			+ "<if test='transactionId!=null'>"
+			+ " AND P_Transaction_Id = #{transactionId}"
+			+ "</if>"
+			+ "<if test='tabId!=null'>"
+			+ " AND orders.O_TID = #{tabId}"
+			+ "</if>"
+			+ "<if test='tabTypeId!=null'>"
+			+ " AND tabtype.TT_ID = #{tabTypeId}"
+			+ "</if>"
+			+ "<if test='payStartTime!=null'>"
+			+ " AND P_Time_End &gt;= #{payStartTime}"
+			+ "</if>"
+			+ "<if test='payEndTime!=null'>"
+			+ " AND P_Time_End &lt;= #{payEndTime}"
+			+ "</if>"
+			+ "</script>")
+	int getPayTotalByUID_UniqSearchID_OutTradeNo_TransactionId_PayTime_TabId_TabTypeId(@Param("m_id") Integer m_id, 
+			@Param("u_id") Integer u_id, @Param("o_id") Integer o_id, @Param("outTradeNo") String outTradeNo, 
+			@Param("transactionId") String transactionId, @Param("payStartTime") String payStartTime, 
+			@Param("payEndTime") String payEndTime, @Param("tabTypeId") Integer tabTypeId, @Param("tabId") Integer tabId);
 }

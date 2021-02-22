@@ -15,6 +15,8 @@ import java.util.UUID;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,6 +73,8 @@ public class OSMOrderingService {
 	@Autowired WxPayService wxPayService;
 	
 	@Autowired RefundMapper refundMapper;
+	
+	final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Transactional
 	public String getOrderForm(Map<String, Object> map) {
@@ -203,9 +207,15 @@ public class OSMOrderingService {
 			if (!"".equals(U_OpenId)) {
 				// 有商户号
 				// 获得O_UID
-				String real_U_OpenId = EncryptionAndDeciphering.deciphering(U_OpenId);
-				WechatUser wechatUser = wechatUserMapper.getByUOpenId(real_U_OpenId);
-				U_ID = wechatUser.getU_ID();
+				try {
+					String real_U_OpenId = EncryptionAndDeciphering.deciphering(U_OpenId);
+					WechatUser wechatUser = wechatUserMapper.getByUOpenId(real_U_OpenId);
+					U_ID = wechatUser.getU_ID();
+				} catch (Exception e) {
+					// TODO: handle exception
+					logger.info("用户号解密错误!");
+					U_ID = 0;
+				}
 			} 
 			multi_Orders_Tab_Tabtypes = ordersMapper.getOrdersByUIDTabIDTabtypeIDOorderTimePayTimeOrderByIimeDESC(U_ID,
 					TabId, TabTypeId, datesList.get(0), datesList.get(1), datesList.get(2), datesList.get(3), m_ID, limitStart, pagesizeInt, PayStatus);
@@ -649,9 +659,8 @@ public class OSMOrderingService {
 			Date P_Time_End_Date = null;
 			try {
 				P_Time_End_Date = simpleDateFormatParse.parse(pay.getP_Time_End());
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (Exception e) {
+				logger.info("支付时间null");
 			}
 			Date nowDate = new Date();
 			
