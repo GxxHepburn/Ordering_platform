@@ -53,4 +53,10 @@ public interface RefundMapper {
 	
 	@Select("SELECT * FROM refund WHERE R_ID = #{r_id}")
 	Refund getByR_ID(@Param("r_id") int r_id);
+	
+	@Select("SELECT * FROM refund WHERE R_Out_Refund_No = #{refundOutTradeNo}")
+	Refund getByRefundOutTradeNo(@Param("refundOutTradeNo") String RefundOutTradeNo);
+	
+	@Select("SELECT * FROM refund WHERE R_Refund_Id = #{refundId}")
+	Refund getByRefundId(@Param("refundId") String refundId);
 }

@@ -157,6 +157,27 @@ public interface OrdersMapper {
 	@Select("SELECT * FROM orders WHERE O_ID = #{o_id}")
 	Orders getordersByO_ID(@Param("o_id") int o_id);
 	
+	@Select("<script>"
+			+ "SELECT O_ID, O_MID, O_UID, O_TID, O_TotlePrice, O_PayMethod, O_PayStatue, O_OrderingTime, O_PayTime, "
+			+ "O_OutTradeNo, O_Remarks, O_TotleNum, O_UniqSearchID, O_isPayNow, O_ReturnNum, O_NumberOfDiners, T_Name, TT_Name "
+			+ "FROM orders left join tab on tab.T_ID = orders.O_TID left join tabtype on tabtype.TT_ID = tab.T_TTID "
+			+ "WHERE 1=1 "
+			+ "<if test='o_id!=null'>"
+			+ " AND O_ID = #{o_id}"
+			+ "</if>"
+			+ "</script>")
+	List<Multi_Orders_Tab_Tabtype> getMulti_Orders_Tab_TabtypesByO_ID(@Param("o_id") Integer o_id);
+	
+	@Select("<script>"
+			+ "SELECT COUNT(*) "
+			+ "FROM orders left join tab on tab.T_ID = orders.O_TID left join tabtype on tabtype.TT_ID = tab.T_TTID "
+			+ "WHERE 1=1 "
+			+ "<if test='o_id!=null'>"
+			+ " AND O_ID = #{o_id}"
+			+ "</if>"
+			+ "</script>")
+	int getmMulti_Orders_Tab_TabtypesTotalByO_ID(@Param("o_id") Integer o_id);
+	
 	@Select("SELECT * FROM orders WHERE O_UniqSearchID = #{searchId}")
 	Orders getOrdersByUniqSearchID(@Param("searchId") String searchId);
 	

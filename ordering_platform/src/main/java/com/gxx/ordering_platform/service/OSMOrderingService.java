@@ -117,6 +117,8 @@ public class OSMOrderingService {
 
 	@Transactional
 	public String getOrderFormList(Map<String, Object> map) throws GeneralSecurityException {
+		int touchButton = Integer.valueOf(map.get("touchButton").toString());
+		
 		int pagenumInt = Integer.valueOf(map.get("pagenum").toString());
 		int pagesizeInt = Integer.valueOf(map.get("pagesize").toString());
 		int limitStart = (pagenumInt - 1) * pagesizeInt;
@@ -126,101 +128,180 @@ public class OSMOrderingService {
 		Mmngct mmngct = mmaMapper.getByUsername(mmngctUserName);
 		int m_ID = mmngct.getMMA_ID();
 		
-		// 先进行空值判断过滤
-		String O_UniqSearchID = map.get("O_UniqSearchID").toString();
-		String U_OpenId = map.get("U_OpenId").toString();
-		Integer U_ID = null;
-		String TabIdString = map.get("TabId").toString();
-		Integer TabId = null;
-		if (!"".equals(TabIdString)) {
-			TabId = Integer.valueOf(TabIdString);
-		}
-		String TabTypeIdString = map.get("TabTypeId").toString();
-		Integer TabTypeId = null;
-		if (!"".equals(TabTypeIdString)) {
-			TabTypeId = Integer.valueOf(TabTypeIdString);
-		}
-		String PayStatusString = map.get("PayStatus").toString();
-		Integer PayStatus = null;
-		if (!"".equals(PayStatusString)) {
-			PayStatus = Integer.valueOf(PayStatusString);
-		}
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS Z");
-		
-		Date orderStartTimeDate = null;
-		Date orderEndTimeDate = null;
-		Date payStartTimeDate = null;
-		Date payEndTimeDate = null;
-		
-		List<Date> datesList = new ArrayList<Date>();
-		datesList.add(orderStartTimeDate);
-		datesList.add(orderEndTimeDate);
-		datesList.add(payStartTimeDate);
-		datesList.add(payEndTimeDate);
-		
-		List<String> timeStringsList = new ArrayList<String>();
-		
-		String OrderStartTime = "";
-		if (map.get("OrderStartTime") != null) {
-			OrderStartTime = map.get("OrderStartTime").toString();
-		}
-		String OrderEndTime = "";
-		if (map.get("OrderEndTime") != null) {
-			OrderEndTime = map.get("OrderEndTime").toString();
-		}
-		String PayStartTime = "";
-		if (map.get("PayStartTime") != null) {
-			PayStartTime = map.get("PayStartTime").toString();
-		}
-		String PayEndTime = "";
-		if (map.get("PayEndTime") != null) {
-			PayEndTime = map.get("PayEndTime").toString();
-		}
-		timeStringsList.add(OrderStartTime);
-		timeStringsList.add(OrderEndTime);
-		timeStringsList.add(PayStartTime);
-		timeStringsList.add(PayEndTime);
-		
-		for(int i = 0; i < timeStringsList.size(); i++) {
-			if (!"".equals(timeStringsList.get(i))) {
-				// 处理下单开始时间
-				String newTimeString = timeStringsList.get(i).replace("Z", " UTC");
-				
-				try {
-					datesList.set(i, format.parse(newTimeString));
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
 		
 		List<Multi_Orders_Tab_Tabtype> multi_Orders_Tab_Tabtypes = null;
 		
 		int total = 0;
-		// 根据参数
-		// 订单号不为空，直接根据订单号，查询订单
-		if (!"".equals(O_UniqSearchID)) {
-			multi_Orders_Tab_Tabtypes = ordersMapper.getOrdersByUniqSearchIDOrderByIimeDESC(O_UniqSearchID);
-			total = 1;
-		} else {
-			if (!"".equals(U_OpenId)) {
-				// 有商户号
-				// 获得O_UID
-				try {
-					String real_U_OpenId = EncryptionAndDeciphering.deciphering(U_OpenId);
-					WechatUser wechatUser = wechatUserMapper.getByUOpenId(real_U_OpenId);
-					U_ID = wechatUser.getU_ID();
-				} catch (Exception e) {
-					// TODO: handle exception
-					logger.info("用户号解密错误!");
-					U_ID = 0;
+		
+		// 按照各种条件组合检索
+		if (touchButton == 1) {
+			// 先进行空值判断过滤
+			String O_UniqSearchID = map.get("O_UniqSearchID").toString();
+			String U_OpenId = map.get("U_OpenId").toString();
+			Integer U_ID = null;
+			String TabIdString = map.get("TabId").toString();
+			Integer TabId = null;
+			if (!"".equals(TabIdString)) {
+				TabId = Integer.valueOf(TabIdString);
+			}
+			String TabTypeIdString = map.get("TabTypeId").toString();
+			Integer TabTypeId = null;
+			if (!"".equals(TabTypeIdString)) {
+				TabTypeId = Integer.valueOf(TabTypeIdString);
+			}
+			String PayStatusString = map.get("PayStatus").toString();
+			Integer PayStatus = null;
+			if (!"".equals(PayStatusString)) {
+				PayStatus = Integer.valueOf(PayStatusString);
+			}
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS Z");
+			
+			Date orderStartTimeDate = null;
+			Date orderEndTimeDate = null;
+			Date payStartTimeDate = null;
+			Date payEndTimeDate = null;
+			
+			List<Date> datesList = new ArrayList<Date>();
+			datesList.add(orderStartTimeDate);
+			datesList.add(orderEndTimeDate);
+			datesList.add(payStartTimeDate);
+			datesList.add(payEndTimeDate);
+			
+			List<String> timeStringsList = new ArrayList<String>();
+			
+			String OrderStartTime = "";
+			if (map.get("OrderStartTime") != null) {
+				OrderStartTime = map.get("OrderStartTime").toString();
+			}
+			String OrderEndTime = "";
+			if (map.get("OrderEndTime") != null) {
+				OrderEndTime = map.get("OrderEndTime").toString();
+			}
+			String PayStartTime = "";
+			if (map.get("PayStartTime") != null) {
+				PayStartTime = map.get("PayStartTime").toString();
+			}
+			String PayEndTime = "";
+			if (map.get("PayEndTime") != null) {
+				PayEndTime = map.get("PayEndTime").toString();
+			}
+			timeStringsList.add(OrderStartTime);
+			timeStringsList.add(OrderEndTime);
+			timeStringsList.add(PayStartTime);
+			timeStringsList.add(PayEndTime);
+			
+			for(int i = 0; i < timeStringsList.size(); i++) {
+				if (!"".equals(timeStringsList.get(i))) {
+					// 处理下单开始时间
+					String newTimeString = timeStringsList.get(i).replace("Z", " UTC");
+					
+					try {
+						datesList.set(i, format.parse(newTimeString));
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
-			} 
-			multi_Orders_Tab_Tabtypes = ordersMapper.getOrdersByUIDTabIDTabtypeIDOorderTimePayTimeOrderByIimeDESC(U_ID,
-					TabId, TabTypeId, datesList.get(0), datesList.get(1), datesList.get(2), datesList.get(3), m_ID, limitStart, pagesizeInt, PayStatus);
-			total = ordersMapper.getOrdersTotalByUIDTabIDTabtypeIDOorderTimePayTime(U_ID,
-					TabId, TabTypeId, datesList.get(0), datesList.get(1), datesList.get(2), datesList.get(3), m_ID, PayStatus);
+			}
+			
+			
+			// 根据参数
+			// 订单号不为空，直接根据订单号，查询订单
+			if (!"".equals(O_UniqSearchID)) {
+				multi_Orders_Tab_Tabtypes = ordersMapper.getOrdersByUniqSearchIDOrderByIimeDESC(O_UniqSearchID);
+				total = 1;
+			} else {
+				if (!"".equals(U_OpenId)) {
+					// 有商户号
+					// 获得O_UID
+					try {
+						String real_U_OpenId = EncryptionAndDeciphering.deciphering(U_OpenId);
+						WechatUser wechatUser = wechatUserMapper.getByUOpenId(real_U_OpenId);
+						U_ID = wechatUser.getU_ID();
+					} catch (Exception e) {
+						// TODO: handle exception
+						logger.info("用户号解密错误!");
+						U_ID = 0;
+					}
+				} 
+				multi_Orders_Tab_Tabtypes = ordersMapper.getOrdersByUIDTabIDTabtypeIDOorderTimePayTimeOrderByIimeDESC(U_ID,
+						TabId, TabTypeId, datesList.get(0), datesList.get(1), datesList.get(2), datesList.get(3), m_ID, limitStart, pagesizeInt, PayStatus);
+				total = ordersMapper.getOrdersTotalByUIDTabIDTabtypeIDOorderTimePayTime(U_ID,
+						TabId, TabTypeId, datesList.get(0), datesList.get(1), datesList.get(2), datesList.get(3), m_ID, PayStatus);
+			}
+		}
+		
+		// 检索商户单号所属订单
+		if (touchButton == 2) {
+			String outTradeNo = map.get("OutTradeNo").toString();
+			Pay pay = payMapper.getByO_OutTrade_No(outTradeNo);
+			System.out.println(pay);
+			Integer O_ID = null;
+			if (pay == null) {
+				if (!"".equals(outTradeNo)) {
+					O_ID = 0;
+				}
+			} else {
+				O_ID = pay.getP_OID();
+			}
+			
+			multi_Orders_Tab_Tabtypes = ordersMapper.getMulti_Orders_Tab_TabtypesByO_ID(O_ID);
+			
+			total = ordersMapper.getmMulti_Orders_Tab_TabtypesTotalByO_ID(O_ID);
+		}
+		
+		// 检索支付单号所属订单
+		if (touchButton == 3) {
+			String transactionId = map.get("TransactionId").toString();
+			Pay pay = payMapper.getByTransactionId(transactionId);
+			Integer O_ID = null;
+			if (pay == null) {
+				if (!"".equals(transactionId)) {
+					O_ID = 0;
+				}
+			} else {
+				O_ID = pay.getP_OID();
+			}
+			
+			multi_Orders_Tab_Tabtypes = ordersMapper.getMulti_Orders_Tab_TabtypesByO_ID(O_ID);
+			
+			total = ordersMapper.getmMulti_Orders_Tab_TabtypesTotalByO_ID(O_ID);
+		}
+		
+		// 检索商户退款单号所属订单
+		if (touchButton == 4) {
+			String refundOutTradeNo = map.get("RefundOutTradeNo").toString();
+			Refund refund = refundMapper.getByRefundOutTradeNo(refundOutTradeNo);
+			Integer O_ID = null;
+			if (refund == null) {
+				if (!"".equals(refundOutTradeNo)) {
+					O_ID = 0;
+				}
+			} else {
+				O_ID = refund.getR_OID();
+			}
+			
+			multi_Orders_Tab_Tabtypes = ordersMapper.getMulti_Orders_Tab_TabtypesByO_ID(O_ID);
+			
+			total = ordersMapper.getmMulti_Orders_Tab_TabtypesTotalByO_ID(O_ID);
+		}
+		
+		// 检索退款单号所属订单
+		if (touchButton == 5) {
+			String refundId = map.get("RefundId").toString();
+			Refund refund = refundMapper.getByRefundId(refundId);
+			Integer O_ID = null;
+			if (refund == null) {
+				if (!"".equals(refundId)) {
+					O_ID = 0;
+				}
+			} else {
+				O_ID = refund.getR_OID();
+			}
+			
+			multi_Orders_Tab_Tabtypes = ordersMapper.getMulti_Orders_Tab_TabtypesByO_ID(O_ID);
+			
+			total = ordersMapper.getmMulti_Orders_Tab_TabtypesTotalByO_ID(O_ID);
 		}
 		
 		JSONObject newJsonObject = new JSONObject();

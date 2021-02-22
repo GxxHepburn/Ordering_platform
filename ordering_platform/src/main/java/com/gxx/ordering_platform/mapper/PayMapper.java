@@ -27,6 +27,9 @@ public interface PayMapper {
 	@Select("SELECT * FROM pay WHERE P_Out_Trade_No = #{o_outTrade_no}")
 	Pay getByO_OutTrade_No(@Param("o_outTrade_no") String o_outTrade_no);
 	
+	@Select("SELECT * FROM pay WHERE P_Transaction_Id = #{p_transaction_id}")
+	Pay getByTransactionId(@Param("p_transaction_id") String p_transaction_id);
+	
 	@Select("SELECT * FROM pay WHERE P_OID = #{o_id}")
 	Pay getByO_ID(@Param("o_id") int o_id);
 	
