@@ -43,17 +43,6 @@ public class OSMUsersService {
 		String O_UniqSearchId = map.get("O_UniqSearchId").toString();
 		int touchButton = Integer.valueOf(map.get("touchButton").toString());
 		
-		// 解密
-		if (!"".equals(query)) {
-			try {
-				query = EncryptionAndDeciphering.deciphering(query);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				query = "";
-			}
-		} else {
-			query = null;
-		}
 		
 		int pagenumInt = Integer.valueOf(pagenum);
 		int pagesizeInt = Integer.valueOf(pagesize);
@@ -69,6 +58,21 @@ public class OSMUsersService {
 		int totalNeedWechatUsers = 0;
 		
 		if (touchButton == 1) {
+			// 解密
+			if (!"".equals(query)) {
+				try {
+					query = EncryptionAndDeciphering.deciphering(query);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					System.out.println("解密时错误");
+					query = "";
+				}
+			} else {
+				query = null;
+			}
+			
+			
 			multi_WechatUser_Orders = wechatUserMapper.getByUOpenIdLike(mID, query, limitStart, pagesizeInt);
 			
 			totalNeedWechatUsers = wechatUserMapper.getTotalByOpenIdLike(mID, query);
