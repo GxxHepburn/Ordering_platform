@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import com.gxx.ordering_platform.entity.Multi_Refund_Orders_Tab_TabType;
 import com.gxx.ordering_platform.entity.Refund;
 
 public interface RefundMapper {
@@ -59,4 +60,90 @@ public interface RefundMapper {
 	
 	@Select("SELECT * FROM refund WHERE R_Refund_Id = #{refundId}")
 	Refund getByRefundId(@Param("refundId") String refundId);
+	
+	@Select("<script>"
+			+ "SELECT * FROM refund left join orders on orders.O_ID = refund.R_OID left join tab on tab.T_ID = orders.O_TID "
+			+ "left join tabtype on tabtype.TT_ID = tab.T_TTID "
+			+ "WHERE R_MID = #{m_id} "
+			+ "<if test='u_id!=null'>"
+			+ " AND R_UID = #{u_id}"
+			+ "</if>"
+			+ "<if test='o_id!=null'>"
+			+ " AND R_OID = #{o_id}"
+			+ "</if>"
+			+ "<if test='refundOutTradeNo!=null'>"
+			+ " AND R_Out_Refund_No = #{refundOutTradeNo}"
+			+ "</if>"
+			+ "<if test='refundTransactionId!=null'>"
+			+ " AND R_Refund_Id = #{refundTransactionId}"
+			+ "</if>"
+			+ "<if test='tabId!=null'>"
+			+ " AND orders.O_TID = #{tabId}"
+			+ "</if>"
+			+ "<if test='tabTypeId!=null'>"
+			+ " AND tabtype.TT_ID = #{tabTypeId}"
+			+ "</if>"
+			+ "<if test='r_submit_start_time!=null'>"
+			+ " AND R_Submit_Time &gt;= #{r_submit_start_time}"
+			+ "</if>"
+			+ "<if test='r_submit_end_time!=null'>"
+			+ " AND R_Submit_Time &lt;= #{r_submit_end_time}"
+			+ "</if>"
+			+ "<if test='r_success_start_time!=null'>"
+			+ " AND R_Success_Time &gt;= #{r_success_start_time}"
+			+ "</if>"
+			+ "<if test='r_success_end_time!=null'>"
+			+ " AND R_Success_Time &lt;= #{r_success_end_time}"
+			+ "</if>"
+			+ " ORDER BY R_Submit_Time DESC"
+			+ " limit #{limitStart}, #{pagesizeInt}"
+			+ "</script>")
+	List<Multi_Refund_Orders_Tab_TabType> getByUID_OID_RefundOutTradeNo_RefundId_RefundSubmitTime_RefundSuccessTime_TabId_TabTypeId(
+			@Param("m_id") Integer m_id, @Param("u_id") Integer u_id, @Param("o_id") Integer o_id, @Param("refundOutTradeNo") String refundOutTradeNo, 
+			@Param("refundTransactionId") String refundTransactionId, @Param("r_submit_start_time") String r_submit_start_time, 
+			@Param("r_submit_end_time") String r_submit_end_time, @Param("r_success_start_time") String r_success_start_time, 
+			@Param("r_success_end_time") String r_success_end_time, @Param("tabTypeId") Integer tabTypeId, 
+			@Param("tabId") Integer tabId, @Param("limitStart") Integer limitStart, 
+			@Param("pagesizeInt") Integer pagesizeInt);
+	
+	@Select("<script>"
+			+ "SELECT COUNT(*) FROM refund left join orders on orders.O_ID = refund.R_OID left join tab on tab.T_ID = orders.O_TID "
+			+ "left join tabtype on tabtype.TT_ID = tab.T_TTID "
+			+ "WHERE R_MID = #{m_id} "
+			+ "<if test='u_id!=null'>"
+			+ " AND R_UID = #{u_id}"
+			+ "</if>"
+			+ "<if test='o_id!=null'>"
+			+ " AND R_OID = #{o_id}"
+			+ "</if>"
+			+ "<if test='refundOutTradeNo!=null'>"
+			+ " AND R_Out_Refund_No = #{refundOutTradeNo}"
+			+ "</if>"
+			+ "<if test='refundTransactionId!=null'>"
+			+ " AND R_Refund_Id = #{refundTransactionId}"
+			+ "</if>"
+			+ "<if test='tabId!=null'>"
+			+ " AND orders.O_TID = #{tabId}"
+			+ "</if>"
+			+ "<if test='tabTypeId!=null'>"
+			+ " AND tabtype.TT_ID = #{tabTypeId}"
+			+ "</if>"
+			+ "<if test='r_submit_start_time!=null'>"
+			+ " AND R_Submit_Time &gt;= #{r_submit_start_time}"
+			+ "</if>"
+			+ "<if test='r_submit_end_time!=null'>"
+			+ " AND R_Submit_Time &lt;= #{r_submit_end_time}"
+			+ "</if>"
+			+ "<if test='r_success_start_time!=null'>"
+			+ " AND R_Success_Time &gt;= #{r_success_start_time}"
+			+ "</if>"
+			+ "<if test='r_success_end_time!=null'>"
+			+ " AND R_Success_Time &lt;= #{r_success_end_time}"
+			+ "</if>"
+			+ "</script>")
+	int getRefundTotalByUID_OID_RefundOutTradeNo_RefundId_RefundSubmitTime_RefundSuccessTime_TabId_TabTypeId(@Param("m_id") Integer m_id, @Param("u_id") Integer u_id, @Param("o_id") Integer o_id, @Param("refundOutTradeNo") String refundOutTradeNo, 
+			@Param("refundTransactionId") String refundTransactionId, @Param("r_submit_start_time") String r_submit_start_time, 
+			@Param("r_submit_end_time") String r_submit_end_time, @Param("r_success_start_time") String r_success_start_time, 
+			@Param("r_success_end_time") String r_success_end_time, @Param("tabTypeId") Integer tabTypeId, 
+			@Param("tabId") Integer tabId);
 }

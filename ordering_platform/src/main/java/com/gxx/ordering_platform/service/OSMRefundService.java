@@ -2,6 +2,7 @@ package com.gxx.ordering_platform.service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -10,12 +11,24 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gxx.ordering_platform.entity.BankType;
+import com.gxx.ordering_platform.entity.Mmngct;
+import com.gxx.ordering_platform.entity.Multi_Pay_Orders_Tab_TabType;
+import com.gxx.ordering_platform.entity.Multi_Refund_Orders_Tab_TabType;
+import com.gxx.ordering_platform.entity.Orders;
 import com.gxx.ordering_platform.entity.Refund;
+import com.gxx.ordering_platform.entity.WechatUser;
+import com.gxx.ordering_platform.mapper.MmaMapper;
+import com.gxx.ordering_platform.mapper.OrdersMapper;
 import com.gxx.ordering_platform.mapper.RefundMapper;
+import com.gxx.ordering_platform.mapper.WechatUserMapper;
+import com.gxx.ordering_platform.utils.EncryptionAndDeciphering;
 
 @Component
 public class OSMRefundService {
@@ -25,6 +38,18 @@ public class OSMRefundService {
 	
 	@Autowired
 	WxPayService wxPayService;
+	
+	@Autowired
+	MmaMapper mmaMapper;
+	
+	@Autowired
+	WechatUserMapper wechatUserMapper;
+	
+	@Autowired
+	OrdersMapper ordersMapper;
+	
+	final Logger logger = LoggerFactory.getLogger(getClass());
+	
 
 	@Transactional
 	public String getRefundFormList (Map<String, Object> map) {
@@ -171,6 +196,179 @@ public class OSMRefundService {
 		metaJsonObject.put("status", 200);
 		metaJsonObject.put("msg", "查询退款到账成功");
 		
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
+	}
+
+	@Transactional
+	public String getRefundRecordFormList(Map<String, Object> map) {
+		
+		int pagenumInt = Integer.valueOf(map.get("pagenum").toString());
+		int pagesizeInt = Integer.valueOf(map.get("pagesize").toString());
+		int limitStart = (pagenumInt - 1) * pagesizeInt;
+		
+		String mmngctUserName = map.get("mmngctUserName").toString();
+		//根据mmngctUserName查出merId
+		Mmngct mmngct = mmaMapper.getByUsername(mmngctUserName);
+		int m_ID = mmngct.getMMA_ID();
+		
+		// 先进行空值判断过滤
+		String O_UniqSearchID = map.get("O_UniqSearchID").toString();
+		String U_OpenId = map.get("U_OpenId").toString();
+		String refundTransactionId = map.get("RefundTransactionId").toString();
+		String refundOutTradeNo = map.get("RefundOutTradeNo").toString();
+		if ("".equals(refundTransactionId)) {
+			refundTransactionId = null;
+		}
+		if ("".equals(refundOutTradeNo)) {
+			refundOutTradeNo = null;
+		}
+		
+		Integer U_ID = null;
+		Integer O_ID = null;
+		
+		String TabIdString = map.get("TabId").toString();
+		Integer TabId = null;
+		if (!"".equals(TabIdString)) {
+			TabId = Integer.valueOf(TabIdString);
+		}
+		String TabTypeIdString = map.get("TabTypeId").toString();
+		Integer TabTypeId = null;
+		if (!"".equals(TabTypeIdString)) {
+			TabTypeId = Integer.valueOf(TabTypeIdString);
+		}
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS Z");
+		SimpleDateFormat formatSuccessString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		String refundSubmitStartTimeString = null;
+		String refundSubmitEndTimeString = null;
+		String refundSuccessStartTimeString = null;
+		String refundSuccessEndTimeString = null;
+		
+		List<String> datesStringList = new ArrayList<String>();
+		datesStringList.add(refundSubmitStartTimeString);
+		datesStringList.add(refundSubmitEndTimeString);
+		datesStringList.add(refundSuccessStartTimeString);
+		datesStringList.add(refundSuccessEndTimeString);
+		
+		
+		List<String> timeStringsList = new ArrayList<String>();
+		
+		String refundSubmitStartTime = "";
+		if (map.get("RefundSubmitStartTime") != null) {
+			refundSubmitStartTime = map.get("RefundSubmitStartTime").toString();
+		}
+		String refundSubmitEndTime = "";
+		if (map.get("RefundSubmitEndTime") != null) {
+			refundSubmitEndTime = map.get("RefundSubmitEndTime").toString();
+		}
+		String refundSuccessStartTime = "";
+		if (map.get("RefundSuccessStartTime") != null) {
+			refundSuccessStartTime = map.get("RefundSuccessStartTime").toString();
+		}
+		String refundSuccessEndTime = "";
+		if (map.get("RefundSuccessEndTime") != null) {
+			refundSuccessEndTime = map.get("RefundSuccessEndTime").toString();
+		}
+		
+		timeStringsList.add(refundSubmitStartTime);
+		timeStringsList.add(refundSubmitEndTime);
+		timeStringsList.add(refundSuccessStartTime);
+		timeStringsList.add(refundSuccessEndTime);
+		
+		for(int i = 0; i < timeStringsList.size(); i++) {
+			if (!"".equals(timeStringsList.get(i))) {
+				// 处理下单开始时间
+				String newTimeString = timeStringsList.get(i).replace("Z", " UTC");
+				
+				try {
+					if (i < 2) {
+						datesStringList.set(i, new Date(format.parse(newTimeString).getTime()).toString());
+					} else {
+						datesStringList.set(i, formatSuccessString.format(new Date(format.parse(newTimeString).getTime())));
+					}
+					
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		if (!"".equals(U_OpenId)) {
+			// 有商户号
+			// 获得O_UID
+			try {
+				String real_U_OpenId = EncryptionAndDeciphering.deciphering(U_OpenId);
+				WechatUser wechatUser = wechatUserMapper.getByUOpenId(real_U_OpenId);
+				U_ID = wechatUser.getU_ID();
+			} catch (Exception e) {
+				logger.info("用户号解密错误!");
+				U_ID = 0;
+			}
+		}
+		
+		if (!"".equals(O_UniqSearchID)) {
+			// 有商户号
+			// 获得O_ID
+			try {
+				Orders orders = ordersMapper.getOrdersByUniqSearchID(O_UniqSearchID);
+				O_ID = orders.getO_ID();
+			} catch (Exception e) {
+				logger.info("订单号错误!");
+				O_ID = 0;
+			}
+		}
+		
+		List<Multi_Refund_Orders_Tab_TabType> multi_Refund_Orders_Tab_TabTypes = null;
+		int total = 0;
+		
+		//TODO 从数据库中检索
+		multi_Refund_Orders_Tab_TabTypes = refundMapper.getByUID_OID_RefundOutTradeNo_RefundId_RefundSubmitTime_RefundSuccessTime_TabId_TabTypeId(
+				m_ID, U_ID, O_ID, refundOutTradeNo, refundTransactionId, datesStringList.get(0), datesStringList.get(1), datesStringList.get(2), datesStringList.get(3), 
+				TabTypeId, TabId, limitStart, pagesizeInt);
+		total = refundMapper.getRefundTotalByUID_OID_RefundOutTradeNo_RefundId_RefundSubmitTime_RefundSuccessTime_TabId_TabTypeId(
+				m_ID, U_ID, O_ID, refundOutTradeNo, refundTransactionId, datesStringList.get(0), datesStringList.get(1), datesStringList.get(2), datesStringList.get(3),  
+				TabTypeId, TabId);
+		
+		SimpleDateFormat refundSubmitTimeDateFormatParse = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.UK);
+		
+		//格式化时间
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		JSONArray refundJsonArray = new JSONArray(multi_Refund_Orders_Tab_TabTypes);
+		for(int i = 0; i < refundJsonArray.length(); i++) {
+			Multi_Refund_Orders_Tab_TabType multi_Refund_Orders_Tab_TabType =  multi_Refund_Orders_Tab_TabTypes.get(i);
+			Date R_Submit_Time_Date = null;
+			try {
+				R_Submit_Time_Date = refundSubmitTimeDateFormatParse.parse(multi_Refund_Orders_Tab_TabType.getR_Submit_Time());
+			} catch (Exception e) {
+				logger.info("退款提交时间null");
+			}
+			String R_Submit_Time_String = null;
+			try {
+				R_Submit_Time_String = simpleDateFormat.format(R_Submit_Time_Date);
+			} catch (Exception e) {
+				logger.info("支付时间null");
+			}
+			
+			refundJsonArray.getJSONObject(i).put("r_Submit_Time", R_Submit_Time_String);
+		}
+		
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "获取成功");
+		
+		JSONObject dataJsonObject = new JSONObject();
+		dataJsonObject.put("refundFormList", refundJsonArray);
+		dataJsonObject.put("total", total);
+		
+		newJsonObject.put("data", dataJsonObject);
 		newJsonObject.put("meta", metaJsonObject);
 		
 		return newJsonObject.toString();
