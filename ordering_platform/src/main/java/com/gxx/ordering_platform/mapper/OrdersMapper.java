@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import com.gxx.ordering_platform.entity.Multi_Orders_Mer;
 import com.gxx.ordering_platform.entity.Multi_Orders_Tab_Tabtype;
 import com.gxx.ordering_platform.entity.Orders;
 
@@ -49,6 +50,15 @@ public interface OrdersMapper {
 	
 	@Select("SELECT * FROM orders WHERE O_UID = #{o_uid} AND O_PayStatue = 2 ORDER BY O_OrderingTime DESC limit #{limitStart}, #{limitSize}")
 	List<Orders> getOrdersOrderByTimeReturn(@Param("o_uid") int o_uid, @Param("limitStart") int limitStart, @Param("limitSize") int limitSize);
+
+	@Select("SELECT * FROM orders left join mer on orders.O_MID = mer.M_ID WHERE O_UID = #{o_uid} AND (O_PayStatue = 0 OR O_PayStatue = 3) ORDER BY O_OrderingTime DESC limit #{limitStart}, #{limitSize}")
+	List<Multi_Orders_Mer> getMulti_Orders_MerOrderByTimeNow(@Param("o_uid") int o_uid, @Param("limitStart") int limitStart, @Param("limitSize") int limitSize);
+	
+	@Select("SELECT * FROM orders left join mer on orders.O_MID = mer.M_ID WHERE O_UID = #{o_uid} AND O_PayStatue = 1 ORDER BY O_OrderingTime DESC limit #{limitStart}, #{limitSize}")
+	List<Multi_Orders_Mer> getMulti_Orders_MerOrderByTimeFinished(@Param("o_uid") int o_uid, @Param("limitStart") int limitStart, @Param("limitSize") int limitSize);
+	
+	@Select("SELECT * FROM orders left join mer on orders.O_MID = mer.M_ID WHERE O_UID = #{o_uid} AND O_PayStatue = 2 ORDER BY O_OrderingTime DESC limit #{limitStart}, #{limitSize}")
+	List<Multi_Orders_Mer> gettMulti_Orders_MerOrderByTimeReturn(@Param("o_uid") int o_uid, @Param("limitStart") int limitStart, @Param("limitSize") int limitSize);
 
 	
 	@Select("SELECT O_ID, O_MID, O_UID, O_TID, O_TotlePrice, O_PayMethod, O_PayStatue, O_OrderingTime, O_PayTime, "

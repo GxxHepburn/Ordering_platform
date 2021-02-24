@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.gxx.ordering_platform.entity.Food;
+import com.gxx.ordering_platform.entity.Multi_Orders_Mer;
 import com.gxx.ordering_platform.entity.OrderAdd;
 import com.gxx.ordering_platform.entity.OrderDetail;
 import com.gxx.ordering_platform.entity.Orders;
@@ -360,9 +361,9 @@ public class WechatOrderingService {
 		int o_uid = wechatUserMapper.getByUOpenId(openid).getU_ID();
 		logger.info("o_uid: " + o_uid);
 		logger.info("openid: " + openid);
-		List<Orders> nowOrders = ordersMapper.getOrdersOrderByTimeNow(o_uid, 0, 10);
-		List<Orders> finishedOrders = ordersMapper.getOrdersOrderByTimeFinished(o_uid, 0, 10);
-		List<Orders> returnOrders = ordersMapper.getOrdersOrderByTimeReturn(o_uid, 0, 10);
+		List<Multi_Orders_Mer> nowOrders = ordersMapper.getMulti_Orders_MerOrderByTimeNow(o_uid, 0, 10);
+		List<Multi_Orders_Mer> finishedOrders = ordersMapper.getMulti_Orders_MerOrderByTimeFinished(o_uid, 0, 10);
+		List<Multi_Orders_Mer> returnOrders = ordersMapper.gettMulti_Orders_MerOrderByTimeReturn(o_uid, 0, 10);
 		
 		JSONArray nowJsonArray = new JSONArray(nowOrders);
 		JSONArray finishedJsonArray = new JSONArray(finishedOrders);
