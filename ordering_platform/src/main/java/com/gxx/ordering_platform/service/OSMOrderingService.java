@@ -730,7 +730,10 @@ public class OSMOrderingService {
 		refund.setR_OID(pay.getP_OID());
 		refund.setR_PID(pay.getP_ID());
 		refund.setR_ORID(orderReturn.getOR_ID());
-		refund.setR_Submit_Time(new Date().toString());
+		
+		// 修改提交时间格式，搞成yyyy-MM-dd hh:MM:ss
+		SimpleDateFormat refundSubmitTimeDateFormatParse = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		refund.setR_Submit_Time(refundSubmitTimeDateFormatParse.format(new Date()));
 		
 		if ("线下支付".equals(pay.getP_Trade_Type())) {
 			msg = "退菜成功！本单为线下支付，请尽快人工退款！";

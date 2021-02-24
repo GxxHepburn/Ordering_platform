@@ -57,7 +57,6 @@ public class OSMRefundService {
 		List<Refund> refunds = refundMapper.getByO_IdOrderByR_Submit_Time(O_ID);
 		
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		SimpleDateFormat parseDate = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.US);
 		
 		
 		JSONObject newJsonObject = new JSONObject();
@@ -76,7 +75,7 @@ public class OSMRefundService {
 				// 查询同时更新到数据库中
 				long R_Submit_Time = 0l;
 				try {
-					R_Submit_Time = parseDate.parse(refund.getR_Submit_Time()).getTime();
+					R_Submit_Time = format.parse(refund.getR_Submit_Time()).getTime();
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -133,16 +132,7 @@ public class OSMRefundService {
 			refundItemJsonObject.put("R_Refund_Id", refund.getR_Refund_Id());
 			refundItemJsonObject.put("R_Refund_Fee", refund.getR_Refund_Fee());
 			refundItemJsonObject.put("R_Total_Fee", refund.getR_Total_Fee());
-			try {
-				// 该字段如果为空，前端也自动为空
-				refundItemJsonObject.put("R_Submit_Time", format.format(parseDate.parse(refund.getR_Submit_Time())));
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			refundItemJsonObject.put("R_Submit_Time", refund.getR_Submit_Time());
 			refundItemJsonObject.put("R_Return_Msg", refund.getR_Return_Msg());
 			refundItemJsonObject.put("R_Result_Code", refund.getR_Result_Code());
 			refundItemJsonObject.put("R_Return_Code", refund.getR_Return_Code());
@@ -284,12 +274,7 @@ public class OSMRefundService {
 				String newTimeString = timeStringsList.get(i).replace("Z", " UTC");
 				
 				try {
-					if (i < 2) {
-						datesStringList.set(i, new Date(format.parse(newTimeString).getTime()).toString());
-					} else {
-						datesStringList.set(i, formatSuccessString.format(new Date(format.parse(newTimeString).getTime())));
-					}
-					
+					datesStringList.set(i, formatSuccessString.format(new Date(format.parse(newTimeString).getTime())));
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -333,29 +318,7 @@ public class OSMRefundService {
 				m_ID, U_ID, O_ID, refundOutTradeNo, refundTransactionId, datesStringList.get(0), datesStringList.get(1), datesStringList.get(2), datesStringList.get(3),  
 				TabTypeId, TabId);
 		
-		SimpleDateFormat refundSubmitTimeDateFormatParse = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.UK);
-		
-		//格式化时间
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		
 		JSONArray refundJsonArray = new JSONArray(multi_Refund_Orders_Tab_TabTypes);
-		for(int i = 0; i < refundJsonArray.length(); i++) {
-			Multi_Refund_Orders_Tab_TabType multi_Refund_Orders_Tab_TabType =  multi_Refund_Orders_Tab_TabTypes.get(i);
-			Date R_Submit_Time_Date = null;
-			try {
-				R_Submit_Time_Date = refundSubmitTimeDateFormatParse.parse(multi_Refund_Orders_Tab_TabType.getR_Submit_Time());
-			} catch (Exception e) {
-				logger.info("退款提交时间null");
-			}
-			String R_Submit_Time_String = null;
-			try {
-				R_Submit_Time_String = simpleDateFormat.format(R_Submit_Time_Date);
-			} catch (Exception e) {
-				logger.info("支付时间null");
-			}
-			
-			refundJsonArray.getJSONObject(i).put("r_Submit_Time", R_Submit_Time_String);
-		}
 		
 		
 		JSONObject newJsonObject = new JSONObject();
