@@ -171,13 +171,13 @@
         },
         {
         	"id": 501,
-            "authName": "数据统计",
+            "authName": "统计分析",
             "path": "reports",
             "children": [
             	{
                     "id": 502,
-                    "authName": "数据报表",
-                    "path": "reports",
+                    "authName": "订单分析",
+                    "path": "orderReports",
                     "children": []
                 }
             ]

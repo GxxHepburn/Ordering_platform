@@ -103,7 +103,7 @@ public class MmaService {
 	public boolean checkingMma(String username, String password) {
 		Mmngct mmngct = mmaMapper.getByUsername(username);
 		if (mmngct != null) {
-			if (password.equals(mmngct.getMMA_Password())) {
+			if (username.equals(mmngct.getMMA_UserName()) && password.equals(mmngct.getMMA_Password())) {
 				return true;
 			}
 		}
