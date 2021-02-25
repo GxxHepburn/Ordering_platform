@@ -31,6 +31,7 @@ import com.gxx.ordering_platform.entity.OrderDetail;
 import com.gxx.ordering_platform.entity.OrderReturn;
 import com.gxx.ordering_platform.entity.OrderReturnDetail;
 import com.gxx.ordering_platform.entity.Orders;
+import com.gxx.ordering_platform.entity.OrdersPHour;
 import com.gxx.ordering_platform.entity.Pay;
 import com.gxx.ordering_platform.entity.Refund;
 import com.gxx.ordering_platform.entity.WechatUser;
@@ -1002,6 +1003,55 @@ public class OSMOrderingService {
 		JSONObject dataJsonObject = new JSONObject();
 		dataJsonObject.put("orderFormList", listToString(multi_Orders_Tab_Tabtypes));
 		dataJsonObject.put("total", total);
+		
+		newJsonObject.put("data", dataJsonObject);
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
+	}
+
+
+	@Transactional
+	public String searchOrdersPHour(Map<String, Object> map) throws Exception {
+		
+		String mmngctUserName = map.get("mmngctUserName").toString();
+		//根据mmngctUserName查出merId
+		Mmngct mmngct = mmaMapper.getByUsername(mmngctUserName);
+		int m_ID = mmngct.getMMA_ID();
+		
+		String dateString = map.get("today").toString();
+		
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date dateStart = simpleDateFormat.parse(dateString + " 00:00:00");
+		Date dateEnd = simpleDateFormat.parse(dateString + " 23:59:59");
+		
+		List<OrdersPHour> ordersPHours = ordersMapper.searchOrdersPHour(m_ID, dateStart, dateEnd);
+		
+		List<OrdersPHour> newOrdersPHours = new ArrayList<OrdersPHour>();
+		
+		int j = 0;
+		for (int i = 0;i < 24; i++) {
+			String nowTimeString = dateString + " " + (i < 10 ? "0" + i : i) + ":00:00";
+			if (j < ordersPHours.size() && nowTimeString.equals(ordersPHours.get(j).getHours())) {
+				OrdersPHour ordersPHour = ordersPHours.get(j);
+				ordersPHour.setHours((i < 10 ? "0" + i : i) + ":00:00~" + (i < 10 ? "0" + i : i) + ":59:59");
+				newOrdersPHours.add(ordersPHour);
+				j++;
+			} else {
+				OrdersPHour ordersPHour = new OrdersPHour();
+				ordersPHour.setHours((i < 10 ? "0" + i : i) + ":00:00~" + (i < 10 ? "0" + i : i) + ":59:59");
+				newOrdersPHours.add(ordersPHour);
+			}
+		}
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "获取成功");
+		
+		JSONObject dataJsonObject = new JSONObject();
+		dataJsonObject.put("hourFormList", new JSONArray(newOrdersPHours));
 		
 		newJsonObject.put("data", dataJsonObject);
 		newJsonObject.put("meta", metaJsonObject);
