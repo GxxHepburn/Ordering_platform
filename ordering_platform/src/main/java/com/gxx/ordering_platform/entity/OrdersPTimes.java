@@ -5,9 +5,9 @@ import java.util.Date;
 import lombok.Data;
 
 @Data
-public class OrdersPHour {
+public class OrdersPTimes {
 
-	String hours;
+	String times;
 	float totalPrice;
 	int totalOrdersNumbers;
 	int numberOfDinners;

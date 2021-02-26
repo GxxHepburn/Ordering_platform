@@ -12,7 +12,7 @@ import org.apache.ibatis.annotations.Update;
 import com.gxx.ordering_platform.entity.Multi_Orders_Mer;
 import com.gxx.ordering_platform.entity.Multi_Orders_Tab_Tabtype;
 import com.gxx.ordering_platform.entity.Orders;
-import com.gxx.ordering_platform.entity.OrdersPHour;
+import com.gxx.ordering_platform.entity.OrdersPTimes;
 
 public interface OrdersMapper {
 
@@ -238,12 +238,21 @@ public interface OrdersMapper {
 			+ "AND O_PayStatue = #{payStatus} ")
 	int getNReturnAndNotFiAndFiOrdersTotalByMIDANDOrderingTime(@Param("m_id") int m_id, @Param("orderingStartTime") Date orderingStartTime, @Param("payStatus") int payStatus);
 
-	@Select("SELECT DATE_FORMAT(O_OrderingTime, '%Y-%m-%d %H:00:00') as hours, "
+	@Select("SELECT DATE_FORMAT(O_OrderingTime, '%Y-%m-%d %H:00:00') as times, "
 			+ " SUM(O_TotlePrice) as totalPrice, COUNT(*) as totalOrdersNumbers, "
 			+ " SUM(O_NumberOfDiners) as numberOfDinners, SUM(O_TotlePrice)/COUNT(*) as pricePOrder, "
 			+ " SUM(O_TotlePrice)/SUM(O_NumberOfDiners) as pricePPeople "
 			+ " FROM orders WHERE O_MID = #{m_id} "
 			+ " AND O_OrderingTime >= #{dateStart} AND O_OrderingTime <= #{dateEnd} "
-			+ " GROUP BY hours ORDER BY hours")
-	List<OrdersPHour> searchOrdersPHour(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
+			+ " GROUP BY times ORDER BY times")
+	List<OrdersPTimes> searchOrdersPHour(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
+	
+	@Select("SELECT DATE_FORMAT(O_OrderingTime, '%Y-%m-%d') as times, "
+			+ " SUM(O_TotlePrice) as totalPrice, COUNT(*) as totalOrdersNumbers, "
+			+ " SUM(O_NumberOfDiners) as numberOfDinners, SUM(O_TotlePrice)/COUNT(*) as pricePOrder, "
+			+ " SUM(O_TotlePrice)/SUM(O_NumberOfDiners) as pricePPeople "
+			+ " FROM orders WHERE O_MID = #{m_id} "
+			+ " AND O_OrderingTime >= #{monthStart} AND O_OrderingTime <= #{monthEnd} "
+			+ " GROUP BY times ORDER BY times")
+	List<OrdersPTimes> searchOrdersPDay(@Param("m_id") int m_id, @Param("monthStart") Date monthStart, @Param("monthEnd") Date monthEnd);
 }
