@@ -1121,4 +1121,53 @@ public class OSMOrderingService {
 		
 		return newJsonObject.toString();
 	}
+	
+	@Transactional
+	public String searchOrdersPMonth (Map<String, Object> map) throws Exception {
+		
+		String mmngctUserName = map.get("mmngctUserName").toString();
+		//根据mmngctUserName查出merId
+		Mmngct mmngct = mmaMapper.getByUsername(mmngctUserName);
+		int m_ID = mmngct.getMMA_ID();
+		
+		String yearString = map.get("year").toString();
+		
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date dateStart = simpleDateFormat.parse(yearString + "-01-01 00:00:00");
+		Date dateEnd = simpleDateFormat.parse(yearString + "-12-31 23:59:59");
+		
+		List<OrdersPTimes> ordersPMonths = ordersMapper.searchOrdersPMonth(m_ID, dateStart, dateEnd);
+		
+		List<OrdersPTimes> newOrdersPMonths = new ArrayList<OrdersPTimes>();
+		
+		int j = 0;
+		for (int i = 0;i < 12;) {
+			i++;
+			String nowTimeString = yearString + "-" + (i < 10 ? "0" + i : i);
+			if (j < ordersPMonths.size() && nowTimeString.equals(ordersPMonths.get(j).getTimes())) {
+				OrdersPTimes ordersPMonth = ordersPMonths.get(j);
+				ordersPMonth.setTimes(i + "月");
+				newOrdersPMonths.add(ordersPMonth);
+				j++;
+			} else {
+				OrdersPTimes ordersPMonth = new OrdersPTimes();
+				ordersPMonth.setTimes(i + "月");
+				newOrdersPMonths.add(ordersPMonth);
+			}
+		}
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "获取成功");
+		
+		JSONObject dataJsonObject = new JSONObject();
+		dataJsonObject.put("monthFormList", new JSONArray(newOrdersPMonths));
+		
+		newJsonObject.put("data", dataJsonObject);
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
+	}
 }

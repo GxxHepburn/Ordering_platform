@@ -255,4 +255,13 @@ public interface OrdersMapper {
 			+ " AND O_OrderingTime >= #{monthStart} AND O_OrderingTime <= #{monthEnd} "
 			+ " GROUP BY times ORDER BY times")
 	List<OrdersPTimes> searchOrdersPDay(@Param("m_id") int m_id, @Param("monthStart") Date monthStart, @Param("monthEnd") Date monthEnd);
+	
+	@Select("SELECT DATE_FORMAT(O_OrderingTime, '%Y-%m') as times, "
+			+ " SUM(O_TotlePrice) as totalPrice, COUNT(*) as totalOrdersNumbers, "
+			+ " SUM(O_NumberOfDiners) as numberOfDinners, SUM(O_TotlePrice)/COUNT(*) as pricePOrder, "
+			+ " SUM(O_TotlePrice)/SUM(O_NumberOfDiners) as pricePPeople "
+			+ " FROM orders WHERE O_MID = #{m_id} "
+			+ " AND O_OrderingTime >= #{dateStart} AND O_OrderingTime <= #{dateEnd} "
+			+ " GROUP BY times ORDER BY times")
+	List<OrdersPTimes> searchOrdersPMonth(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
 }
