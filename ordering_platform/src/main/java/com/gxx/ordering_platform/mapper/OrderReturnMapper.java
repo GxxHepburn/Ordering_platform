@@ -21,8 +21,8 @@ public interface OrderReturnMapper {
 	@Options(useGeneratedKeys = true, keyProperty = "OR_ID")
 	void insert(@Param("orderReturn") OrderReturn orderReturn);
 	
-	@Update("UPDATE orderreturn SET OR_TotlePrice = #{or_totlePrice} WHERE OR_ID = #{or_id}")
-	void updateTotlePrice(@Param("or_id") int or_id, @Param("or_totlePrice") float or_totlePrice);
+	@Update("UPDATE orderreturn SET OR_TotlePrice = #{or_totlePrice}, OR_TotleReturnNum = #{or_totalNum} WHERE OR_ID = #{or_id}")
+	void updateTotlePrice(@Param("or_id") int or_id, @Param("or_totlePrice") float or_totlePrice, @Param("or_totalNum") int or_totalNum);
 	
 	@Select("SELECT * FROM orderreturn WHERE OR_OID = #{o_id}")
 	List<OrderReturn> getByO_ID(@Param("o_id") int o_id);

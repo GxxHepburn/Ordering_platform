@@ -665,6 +665,7 @@ public class OSMOrderingService {
 			}
 		}
 		float nowORTotlePrice = 0.00f;
+		int nowORTotalNum = 0;
 		// 修改orderDetail
 		for (int i = 0; i < newJsonArray.length(); i++) {
 			int onlyReturnNum = newJsonArray.getJSONObject(i).getInt("returnNum");
@@ -690,12 +691,13 @@ public class OSMOrderingService {
 				orderReturnDetail.setORD_Num(newJsonArray.getJSONObject(i).getInt("returnNum"));
 				orderReturnDetail.setORD_FName(newJsonArray.getJSONObject(i).getString("OD_FName"));
 				nowORTotlePrice += orderReturnDetail.getORD_RealPrice() * orderReturnDetail.getORD_Num();
+				nowORTotalNum += orderReturnDetail.getORD_Num();
 				// 插入orderReturnDetail
 				orderReturnDetailMapper.insert(orderReturnDetail);
 			}
 		}
 		// 修改orderreturn总价
-		orderReturnMapper.updateTotlePrice(orderReturn.getOR_ID(), nowORTotlePrice);
+		orderReturnMapper.updateTotlePrice(orderReturn.getOR_ID(), nowORTotlePrice, nowORTotalNum);
 		
 		// 修改orderadd总价
 		List<OrderAdd> orderAdds = orderAddMapper.getByO_ID(O_ID);
