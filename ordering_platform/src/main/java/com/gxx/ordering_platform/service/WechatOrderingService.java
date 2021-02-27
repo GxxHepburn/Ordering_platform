@@ -398,7 +398,7 @@ public class WechatOrderingService {
 		
 		List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(o_id);
 		JSONArray jsonArray = new JSONArray();
-		int returnTotalPrice = 0;
+		float returnTotalPrice = 0.00f;
 		int hasReturn = 0;
 		for(int i=0; i<orderDetails.size(); i++) {
 			JSONObject orderDetailJsonObject = new JSONObject();

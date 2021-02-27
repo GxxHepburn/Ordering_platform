@@ -567,7 +567,7 @@ public class OSMOrderingService {
 		// 格式化P_Time_End时间
 		SimpleDateFormat simpleDateFormatParse = new SimpleDateFormat("yyyyMMddHHmmss");
 		String P_Time_End = simpleDateFormatParse.format(new Date());
-		String P_Totle_Fee = String.valueOf(Integer.valueOf(map.get("o_TotlePrice").toString())*100);
+		String P_Totle_Fee = String.valueOf(Float.valueOf(map.get("o_TotlePrice").toString())*100);
 		String P_Transaction_Id = "";
 		String P_Trade_Type = "线下支付";
 		String P_Bank_Type = "OTHERS";
