@@ -1,5 +1,6 @@
 package com.gxx.ordering_platform.mapper;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Insert;
@@ -9,6 +10,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import com.gxx.ordering_platform.entity.OrderReturn;
+import com.gxx.ordering_platform.entity.ReturnOrdersPTimes;
 
 public interface OrderReturnMapper {
 
@@ -26,4 +28,13 @@ public interface OrderReturnMapper {
 	
 	@Select("SELECT * FROM orderreturn WHERE OR_OID = #{o_id}")
 	List<OrderReturn> getByO_ID(@Param("o_id") int o_id);
+	
+	@Select("SELECT DATE_FORMAT(OR_ReturnTime, '%Y-%m') as times, "
+			+ " COUNT(*) as totalRefundNumbers, "
+			+ " SUM(OR_TotleReturnNum) as totalReturnNum, "
+			+ " SUM(OR_TotlePrice) as totalRefundPrice "
+			+ " FROM orderreturn WHERE OR_MID = #{m_id} "
+			+ " AND OR_ReturnTime >= #{dateStart} AND OR_ReturnTime <= #{dateEnd} "
+			+ " GROUP BY times ORDER BY times")
+	List<ReturnOrdersPTimes> searchReturnOrdersPMonth(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
 }

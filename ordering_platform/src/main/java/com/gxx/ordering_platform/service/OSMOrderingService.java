@@ -1143,7 +1143,7 @@ public class OSMOrderingService {
 		List<OrdersPTimes> newOrdersPMonths = new ArrayList<OrdersPTimes>();
 		
 		int j = 0;
-		for (int i = 0;i < 12;) {
+		for (int i = 0; i < 12;) {
 			i++;
 			String nowTimeString = yearString + "-" + (i < 10 ? "0" + i : i);
 			if (j < ordersPMonths.size() && nowTimeString.equals(ordersPMonths.get(j).getTimes())) {

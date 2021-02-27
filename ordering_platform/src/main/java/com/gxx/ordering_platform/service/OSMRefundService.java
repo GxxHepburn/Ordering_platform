@@ -23,8 +23,10 @@ import com.gxx.ordering_platform.entity.Multi_Pay_Orders_Tab_TabType;
 import com.gxx.ordering_platform.entity.Multi_Refund_Orders_Tab_TabType;
 import com.gxx.ordering_platform.entity.Orders;
 import com.gxx.ordering_platform.entity.Refund;
+import com.gxx.ordering_platform.entity.ReturnOrdersPTimes;
 import com.gxx.ordering_platform.entity.WechatUser;
 import com.gxx.ordering_platform.mapper.MmaMapper;
+import com.gxx.ordering_platform.mapper.OrderReturnMapper;
 import com.gxx.ordering_platform.mapper.OrdersMapper;
 import com.gxx.ordering_platform.mapper.RefundMapper;
 import com.gxx.ordering_platform.mapper.WechatUserMapper;
@@ -47,6 +49,9 @@ public class OSMRefundService {
 	
 	@Autowired
 	OrdersMapper ordersMapper;
+	
+	@Autowired
+	OrderReturnMapper orderReturnMapper;
 	
 	final Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -330,6 +335,54 @@ public class OSMRefundService {
 		JSONObject dataJsonObject = new JSONObject();
 		dataJsonObject.put("refundFormList", refundJsonArray);
 		dataJsonObject.put("total", total);
+		
+		newJsonObject.put("data", dataJsonObject);
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
+	}
+	
+	@Transactional
+	public String searchRefundPMonth(Map<String, Object> map) throws Exception {
+		
+		String mmngctUserName = map.get("mmngctUserName").toString();
+		//根据mmngctUserName查出merId
+		Mmngct mmngct = mmaMapper.getByUsername(mmngctUserName);
+		int m_ID = mmngct.getMMA_ID();
+		
+		String yearString = map.get("refundYear").toString();
+		
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date dateStart = simpleDateFormat.parse(yearString + "-01-01 00:00:00");
+		Date dateEnd = simpleDateFormat.parse(yearString + "-12-31 23:59:59");
+		
+		List<ReturnOrdersPTimes> returnOrdersPMonths = orderReturnMapper.searchReturnOrdersPMonth(m_ID, dateStart, dateEnd);
+		List<ReturnOrdersPTimes> newReturnOrdersPMonths = new ArrayList<ReturnOrdersPTimes>();
+		
+		int j = 0;
+		for (int i = 0; i < 12;) {
+			i++;
+			String nowTimeString = yearString + "-" + (i < 10 ? "0" + i : i);
+			if (j < returnOrdersPMonths.size() && nowTimeString.equals(returnOrdersPMonths.get(j).getTimes())) {
+				ReturnOrdersPTimes returnOrdersPMonth = returnOrdersPMonths.get(j);
+				returnOrdersPMonth.setTimes(i + "月");
+				newReturnOrdersPMonths.add(returnOrdersPMonth);
+				j++;
+			} else {
+				ReturnOrdersPTimes returnOrdersPMonth = new ReturnOrdersPTimes();
+				returnOrdersPMonth.setTimes(i + "月");
+				newReturnOrdersPMonths.add(returnOrdersPMonth);
+			}
+		}
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "获取成功");
+		
+		JSONObject dataJsonObject = new JSONObject();
+		dataJsonObject.put("refundMonthFormList", new JSONArray(newReturnOrdersPMonths));
 		
 		newJsonObject.put("data", dataJsonObject);
 		newJsonObject.put("meta", metaJsonObject);
