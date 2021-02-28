@@ -1,10 +1,11 @@
 package com.gxx.ordering_platform.service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.gxx.ordering_platform.entity.Food;
 import com.gxx.ordering_platform.entity.FoodType;
 import com.gxx.ordering_platform.entity.Mmngct;
+import com.gxx.ordering_platform.entity.PSS;
 import com.gxx.ordering_platform.mapper.FoodMapper;
 import com.gxx.ordering_platform.mapper.FoodPropertyMapper;
 import com.gxx.ordering_platform.mapper.FoodSpecificationsMapper;
@@ -217,6 +219,54 @@ public class OSMFoodTypeService {
 		
 		JSONObject dataJsonObject = new JSONObject();
 		dataJsonObject.put("PSSGoodsAndGoodstypeOptions", goodsAndGoodstypeJsonArray);
+		
+		newJsonObject.put("data", dataJsonObject);
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
+	}
+
+	@Transactional
+	public String searchPSSFormList(Map<String, Object> map) throws Exception {
+		
+		String mmngctUserName = (String) map.get("mmngctUserName");
+		
+		//根据mmngctUserName查出merId
+		Mmngct mmngct = mmaMapper.getByUsername(mmngctUserName);
+		int m_ID = mmngct.getMMA_ID();
+		
+		String PSSGoodID = map.get("PSSGoodID").toString();
+		String PSSGoodtypeID = map.get("PSSGoodtypeID").toString();
+		
+		String PSSStartString = map.get("PSSStartString").toString();
+		String PSSEndString = map.get("PSSEndString").toString();
+		
+		Integer foodId = null;
+		Integer foodtypeId = null;
+		
+		if (!"".equals(PSSGoodID)) {
+			foodId = Integer.valueOf(PSSGoodID);
+		}
+		if (!"".contentEquals(PSSGoodtypeID)) {
+			foodtypeId = Integer.valueOf(PSSGoodtypeID);
+		}
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
+		
+		Date PSSStartDate = format.parse(PSSStartString);
+		Date PSSEndDate = format.parse(PSSEndString);
+		
+		List<PSS> psses = foodTypeMapper.searchPSS(m_ID, PSSStartDate, PSSEndDate, foodId, foodtypeId);
+		System.out.println(psses);
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "获取成功");
+		
+		JSONObject dataJsonObject = new JSONObject();
+		dataJsonObject.put("PSSFormList", new JSONArray(psses));
 		
 		newJsonObject.put("data", dataJsonObject);
 		newJsonObject.put("meta", metaJsonObject);
