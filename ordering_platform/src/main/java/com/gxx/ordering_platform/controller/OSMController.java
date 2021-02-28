@@ -294,7 +294,24 @@ public class OSMController {
 	@PostMapping(value = "/ordersTabAndTabTypeOptions", produces="application/json;charset=UTF-8")
 	@ResponseBody
 	public String ordersTabAndTabTypeOptions(@RequestBody Map<String, Object> map) {
-		return oSMTabService.ordersTabAndTabTypeOptions(map);
+		try {
+			return oSMTabService.ordersTabAndTabTypeOptions(map);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "获取失败");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
 	}
 	
 	@PostMapping(value = "/getOrderFormList", produces="application/json;charset=UTF-8")
@@ -859,6 +876,25 @@ public class OSMController {
 	public String searchRefundPMonth(@RequestBody Map<String, Object> map) {
 		try {
 			return oSMRefundService.searchRefundPMonth(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
+	
+	@PostMapping(value = "/pSSGoodsAndGoodstypeOptions", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String pSSGoodsAndGoodstypeOptions(@RequestBody Map<String, Object> map) {
+		try {
+			return oSMFoodTypeService.pSSGoodsAndGoodstypeOptions(map);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

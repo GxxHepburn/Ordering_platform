@@ -176,4 +176,51 @@ public class OSMFoodTypeService {
 		
 		return newJsonObject.toString();
 	}
+	
+	@Transactional
+	public String pSSGoodsAndGoodstypeOptions(Map<String, Object> map) {
+		
+		String mmngctUserName = (String) map.get("mmngctUserName");
+		
+		//根据mmngctUserName查出merId
+		Mmngct mmngct = mmaMapper.getByUsername(mmngctUserName);
+		int m_ID = mmngct.getMMA_ID();
+		
+		List<FoodType> foodTypes = foodTypeMapper.getByFTMID(m_ID);
+		
+		JSONArray goodsAndGoodstypeJsonArray = new JSONArray();
+		
+		for (FoodType foodType : foodTypes) {
+			List<Food> foods = foodMapper.getByMIDFTID(foodType.getFT_ID(), m_ID);
+			JSONObject foodtypeJsonObject = new JSONObject();
+			foodtypeJsonObject.put("value", foodType.getFT_ID());
+			foodtypeJsonObject.put("label", foodType.getFT_Name());
+			
+			JSONArray foodJsonArray = new JSONArray();
+			for (Food food : foods) {
+				JSONObject foodJsonObject = new JSONObject();
+				foodJsonObject.put("value", food.getF_ID());
+				foodJsonObject.put("label", food.getF_Name());
+				
+				foodJsonArray.put(foodJsonObject);
+			}
+			foodtypeJsonObject.put("children", foodJsonArray);
+			goodsAndGoodstypeJsonArray.put(foodtypeJsonObject);
+		}
+		
+		//拼接json
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "获取成功");
+		
+		JSONObject dataJsonObject = new JSONObject();
+		dataJsonObject.put("PSSGoodsAndGoodstypeOptions", goodsAndGoodstypeJsonArray);
+		
+		newJsonObject.put("data", dataJsonObject);
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
+	}
 }

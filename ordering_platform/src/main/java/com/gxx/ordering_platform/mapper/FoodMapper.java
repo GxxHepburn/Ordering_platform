@@ -97,4 +97,7 @@ public interface FoodMapper {
 	
 	@Update("UPDATE food SET F_Statue = #{statue} WHERE F_MID = #{m_id}")
 	void updateFoodStatueByMID(@Param("m_id") int m_id, @Param("statue") int statue);
+	
+	@Select("SELECT * FROM food WHERE F_MID = #{m_id} AND F_FTID = #{ft_id}")
+	List<Food> getByMIDFTID(@Param("ft_id") int ft_id, @Param("m_id") int m_id);
 }
