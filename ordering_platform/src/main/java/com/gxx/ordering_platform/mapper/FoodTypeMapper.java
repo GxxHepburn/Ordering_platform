@@ -52,7 +52,7 @@ public interface FoodTypeMapper {
 			+ "<if test='foodtypeId!=null'>"
 			+ " AND foodtype.FT_ID &lt;= #{foodtypeId}"
 			+ "</if>"
-			+ " GROUP BY ftid, odrealprice ORDER BY odrealprice"
+			+ " GROUP BY ftid, fid, odrealprice ORDER BY ftid, fid, odrealprice"
 			+ "</script>")
 	List<PSS> searchPSS(@Param("m_id") int m_id, @Param("pssStartDate") Date pssStartDate, 
 			@Param("pssEndDate") Date pssEnDate, @Param("foodId") Integer foodId, @Param("foodtypeId") Integer foodtypeId);
