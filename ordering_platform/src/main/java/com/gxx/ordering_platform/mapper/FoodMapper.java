@@ -81,8 +81,8 @@ public interface FoodMapper {
 	void deleteFoodByFID(@Param("f_id") int f_id);
 	
 	// 添加商品
-	@Insert("INSERT INTO food (F_FTID, F_MID, F_Name, F_ImageUrl, F_Price, F_Unit, F_Stock, F_Tag, F_Statue) VALUES (#{food.F_FTID},"
-			+ " #{food.F_MID}, #{food.F_Name}, #{food.F_ImageUrl}, #{food.F_Price}, #{food.F_Unit}, #{food.F_Stock}, #{food.F_Tag}, #{food.F_Statue})")
+	@Insert("INSERT INTO food (F_FTID, F_MID, F_Name, F_ImageUrl, F_Price, F_Unit, F_Stock, F_Tag, F_Statue, F_SalesVolume) VALUES (#{food.F_FTID},"
+			+ " #{food.F_MID}, #{food.F_Name}, #{food.F_ImageUrl}, #{food.F_Price}, #{food.F_Unit}, #{food.F_Stock}, #{food.F_Tag}, #{food.F_Statue}, 0)")
 	@Options(useGeneratedKeys = true, keyProperty = "F_ID")
 	Integer insert(@Param("food") Food food);
 	
