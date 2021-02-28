@@ -160,6 +160,7 @@ public class WechatController {
 		} catch (Exception e) {
 			//遇到错误，返回下单失败
 			logger.error(e.toString());
+			e.printStackTrace();
 			return "0";
 		}
 	}

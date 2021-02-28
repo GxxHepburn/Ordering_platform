@@ -12,4 +12,6 @@ public class PSS {
 	int odnum;
 	int odrealnum;
 	float odrealprice;
+	float realTotalPrice;
+	float totalPrice;
 }

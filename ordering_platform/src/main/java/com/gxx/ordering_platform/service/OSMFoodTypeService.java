@@ -257,7 +257,6 @@ public class OSMFoodTypeService {
 		Date PSSEndDate = format.parse(PSSEndString);
 		
 		List<PSS> psses = foodTypeMapper.searchPSS(m_ID, PSSStartDate, PSSEndDate, foodId, foodtypeId);
-		System.out.println(psses);
 		
 		JSONObject newJsonObject = new JSONObject();
 		
