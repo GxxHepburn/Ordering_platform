@@ -47,10 +47,10 @@ public interface FoodTypeMapper {
 			+ " WHERE orderadd.OA_MID = #{m_id} AND orderadd.OA_OrderingTime &gt;= #{pssStartDate} "
 			+ " AND orderadd.OA_OrderingTime &lt;= #{pssEndDate} "
 			+ "<if test='foodId!=null'>"
-			+ " AND orderdetail.OD_FID &lt;= #{foodId}"
+			+ " AND orderdetail.OD_FID = #{foodId}"
 			+ "</if>"
 			+ "<if test='foodtypeId!=null'>"
-			+ " AND foodtype.FT_ID &lt;= #{foodtypeId}"
+			+ " AND foodtype.FT_ID = #{foodtypeId}"
 			+ "</if>"
 			+ " GROUP BY ftid, fid, odrealprice ORDER BY ftid, fid, odrealprice"
 			+ "</script>")
