@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Update;
 
 import com.gxx.ordering_platform.entity.CSS;
 import com.gxx.ordering_platform.entity.FoodType;
+import com.gxx.ordering_platform.entity.PSC;
 import com.gxx.ordering_platform.entity.PSS;
 
 public interface FoodTypeMapper {
@@ -74,4 +75,28 @@ public interface FoodTypeMapper {
 			+ "</script>")
 	List<CSS> searchCSS(@Param("m_id") int m_id, @Param("cssStartDate") Date cssStartDate, 
 			@Param("cssEndDate") Date cssEnDate, @Param("foodtypeId") Integer foodtypeId);
+	
+	@Select("<script>"
+			+ "SELECT foodtype.FT_ID as ftid, foodtype.FT_Name as ftname, "
+			+ " food.F_ID as fid,  food.F_Name as fname, orderdetail.OD_Spec as spec, "
+			+ " orderdetail.OD_PropOne as propOne, orderdetail.OD_PropTwo as propTwo, "
+			+ " SUM(orderdetail.OD_Num) as odnum, "
+			+ " SUM(orderdetail.OD_RealNum) as odrealnum , orderdetail.OD_RealPrice as odrealprice, "
+			+ " SUM(orderdetail.OD_RealNum) * orderdetail.OD_RealPrice as realTotalPrice, "
+			+ " SUM(orderdetail.OD_Num) * orderdetail.OD_RealPrice as totalPrice "
+			+ " FROM orderdetail left join food on orderdetail.OD_FID = food.F_ID "
+			+ " left join foodtype on food.F_FTID = foodtype.FT_ID "
+			+ " left join orderadd on orderdetail.OD_OAID = orderadd.OA_ID "
+			+ " WHERE orderadd.OA_MID = #{m_id} AND orderadd.OA_OrderingTime &gt;= #{pscStartDate} "
+			+ " AND orderadd.OA_OrderingTime &lt;= #{pscEndDate} "
+			+ "<if test='foodId!=null'>"
+			+ " AND orderdetail.OD_FID = #{foodId}"
+			+ "</if>"
+			+ "<if test='foodtypeId!=null'>"
+			+ " AND foodtype.FT_ID = #{foodtypeId}"
+			+ "</if>"
+			+ " GROUP BY ftid, fid, spec, propOne, propTwo ORDER BY ftid, fid, odrealprice, propOne, propTwo"
+			+ "</script>")
+	List<PSC> searchPSC(@Param("m_id") int m_id, @Param("pscStartDate") Date pscStartDate, 
+			@Param("pscEndDate") Date pscEnDate, @Param("foodId") Integer foodId, @Param("foodtypeId") Integer foodtypeId);
 }

@@ -16,6 +16,7 @@ import com.gxx.ordering_platform.entity.CSS;
 import com.gxx.ordering_platform.entity.Food;
 import com.gxx.ordering_platform.entity.FoodType;
 import com.gxx.ordering_platform.entity.Mmngct;
+import com.gxx.ordering_platform.entity.PSC;
 import com.gxx.ordering_platform.entity.PSS;
 import com.gxx.ordering_platform.mapper.FoodMapper;
 import com.gxx.ordering_platform.mapper.FoodPropertyMapper;
@@ -324,6 +325,53 @@ public class OSMFoodTypeService {
 		
 		JSONObject dataJsonObject = new JSONObject();
 		dataJsonObject.put("CSSFormList", cssesJsonArray);
+		
+		newJsonObject.put("data", dataJsonObject);
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
+	}
+	
+	@Transactional
+	public String searchPSCFormList(Map<String, Object> map) throws Exception {
+		
+		String mmngctUserName = (String) map.get("mmngctUserName");
+		
+		//根据mmngctUserName查出merId
+		Mmngct mmngct = mmaMapper.getByUsername(mmngctUserName);
+		int m_ID = mmngct.getMMA_ID();
+		
+		String PSCGoodID = map.get("PSCGoodID").toString();
+		String PSCGoodtypeID = map.get("PSCGoodtypeID").toString();
+		
+		String PSCStartString = map.get("PSCStartString").toString();
+		String PSCEndString = map.get("PSCEndString").toString();
+		
+		Integer foodId = null;
+		Integer foodtypeId = null;
+		
+		if (!"".equals(PSCGoodID)) {
+			foodId = Integer.valueOf(PSCGoodID);
+		}
+		if (!"".contentEquals(PSCGoodtypeID)) {
+			foodtypeId = Integer.valueOf(PSCGoodtypeID);
+		}
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
+		
+		Date PSCStartDate = format.parse(PSCStartString);
+		Date PSCEndDate = format.parse(PSCEndString);
+		
+		List<PSC> pscs = foodTypeMapper.searchPSC(m_ID, PSCStartDate, PSCEndDate, foodId, foodtypeId);
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "获取成功");
+		
+		JSONObject dataJsonObject = new JSONObject();
+		dataJsonObject.put("PSCFormList", new JSONArray(pscs));
 		
 		newJsonObject.put("data", dataJsonObject);
 		newJsonObject.put("meta", metaJsonObject);
