@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import com.gxx.ordering_platform.entity.CSS;
 import com.gxx.ordering_platform.entity.FoodType;
 import com.gxx.ordering_platform.entity.PSS;
 
@@ -56,4 +57,21 @@ public interface FoodTypeMapper {
 			+ "</script>")
 	List<PSS> searchPSS(@Param("m_id") int m_id, @Param("pssStartDate") Date pssStartDate, 
 			@Param("pssEndDate") Date pssEnDate, @Param("foodId") Integer foodId, @Param("foodtypeId") Integer foodtypeId);
+	
+	@Select("<script>"
+			+ "SELECT foodtype.FT_ID as ftid, foodtype.FT_Name as ftname, "
+			+ " SUM(orderdetail.OD_Num) as odnum, "
+			+ " SUM(orderdetail.OD_Num * orderdetail.OD_RealPrice) as totalPrice "
+			+ " FROM orderdetail left join food on orderdetail.OD_FID = food.F_ID "
+			+ " left join foodtype on food.F_FTID = foodtype.FT_ID "
+			+ " left join orderadd on orderdetail.OD_OAID = orderadd.OA_ID "
+			+ " WHERE orderadd.OA_MID = #{m_id} AND orderadd.OA_OrderingTime &gt;= #{cssStartDate} "
+			+ " AND orderadd.OA_OrderingTime &lt;= #{cssEndDate} "
+			+ "<if test='foodtypeId!=null'>"
+			+ " AND foodtype.FT_ID = #{foodtypeId}"
+			+ "</if>"
+			+ " GROUP BY ftid"
+			+ "</script>")
+	List<CSS> searchCSS(@Param("m_id") int m_id, @Param("cssStartDate") Date cssStartDate, 
+			@Param("cssEndDate") Date cssEnDate, @Param("foodtypeId") Integer foodtypeId);
 }

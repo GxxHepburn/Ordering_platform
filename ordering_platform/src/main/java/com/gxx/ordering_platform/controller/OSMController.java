@@ -927,4 +927,23 @@ public class OSMController {
 		newJsonObject.put("meta", metaJsonObject);
 		return newJsonObject.toString();
 	}
+	
+	@PostMapping(value = "/searchCSSFormList", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String searchCSSFormList(@RequestBody Map<String, Object> map) {
+		try {
+			return oSMFoodTypeService.searchCSSFormList(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
 }

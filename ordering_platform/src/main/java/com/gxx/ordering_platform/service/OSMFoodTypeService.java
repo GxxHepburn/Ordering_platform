@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gxx.ordering_platform.entity.CSS;
 import com.gxx.ordering_platform.entity.Food;
 import com.gxx.ordering_platform.entity.FoodType;
 import com.gxx.ordering_platform.entity.Mmngct;
@@ -266,6 +267,63 @@ public class OSMFoodTypeService {
 		
 		JSONObject dataJsonObject = new JSONObject();
 		dataJsonObject.put("PSSFormList", new JSONArray(psses));
+		
+		newJsonObject.put("data", dataJsonObject);
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
+	}
+	
+	@Transactional
+	public String searchCSSFormList(Map<String, Object> map) throws Exception {
+		
+		String mmngctUserName = (String) map.get("mmngctUserName");
+		
+		//根据mmngctUserName查出merId
+		Mmngct mmngct = mmaMapper.getByUsername(mmngctUserName);
+		int m_ID = mmngct.getMMA_ID();
+
+		String CSSGoodtypeID = map.get("CSSGoodtypeID").toString();
+		
+		String CSSStartString = map.get("CSSStartString").toString();
+		String CSSEndString = map.get("CSSEndString").toString();
+		
+		Integer foodtypeId = null;
+		
+		if (!"".contentEquals(CSSGoodtypeID)) {
+			foodtypeId = Integer.valueOf(CSSGoodtypeID);
+		}
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
+		
+		Date CSSStartDate = format.parse(CSSStartString);
+		Date CSSEndDate = format.parse(CSSEndString);
+		
+		List<CSS> csses = foodTypeMapper.searchCSS(m_ID, CSSStartDate, CSSEndDate, foodtypeId);
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "获取成功");
+		
+		JSONArray cssesJsonArray = new JSONArray(csses);
+		
+		int totalNum = 0;
+		float totalPrice = 0f;
+		
+		for(int i = 0; i < csses.size(); i++) {
+			totalNum += csses.get(i).getOdnum();
+			totalPrice += csses.get(i).getTotalPrice();
+		}
+		
+		for (int i = 0; i < cssesJsonArray.length(); i++) {
+			cssesJsonArray.getJSONObject(i).put("numPercentage", ((float) csses.get(i).getOdnum()) / ((float) totalNum));
+			cssesJsonArray.getJSONObject(i).put("pricePercentage", csses.get(i).getTotalPrice() / totalPrice);
+		}
+		
+		JSONObject dataJsonObject = new JSONObject();
+		dataJsonObject.put("CSSFormList", cssesJsonArray);
 		
 		newJsonObject.put("data", dataJsonObject);
 		newJsonObject.put("meta", metaJsonObject);
