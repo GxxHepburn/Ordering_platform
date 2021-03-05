@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -971,6 +972,25 @@ public class OSMController {
 	public String searchRCFormList(@RequestBody Map<String, Object> map) {
 		try {
 			return oSMRefundService.searchRCFormList(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
+
+	@PostMapping(value = "/searchRSFormList", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String searchRSFormList(@RequestBody Map<String, Object> map) {
+		try {
+			return oSMRefundService.searchRSFormList(map);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
