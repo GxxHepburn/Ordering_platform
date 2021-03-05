@@ -22,6 +22,7 @@ import com.gxx.ordering_platform.entity.Mmngct;
 import com.gxx.ordering_platform.entity.Multi_Pay_Orders_Tab_TabType;
 import com.gxx.ordering_platform.entity.Multi_Refund_Orders_Tab_TabType;
 import com.gxx.ordering_platform.entity.Orders;
+import com.gxx.ordering_platform.entity.RC;
 import com.gxx.ordering_platform.entity.Refund;
 import com.gxx.ordering_platform.entity.ReturnOrdersPTimes;
 import com.gxx.ordering_platform.entity.WechatUser;
@@ -383,6 +384,51 @@ public class OSMRefundService {
 		
 		JSONObject dataJsonObject = new JSONObject();
 		dataJsonObject.put("refundMonthFormList", new JSONArray(newReturnOrdersPMonths));
+		
+		newJsonObject.put("data", dataJsonObject);
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
+	}
+
+	@Transactional
+	public String searchRCFormList(Map<String, Object> map) throws Exception {
+		String mmngctUserName = (String) map.get("mmngctUserName");
+		
+		//根据mmngctUserName查出merId
+		Mmngct mmngct = mmaMapper.getByUsername(mmngctUserName);
+		int m_ID = mmngct.getMMA_ID();
+		
+		String RCStartString = map.get("RCStartString").toString();
+		String RCEndString = map.get("RCEndString").toString();
+		
+		String RCO_UniqSearchIDString = map.get("RCO_UniqSearchID").toString();
+		
+		String RCO_UniqSearchID = null;
+		if (!"".equals(RCO_UniqSearchIDString)) {
+			RCO_UniqSearchID = RCO_UniqSearchIDString;
+		}
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
+		
+		Date RCStartDate = format.parse(RCStartString);
+		Date RCEndDate = format.parse(RCEndString);
+		
+		List<RC> rcs = orderReturnMapper.searchRC(m_ID, RCStartDate, RCEndDate, RCO_UniqSearchID);
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "获取成功");
+		
+		JSONArray rcsJsonArray = new JSONArray(rcs);
+		for (int i = 0; i < rcsJsonArray.length(); i++) {
+			rcsJsonArray.getJSONObject(i).put("orderTime", format.format(rcs.get(i).getOrderTime()));
+			rcsJsonArray.getJSONObject(i).put("returnTime", format.format(rcs.get(i).getReturnTime()));
+		}
+		
+		JSONObject dataJsonObject = new JSONObject();
+		dataJsonObject.put("RCFormList", rcsJsonArray);
 		
 		newJsonObject.put("data", dataJsonObject);
 		newJsonObject.put("meta", metaJsonObject);
