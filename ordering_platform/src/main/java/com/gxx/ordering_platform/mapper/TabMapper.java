@@ -1,5 +1,6 @@
 package com.gxx.ordering_platform.mapper;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Delete;
@@ -8,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import com.gxx.ordering_platform.entity.COSN;
 import com.gxx.ordering_platform.entity.Multi_Tabtype_Tab;
 import com.gxx.ordering_platform.entity.Tab;
 
@@ -46,4 +48,17 @@ public interface TabMapper {
 	
 	@Select("SELECT * FROM tab WHERE T_TTID = #{t_ttid}")
 	List<Tab> getByTTID(@Param("t_ttid") int t_ttid);
+	
+	@Select("SELECT COUNT(*) as orderNum,  SUM(O_NumberOfDiners) as numberOfDiners, "
+			+ "SUM(O_TotlePrice) as totalOrderPrice, SUM(O_TotlePrice)/COUNT(*) as totalPricePOrder, "
+			+ "SUM(O_TotlePrice)/SUM(O_NumberOfDiners) as totalPricePPerson, tabtype.TT_ID as ttid, "
+			+ "tabtype.TT_Name as ttname, tab.T_ID as tid, tab.T_Name as tname "
+			+ " FROM orders left join tab on orders.O_TID = tab.T_ID "
+			+ " left join tabtype on tab.T_TTID = tabtype.TT_ID "
+			+ " WHERE orders.O_MID = #{m_id} "
+			+ " AND orders.O_OrderingTime >= #{dateStart} "
+			+ " AND orders.O_OrderingTIme <= #{dateEnd} "
+			+ " GROUP BY ttid, tid "
+			+ " ORDER BY ttid, tid")
+	List<COSN> searchCOSN(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
 }

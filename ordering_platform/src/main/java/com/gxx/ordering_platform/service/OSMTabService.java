@@ -1,5 +1,7 @@
 package com.gxx.ordering_platform.service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.gxx.ordering_platform.entity.COSN;
 import com.gxx.ordering_platform.entity.Mmngct;
 import com.gxx.ordering_platform.entity.Multi_Tabtype_Tab;
 import com.gxx.ordering_platform.entity.Tab;
@@ -212,6 +215,40 @@ public class OSMTabService {
 		
 		JSONObject dataJsonObject = new JSONObject();
 		dataJsonObject.put("ordersTabAndTabTypeOptions", tabAndTabTypeJsonArray);
+		
+		newJsonObject.put("data", dataJsonObject);
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
+	}
+
+	@Transactional
+	public String searchCOSNFormList(Map<String, Object> map) throws Exception {
+		
+		String mmngctUserName = (String) map.get("mmngctUserName");
+		
+		//根据mmngctUserName查出merId
+		Mmngct mmngct = mmaMapper.getByUsername(mmngctUserName);
+		int m_ID = mmngct.getMMA_ID();
+		
+		String COSNStartString = map.get("COSNStartString").toString();
+		String COSNEndString = map.get("COSNEndString").toString();
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
+		
+		Date COSNStartDate = format.parse(COSNStartString);
+		Date COSNEndDate = format.parse(COSNEndString);
+		
+		List<COSN> csons = tabMapper.searchCOSN(m_ID, COSNStartDate, COSNEndDate);
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "获取成功");
+		
+		JSONObject dataJsonObject = new JSONObject();
+		dataJsonObject.put("COSNFormList", new JSONArray(csons));
 		
 		newJsonObject.put("data", dataJsonObject);
 		newJsonObject.put("meta", metaJsonObject);
