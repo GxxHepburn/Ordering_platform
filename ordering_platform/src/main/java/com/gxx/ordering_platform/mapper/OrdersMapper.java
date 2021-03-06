@@ -13,6 +13,7 @@ import com.gxx.ordering_platform.entity.Multi_Orders_Mer;
 import com.gxx.ordering_platform.entity.Multi_Orders_Tab_Tabtype;
 import com.gxx.ordering_platform.entity.Orders;
 import com.gxx.ordering_platform.entity.OrdersPTimes;
+import com.gxx.ordering_platform.entity.TR;
 
 public interface OrdersMapper {
 
@@ -264,4 +265,9 @@ public interface OrdersMapper {
 			+ " AND O_OrderingTime >= #{dateStart} AND O_OrderingTime <= #{dateEnd} "
 			+ " GROUP BY times ORDER BY times")
 	List<OrdersPTimes> searchOrdersPMonth(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
+	
+	@Select("SELECT COUNT(*) as tradeNum, COUNT(*) as openingNum, SUM(O_NumberOfDiners) as numberOfDiners "
+			+ "FROM orders WHERE O_MID = #{m_id} AND O_OrderingTime >= #{dateStart} AND "
+			+ " O_OrderingTime <= #{dateEnd}")
+	TR searchTR(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
 }

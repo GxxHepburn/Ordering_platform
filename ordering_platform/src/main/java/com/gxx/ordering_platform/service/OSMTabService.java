@@ -1,6 +1,7 @@
 package com.gxx.ordering_platform.service;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import com.gxx.ordering_platform.entity.TR;
 import com.gxx.ordering_platform.entity.Tab;
 import com.gxx.ordering_platform.entity.TabType;
 import com.gxx.ordering_platform.mapper.MmaMapper;
+import com.gxx.ordering_platform.mapper.OrdersMapper;
 import com.gxx.ordering_platform.mapper.TabMapper;
 import com.gxx.ordering_platform.mapper.TabTypeMapper;
 
@@ -30,6 +32,8 @@ public class OSMTabService {
 	@Autowired TabMapper tabMapper;
 	
 	@Autowired TabTypeMapper tabTypeMapper;
+	
+	@Autowired OrdersMapper ordersMapper;
 
 	@Transactional
 	public String tabs(Map<String, Object> map) {
@@ -276,7 +280,29 @@ public class OSMTabService {
 		Date TRStartDate = format.parse(TRStartString);
 		Date TREndDate = format.parse(TREndString);
 		
-		List<TR> trs = tabMapper.searchTR(m_ID, TRStartDate, TREndDate);
+		// 获取桌台数、餐位数
+		// 交易数=开台数
+		// 客人数
+		
+		TR tr = new TR();
+		
+		TR trTab = tabMapper.searchTR(m_ID);
+		
+		TR trOrders = ordersMapper.searchTR(m_ID, TRStartDate, TREndDate);
+		
+		tr.setTabnum(trTab.getTabnum());
+		tr.setTabPersonNum(trTab.getTabPersonNum());
+		
+		tr.setTradeNum(trOrders.getTradeNum());
+		tr.setOpeningNum(trOrders.getOpeningNum());
+		tr.setNumberOfDiners(trOrders.getNumberOfDiners());
+		tr.setAttendance(((float) tr.getNumberOfDiners())/((float) tr.getTabPersonNum()));
+		tr.setOpeningRate(((float) tr.getOpeningNum())/((float) tr.getTabnum()));
+		if (tr.getOpeningNum() <= tr.getTabnum()) {
+			tr.setTurnoverRate(0);
+		} else {
+			tr.setTurnoverRate(((float) (tr.getOpeningNum() - tr.getTabnum()))/((float) tr.getTabnum()));
+		}
 		
 		JSONObject newJsonObject = new JSONObject();
 		
@@ -284,8 +310,11 @@ public class OSMTabService {
 		metaJsonObject.put("status", 200);
 		metaJsonObject.put("msg", "获取成功");
 		
+		List<TR> trs = new ArrayList<TR>();
+		trs.add(tr);
+		
 		JSONObject dataJsonObject = new JSONObject();
-		dataJsonObject.put("COSNFormList", new JSONArray(trs));
+		dataJsonObject.put("TRFormList", new JSONArray(trs));
 		
 		newJsonObject.put("data", dataJsonObject);
 		newJsonObject.put("meta", metaJsonObject);

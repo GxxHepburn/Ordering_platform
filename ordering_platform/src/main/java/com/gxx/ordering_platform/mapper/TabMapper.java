@@ -63,6 +63,7 @@ public interface TabMapper {
 			+ " ORDER BY ttid, tid")
 	List<COSN> searchCOSN(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
 	
-	@Select("")
-	List<TR> searchTR(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
+	@Select("SELECT COUNT(*) as tabnum, SUM(T_PeopleOfDiners) as tabPersonNum "
+			+ " FROM tab WHERE T_MID = #{m_id}")
+	TR searchTR(@Param("m_id") int m_id);
 }

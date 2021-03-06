@@ -5,4 +5,14 @@ import lombok.Data;
 @Data
 public class TR {
 
+	int tabnum;
+	int tabPersonNum;
+	
+	int tradeNum;
+	int openingNum;
+	int numberOfDiners;
+	
+	float attendance;
+	float openingRate;
+	float turnoverRate;
 }
