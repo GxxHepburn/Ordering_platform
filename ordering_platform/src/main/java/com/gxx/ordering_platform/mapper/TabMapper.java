@@ -18,7 +18,7 @@ public interface TabMapper {
 	@Select("SELECT * FROM tab WHERE T_ID = #{t_id}")
 	Tab getByTabId(@Param("t_id") int t_id);
 	
-	@Select("SELECT * FROM tabtype, tab WHERE TT_ID = T_TTID AND T_MID = #{t_mid} AND T_Name like concat(#{query}, '%') limit #{limitStart}, #{pagesize}")
+	@Select("SELECT * FROM tabtype, tab WHERE TT_ID = T_TTID AND T_MID = #{t_mid} AND T_Name like concat(#{query}, '%') ORDER BY tabtype.TT_ID, tab.T_ID limit #{limitStart}, #{pagesize}")
 	List<Multi_Tabtype_Tab> getByMID(@Param("t_mid") int t_mid, @Param("limitStart") int limitStart, @Param("pagesize") int pagesize, @Param("query") String query);
 	
 	@Select("SELECT * FROM tabtype, tab WHERE TT_ID = T_TTID AND T_MID = #{t_mid} AND T_Name like concat(#{query}, '%') AND T_TTID = #{t_ttid} limit #{limitStart}, #{pagesize}")
