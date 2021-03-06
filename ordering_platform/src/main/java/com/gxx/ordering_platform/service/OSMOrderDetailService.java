@@ -1,6 +1,7 @@
 package com.gxx.ordering_platform.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -21,7 +22,8 @@ public class OSMOrderDetailService {
 	@Autowired FoodMapper foodMapper;
 	
 	@Transactional
-	public String orderDetails(int O_ID) {
+	public String orderDetails(Map<String, Object> map) {
+		int O_ID = Integer.valueOf(map.get("O_ID").toString());
 		
 		List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(O_ID);
 		

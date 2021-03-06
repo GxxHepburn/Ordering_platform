@@ -103,7 +103,6 @@ public class OSMController {
 		try {
 			return mmaService.login(map);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// 错误信息
@@ -111,7 +110,7 @@ public class OSMController {
 		
 		JSONObject metaJsonObject = new JSONObject();
 		metaJsonObject.put("status", 500);
-		metaJsonObject.put("msg", "失败!");
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
 		
 		newJsonObject.put("meta", metaJsonObject);
 		return newJsonObject.toString();
@@ -129,11 +128,7 @@ public class OSMController {
 		
 		try {
 			return oSMUsersService.users(map);
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// 错误信息
@@ -141,7 +136,7 @@ public class OSMController {
 		
 		JSONObject metaJsonObject = new JSONObject();
 		metaJsonObject.put("status", 500);
-		metaJsonObject.put("msg", "获取失败");
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
 		
 		newJsonObject.put("meta", metaJsonObject);
 		return newJsonObject.toString();
@@ -150,8 +145,20 @@ public class OSMController {
 	@PostMapping("/orderDetails")
 	@ResponseBody
 	public String orderDetails(@RequestBody Map<String, Object> map) {
-		int O_ID = Integer.valueOf(map.get("O_ID").toString());
-		return oSMOrderDetailService.orderDetails(O_ID);
+		try {
+			return oSMOrderDetailService.orderDetails(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
 	}
 	
 	@PostMapping(value = "/uploadFoodImg", produces="application/json;charset=UTF-8")
@@ -163,61 +170,191 @@ public class OSMController {
 	@PostMapping(value = "/cates", produces="application/json;charset=UTF-8")
 	@ResponseBody
 	public String cates(@RequestBody Map<String, Object> map) {
-		return oSMFoodTypeService.cates(map);
+		try {
+			return oSMFoodTypeService.cates(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
 	}
 	
 	@PostMapping(value = "/editFood", produces="application/json;charset=UTF-8")
 	@ResponseBody
 	public String editFood(@RequestBody Map<String, Object> map) {
-		return oSMFoodService.editFood(map);
+		try {
+			return oSMFoodService.editFood(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
 	}
 	
 	@PostMapping(value = "/deleteFood", produces="application/json;charset=UTF-8")
 	@ResponseBody
 	public String deleteFood(@RequestBody Map<String, Object> map) {
-		return oSMFoodService.deleteFood(map);
+		try {
+			return oSMFoodService.deleteFood(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
 	}
 	
 	@PostMapping(value = "/addFood", produces="application/json;charset=UTF-8")
 	@ResponseBody
 	public String addFood(@RequestBody Map<String, Object> map) {
-		return oSMFoodService.addFood(map);
+		try {
+			return oSMFoodService.addFood(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
 	}
 	
 	@PostMapping(value = "/searchGoods", produces="application/json;charset=UTF-8")
 	@ResponseBody
 	public String searchGoods(@RequestBody Map<String, Object> map) {
-		return oSMFoodService.searchGoods(map);
+		try {
+			return oSMFoodService.searchGoods(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
 	}
 	
 	@PostMapping(value = "/searchCates", produces="application/json;charset=UTF-8")
 	@ResponseBody
 	public String searchCates(@RequestBody Map<String, Object> map) {
-		return oSMFoodTypeService.searchCates(map);
+		try {
+			return oSMFoodTypeService.searchCates(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
 	}
 	
 	@PostMapping(value = "/deleteCate", produces="application/json;charset=UTF-8")
 	@ResponseBody
 	public String deleteCate(@RequestBody Map<String, Object> map) {
-		return oSMFoodTypeService.deleteCate(map);
+		try {
+			return oSMFoodTypeService.deleteCate(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
 	}
 	
 	@PostMapping(value = "/changeFTName", produces="application/json;charset=UTF-8")
 	@ResponseBody
 	public String changeFTName(@RequestBody Map<String, Object> map) {
-		return oSMFoodTypeService.changeFTName(map);
+		try {
+			return oSMFoodTypeService.changeFTName(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
 	}
 	
 	@PostMapping(value = "/addFT", produces="application/json;charset=UTF-8")
 	@ResponseBody
 	public String addFT(@RequestBody Map<String, Object> map) {
-		return oSMFoodTypeService.addFT(map);
+		try {
+			return oSMFoodTypeService.addFT(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
 	}
 	
 	@PostMapping(value = "/getMerInfo", produces="application/json;charset=UTF-8")
 	@ResponseBody
 	public String getMerInfo(@RequestBody Map<String, Object> map) {
-		return oSMMerService.getMerInfo(map);
+		try {
+			return oSMMerService.getMerInfo(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
 	}
 	
 	@PostMapping(value = "/uploadMerImg", produces="application/json;charset=UTF-8")
@@ -229,79 +366,9 @@ public class OSMController {
 	@PostMapping(value = "/changeMerInfo", produces="application/json;charset=UTF-8")
 	@ResponseBody
 	public String changeMerInfo(@RequestBody Map<String, Object> map) {
-		return oSMMerService.changeMerInfo(map);
-	}
-	
-	@PostMapping(value = "/tabs", produces="application/json;charset=UTF-8")
-	@ResponseBody
-	public String tabs(@RequestBody Map<String, Object> map) {
-		return oSMTabService.tabs(map);
-	}
-	
-	@PostMapping(value = "/deleteTab", produces="application/json;charset=UTF-8")
-	@ResponseBody
-	public String deleteTab(@RequestBody Map<String, Object> map) {
-		return oSMTabService.deleteTab(map);
-	}
-	
-	@PostMapping(value = "/tabtypes", produces="application/json;charset=UTF-8")
-	@ResponseBody
-	public String tabtypes(@RequestBody Map<String, Object> map) {
-		return oSMTabTypeService.tabtypes(map);
-	}
-	
-	@PostMapping(value = "/editTab", produces="application/json;charset=UTF-8")
-	@ResponseBody
-	public String editTab(@RequestBody Map<String, Object> map) {
-		return oSMTabService.editTab(map);
-	}
-	
-	@PostMapping(value = "/searchtabs", produces="application/json;charset=UTF-8")
-	@ResponseBody
-	public String searchtabs(@RequestBody Map<String, Object> map) {
-		return oSMTabService.searchtabs(map);
-	}
-	
-	@PostMapping(value = "/addTab", produces="application/json;charset=UTF-8")
-	@ResponseBody
-	public String addTab(@RequestBody Map<String, Object> map) {
-		return oSMTabService.addTab(map);
-	}
-	
-	@PostMapping(value = "/searchTabTypes", produces="application/json;charset=UTF-8")
-	@ResponseBody
-	public String searchTabTypes(@RequestBody Map<String, Object> map) {
-		return oSMTabTypeService.searchTabTypes(map);
-	}
-	
-	@PostMapping(value = "/deleteTabType", produces="application/json;charset=UTF-8")
-	@ResponseBody
-	public String deleteTabType(@RequestBody Map<String, Object> map) {
-		return oSMTabTypeService.deleteTabType(map);
-	}
-	
-	@PostMapping(value = "/changeTTName", produces="application/json;charset=UTF-8")
-	@ResponseBody
-	public String changeTTName(@RequestBody Map<String, Object> map) {
-		return oSMTabTypeService.changeTTName(map);
-	}
-	
-	@PostMapping(value = "/addTT", produces="application/json;charset=UTF-8")
-	@ResponseBody
-	public String addTT(@RequestBody Map<String, Object> map) {
-		return oSMTabTypeService.addTT(map);
-	}
-	
-	@PostMapping(value = "/ordersTabAndTabTypeOptions", produces="application/json;charset=UTF-8")
-	@ResponseBody
-	public String ordersTabAndTabTypeOptions(@RequestBody Map<String, Object> map) {
 		try {
-			return oSMTabService.ordersTabAndTabTypeOptions(map);
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return oSMMerService.changeMerInfo(map);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// 错误信息
@@ -309,7 +376,216 @@ public class OSMController {
 		
 		JSONObject metaJsonObject = new JSONObject();
 		metaJsonObject.put("status", 500);
-		metaJsonObject.put("msg", "获取失败");
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
+	
+	@PostMapping(value = "/tabs", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String tabs(@RequestBody Map<String, Object> map) {
+		try {
+			return oSMTabService.tabs(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
+	
+	@PostMapping(value = "/deleteTab", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String deleteTab(@RequestBody Map<String, Object> map) {
+		try {
+			return oSMTabService.deleteTab(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
+	
+	@PostMapping(value = "/tabtypes", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String tabtypes(@RequestBody Map<String, Object> map) {
+		try {
+			return oSMTabTypeService.tabtypes(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
+	
+	@PostMapping(value = "/editTab", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String editTab(@RequestBody Map<String, Object> map) {
+		try {
+			return oSMTabService.editTab(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
+	
+	@PostMapping(value = "/searchtabs", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String searchtabs(@RequestBody Map<String, Object> map) {
+		try {
+			return oSMTabService.searchtabs(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
+	
+	@PostMapping(value = "/addTab", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String addTab(@RequestBody Map<String, Object> map) {
+		try {
+			return oSMTabService.addTab(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
+	
+	@PostMapping(value = "/searchTabTypes", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String searchTabTypes(@RequestBody Map<String, Object> map) {
+		try {
+			return oSMTabTypeService.searchTabTypes(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
+	
+	@PostMapping(value = "/deleteTabType", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String deleteTabType(@RequestBody Map<String, Object> map) {
+		try {
+			return oSMTabTypeService.deleteTabType(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
+	
+	@PostMapping(value = "/changeTTName", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String changeTTName(@RequestBody Map<String, Object> map) {
+		try {
+			return oSMTabTypeService.changeTTName(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
+	
+	@PostMapping(value = "/addTT", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String addTT(@RequestBody Map<String, Object> map) {
+		try {
+			return oSMTabTypeService.addTT(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
+	
+	@PostMapping(value = "/ordersTabAndTabTypeOptions", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String ordersTabAndTabTypeOptions(@RequestBody Map<String, Object> map) {
+		try {
+			return oSMTabService.ordersTabAndTabTypeOptions(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
 		
 		newJsonObject.put("meta", metaJsonObject);
 		return newJsonObject.toString();
@@ -320,11 +596,7 @@ public class OSMController {
 	public String getOrderFormList(@RequestBody Map<String, Object> map) {
 		try {
 			return oSMOrderingService.getOrderFormList(map);
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// 错误信息
@@ -332,7 +604,7 @@ public class OSMController {
 		
 		JSONObject metaJsonObject = new JSONObject();
 		metaJsonObject.put("status", 500);
-		metaJsonObject.put("msg", "获取失败");
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
 		
 		newJsonObject.put("meta", metaJsonObject);
 		return newJsonObject.toString();
@@ -343,11 +615,7 @@ public class OSMController {
 	public String getOrderForm(@RequestBody Map<String, Object> map) {
 		try {
 			return oSMOrderingService.getOrderForm(map);
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// 错误信息
@@ -355,7 +623,7 @@ public class OSMController {
 		
 		JSONObject metaJsonObject = new JSONObject();
 		metaJsonObject.put("status", 500);
-		metaJsonObject.put("msg", "获取失败");
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
 		
 		newJsonObject.put("meta", metaJsonObject);
 		return newJsonObject.toString();
@@ -366,11 +634,7 @@ public class OSMController {
 	public String getOrderAddFormList(@RequestBody Map<String, Object> map) {
 		try {
 			return oSMOrderingService.getOrderAddFormList(map);
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// 错误信息
@@ -378,7 +642,7 @@ public class OSMController {
 		
 		JSONObject metaJsonObject = new JSONObject();
 		metaJsonObject.put("status", 500);
-		metaJsonObject.put("msg", "获取失败");
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
 		
 		newJsonObject.put("meta", metaJsonObject);
 		return newJsonObject.toString();
@@ -389,8 +653,6 @@ public class OSMController {
 	public String onlyReturnGoods(@RequestBody Map<String, Object> map) {
 		try {
 			return oSMOrderingService.onlyReturnGoods(map);
-		} catch (JSONException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -399,7 +661,7 @@ public class OSMController {
 		
 		JSONObject metaJsonObject = new JSONObject();
 		metaJsonObject.put("status", 500);
-		metaJsonObject.put("msg", "获取失败");
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
 		
 		newJsonObject.put("meta", metaJsonObject);
 		return newJsonObject.toString();
@@ -410,8 +672,6 @@ public class OSMController {
 	public String onePunchUpGoods(@RequestBody Map<String, Object> map) {
 		try {
 			return oSMFoodService.onePunchUpGoods(map);
-		} catch (JSONException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -420,7 +680,7 @@ public class OSMController {
 		
 		JSONObject metaJsonObject = new JSONObject();
 		metaJsonObject.put("status", 500);
-		metaJsonObject.put("msg", "获取失败");
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
 		
 		newJsonObject.put("meta", metaJsonObject);
 		return newJsonObject.toString();
@@ -431,8 +691,6 @@ public class OSMController {
 	public String changeFoodStatue(@RequestBody Map<String, Object> map) {
 		try {
 			return oSMFoodService.changeFoodStatue(map);
-		} catch (JSONException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -441,7 +699,7 @@ public class OSMController {
 		
 		JSONObject metaJsonObject = new JSONObject();
 		metaJsonObject.put("status", 500);
-		metaJsonObject.put("msg", "修改商品状态失败!");
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
 		
 		newJsonObject.put("meta", metaJsonObject);
 		return newJsonObject.toString();
@@ -452,8 +710,6 @@ public class OSMController {
 	public String onePunchDisableOrAble(@RequestBody Map<String, Object> map) {
 		try {
 			return oSMFoodService.onePunchDisableOrAble(map);
-		} catch (JSONException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -462,7 +718,7 @@ public class OSMController {
 		
 		JSONObject metaJsonObject = new JSONObject();
 		metaJsonObject.put("status", 500);
-		metaJsonObject.put("msg", "失败!");
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
 		
 		newJsonObject.put("meta", metaJsonObject);
 		return newJsonObject.toString();
@@ -473,8 +729,6 @@ public class OSMController {
 	public String changeWechatUserStatus(@RequestBody Map<String, Object> map) {
 		try {
 			return oSMWechatUserService.changeWechatUserStatus(map);
-		} catch (JSONException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -483,7 +737,7 @@ public class OSMController {
 		
 		JSONObject metaJsonObject = new JSONObject();
 		metaJsonObject.put("status", 500);
-		metaJsonObject.put("msg", "失败!");
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
 		
 		newJsonObject.put("meta", metaJsonObject);
 		return newJsonObject.toString();
@@ -494,8 +748,6 @@ public class OSMController {
 	public String getOrderPayForm(@RequestBody Map<String, Object> map) {
 		try {
 			return oSMPayService.getOrderPayForm(map);
-		} catch (JSONException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -504,7 +756,7 @@ public class OSMController {
 		
 		JSONObject metaJsonObject = new JSONObject();
 		metaJsonObject.put("status", 500);
-		metaJsonObject.put("msg", "失败!");
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
 		
 		newJsonObject.put("meta", metaJsonObject);
 		return newJsonObject.toString();
@@ -515,11 +767,7 @@ public class OSMController {
 	public String takingOrder(@RequestBody Map<String, Object> map) {
 		try {
 			return oSMOrderingService.takingOrder(map);
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// 错误信息
@@ -527,7 +775,7 @@ public class OSMController {
 		
 		JSONObject metaJsonObject = new JSONObject();
 		metaJsonObject.put("status", 500);
-		metaJsonObject.put("msg", "失败!");
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
 		
 		newJsonObject.put("meta", metaJsonObject);
 		return newJsonObject.toString();
@@ -538,11 +786,7 @@ public class OSMController {
 	public String notTakingOrerAddFormList(@RequestBody Map<String, Object> map) {
 		try {
 			return oSMOrderingService.notTakingOrerAddFormList(map);
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// 错误信息
@@ -550,7 +794,7 @@ public class OSMController {
 		
 		JSONObject metaJsonObject = new JSONObject();
 		metaJsonObject.put("status", 500);
-		metaJsonObject.put("msg", "失败!");
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
 		
 		newJsonObject.put("meta", metaJsonObject);
 		return newJsonObject.toString();
@@ -561,11 +805,7 @@ public class OSMController {
 	public String orderFiUnderLine(@RequestBody Map<String, Object> map) {
 		try {
 			return oSMOrderingService.orderFiUnderLine(map);
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// 错误信息
@@ -573,7 +813,7 @@ public class OSMController {
 		
 		JSONObject metaJsonObject = new JSONObject();
 		metaJsonObject.put("status", 500);
-		metaJsonObject.put("msg", "失败!");
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
 		
 		newJsonObject.put("meta", metaJsonObject);
 		return newJsonObject.toString();
@@ -585,7 +825,6 @@ public class OSMController {
 		try {
 			return oSMOrderingService.orderNotFiUnderLine(map);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// 错误信息
@@ -593,7 +832,7 @@ public class OSMController {
 		
 		JSONObject metaJsonObject = new JSONObject();
 		metaJsonObject.put("status", 500);
-		metaJsonObject.put("msg", "失败!");
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
 		
 		newJsonObject.put("meta", metaJsonObject);
 		return newJsonObject.toString();
@@ -605,7 +844,6 @@ public class OSMController {
 		try {
 			return mmaService.sendCheck(map);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// 错误信息
@@ -625,7 +863,6 @@ public class OSMController {
 		try {
 			return mmaService.realCheck(map);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// 错误信息
@@ -645,7 +882,6 @@ public class OSMController {
 		try {
 			return oSMOrderingService.returnGoodsWithMoney(map);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// 错误信息
@@ -665,7 +901,6 @@ public class OSMController {
 		try {
 			return oSMOrderingService.getOrderReturnFormList(map);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// 错误信息
@@ -685,7 +920,6 @@ public class OSMController {
 		try {
 			return mmaService.checkTradePassword(map);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// 错误信息
@@ -705,7 +939,6 @@ public class OSMController {
 		try {
 			return oSMRefundService.getRefundFormList(map);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// 错误信息
@@ -725,7 +958,6 @@ public class OSMController {
 		try {
 			return oSMRefundService.refundQuery(map);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// 错误信息
