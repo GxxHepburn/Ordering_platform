@@ -38,12 +38,12 @@ public class OSMOrderingHandler extends TextWebSocketHandler {
         // 新会话根据ID放入Map:
         
      // 检查是否有商户重乎链接-name属性重复,有就关闭
-		for (String id : clients.keySet()) {
-			WebSocketSession sion = clients.get(id);
-			if (sion.getAttributes().get("name").equals(session.getAttributes().get("name"))) {
-				sion.close();
-			}
-		}
+//		for (String id : clients.keySet()) {
+//			WebSocketSession sion = clients.get(id);
+//			if (sion.getAttributes().get("name").equals(session.getAttributes().get("name"))) {
+//				sion.close();
+//			}
+//		}
 		Mmngct mmngct = mmaMapper.getByUsername(session.getAttributes().get("name").toString());
 		session.getAttributes().put("M_ID", mmngct.getMMA_MID());
         clients.put(session.getId(), session);
