@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Update;
 
 import com.gxx.ordering_platform.entity.COSN;
 import com.gxx.ordering_platform.entity.Multi_Tabtype_Tab;
+import com.gxx.ordering_platform.entity.TR;
 import com.gxx.ordering_platform.entity.Tab;
 
 public interface TabMapper {
@@ -61,4 +62,7 @@ public interface TabMapper {
 			+ " GROUP BY ttid, tid "
 			+ " ORDER BY ttid, tid")
 	List<COSN> searchCOSN(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
+	
+	@Select("")
+	List<TR> searchTR(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
 }

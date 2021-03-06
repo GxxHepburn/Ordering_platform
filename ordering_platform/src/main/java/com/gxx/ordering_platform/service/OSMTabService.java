@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.gxx.ordering_platform.entity.COSN;
 import com.gxx.ordering_platform.entity.Mmngct;
 import com.gxx.ordering_platform.entity.Multi_Tabtype_Tab;
+import com.gxx.ordering_platform.entity.TR;
 import com.gxx.ordering_platform.entity.Tab;
 import com.gxx.ordering_platform.entity.TabType;
 import com.gxx.ordering_platform.mapper.MmaMapper;
@@ -249,6 +250,42 @@ public class OSMTabService {
 		
 		JSONObject dataJsonObject = new JSONObject();
 		dataJsonObject.put("COSNFormList", new JSONArray(csons));
+		
+		newJsonObject.put("data", dataJsonObject);
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
+	}
+
+	@Transactional
+	public String searchTRFormList(Map<String, Object> map) throws Exception {
+		
+		String mmngctUserName = (String) map.get("mmngctUserName");
+		
+		//根据mmngctUserName查出merId
+		Mmngct mmngct = mmaMapper.getByUsername(mmngctUserName);
+		int m_ID = mmngct.getMMA_ID();
+		
+		String TRDayString = map.get("TRDayString").toString();
+		
+		String TRStartString = TRDayString + " 00:00:00";
+		String TREndString = TRDayString + " 23:59:59";
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
+		
+		Date TRStartDate = format.parse(TRStartString);
+		Date TREndDate = format.parse(TREndString);
+		
+		List<TR> trs = tabMapper.searchTR(m_ID, TRStartDate, TREndDate);
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "获取成功");
+		
+		JSONObject dataJsonObject = new JSONObject();
+		dataJsonObject.put("COSNFormList", new JSONArray(trs));
 		
 		newJsonObject.put("data", dataJsonObject);
 		newJsonObject.put("meta", metaJsonObject);
