@@ -19,6 +19,7 @@ import com.gxx.ordering_platform.entity.Multi_Tabtype_Tab;
 import com.gxx.ordering_platform.entity.TR;
 import com.gxx.ordering_platform.entity.Tab;
 import com.gxx.ordering_platform.entity.TabType;
+import com.gxx.ordering_platform.entity.UDS;
 import com.gxx.ordering_platform.mapper.MmaMapper;
 import com.gxx.ordering_platform.mapper.OrdersMapper;
 import com.gxx.ordering_platform.mapper.TabMapper;

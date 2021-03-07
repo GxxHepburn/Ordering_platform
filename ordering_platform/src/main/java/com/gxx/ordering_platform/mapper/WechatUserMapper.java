@@ -1,5 +1,6 @@
 package com.gxx.ordering_platform.mapper;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Insert;
@@ -8,6 +9,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import com.gxx.ordering_platform.entity.Multi_WechatUser_Orders;
+import com.gxx.ordering_platform.entity.UDS;
 import com.gxx.ordering_platform.entity.WechatUser;
 
 public interface WechatUserMapper {
@@ -70,4 +72,28 @@ public interface WechatUserMapper {
 			+ "</if>"
 			+ "</script>")
 	int getTotalByUID(@Param("o_mid") int o_mid,  @Param("u_id") Integer u_id);
+	
+	@Select("SELECT COUNT(DISTINCT orders.O_UID) as userNum FROM orders WHERE "
+			+ " orders.O_MID = #{m_id} "
+			+ " AND orders.O_OrderingTime >= #{dateStart} "
+			+ " AND orders.O_OrderingTime <= #{dateEnd}")
+	UDS searchUDSUserNum(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
+	
+	@Select("SELECT COUNT(*) as newUserNum FROM wechat_user WHERE wechat_user.U_ID IN (SELECT DISTINCT orders.O_UID FROM orders WHERE "
+			+ " orders.O_MID = #{m_id} "
+			+ " AND orders.O_OrderingTime >= #{dateStart} "
+			+ " AND orders.O_OrderingTime <= #{dateEnd}) "
+			+ " AND wechat_user.U_ID NOT IN ("
+			+ " SELECT DISTINCT orders.O_UID FROM orders WHERE "
+			+ " orders.O_MID = #{m_id} "
+			+ " AND orders.O_OrderingTime < #{dateStart})")
+	UDS searchUDSNewUserNum(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
+	
+	@Select("SELECT SUM(orders.O_NumberOfDiners) as consumeNum, COUNT(*) as consumeCount, "
+			+ " SUM(orders.O_TotlePrice) as totalPrice "
+			+ " FROM orders WHERE "
+			+ " orders.O_MID = #{m_id} "
+			+ " AND orders.O_OrderingTime >= #{dateStart} "
+			+ " AND orders.O_OrderingTime <= #{dateEnd}")
+	UDS searchUDSConsume(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
 }
