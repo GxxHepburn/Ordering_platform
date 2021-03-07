@@ -81,7 +81,12 @@ public class OSMTabService {
 		
 		int t_ID = Integer.valueOf(map.get("t_ID").toString());
 		
+		int m_ID = Integer.valueOf(map.get("TT_MID").toString());
+		
 		tabMapper.deleteByTID(t_ID);
+		
+		// 删除qrcode
+		qrCodeMapper.delete(m_ID, t_ID);
 		
 		//拼接json
 		JSONObject newJsonObject = new JSONObject();
@@ -179,7 +184,7 @@ public class OSMTabService {
 		
 		String url = "https://www.donghuastar.com/wechat/scan?res=" + m_ID + "&table=" + tab.getT_ID();
 		// 插入qrcode
-		qrCodeMapper.insert(m_ID, url);
+		qrCodeMapper.insert(m_ID, url, tab.getT_ID(), tab.getT_TTID());
 		
 		//拼接json
 		JSONObject newJsonObject = new JSONObject();

@@ -13,6 +13,7 @@ import com.gxx.ordering_platform.entity.Mmngct;
 import com.gxx.ordering_platform.entity.Tab;
 import com.gxx.ordering_platform.entity.TabType;
 import com.gxx.ordering_platform.mapper.MmaMapper;
+import com.gxx.ordering_platform.mapper.QrCodeMapper;
 import com.gxx.ordering_platform.mapper.TabMapper;
 import com.gxx.ordering_platform.mapper.TabTypeMapper;
 
@@ -24,6 +25,8 @@ public class OSMTabTypeService {
 	@Autowired TabTypeMapper tabTypeMapper;
 	
 	@Autowired TabMapper tabMapper;
+	
+	@Autowired QrCodeMapper qrCodeMapper;
 
 	@Transactional
 	public String tabtypes(Map<String, Object> map) {
@@ -104,10 +107,14 @@ public class OSMTabTypeService {
 	@Transactional
 	public String deleteTabType (Map<String, Object> map) {
 		int TT_ID = Integer.valueOf(map.get("TT_ID").toString());
+		int m_ID = Integer.valueOf(map.get("TT_MID").toString());
 		
 		tabTypeMapper.deleteByTTID(TT_ID);
 		
 		tabMapper.deleteByTTID(TT_ID);
+		
+		// 删除qrcode
+		qrCodeMapper.deleteByMIDTTID(m_ID, TT_ID);
 		
 		//拼接json
 		JSONObject newJsonObject = new JSONObject();
