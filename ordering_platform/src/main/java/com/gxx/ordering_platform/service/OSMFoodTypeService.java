@@ -253,7 +253,7 @@ public class OSMFoodTypeService {
 			foodtypeId = Integer.valueOf(PSSGoodtypeID);
 		}
 		
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
 		Date PSSStartDate = format.parse(PSSStartString);
 		Date PSSEndDate = format.parse(PSSEndString);
@@ -295,7 +295,7 @@ public class OSMFoodTypeService {
 			foodtypeId = Integer.valueOf(CSSGoodtypeID);
 		}
 		
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
 		Date CSSStartDate = format.parse(CSSStartString);
 		Date CSSEndDate = format.parse(CSSEndString);
@@ -357,7 +357,7 @@ public class OSMFoodTypeService {
 			foodtypeId = Integer.valueOf(PSCGoodtypeID);
 		}
 		
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
 		Date PSCStartDate = format.parse(PSCStartString);
 		Date PSCEndDate = format.parse(PSCEndString);

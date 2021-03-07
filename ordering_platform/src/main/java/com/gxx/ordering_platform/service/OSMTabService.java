@@ -240,7 +240,7 @@ public class OSMTabService {
 		String COSNStartString = map.get("COSNStartString").toString();
 		String COSNEndString = map.get("COSNEndString").toString();
 		
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
 		Date COSNStartDate = format.parse(COSNStartString);
 		Date COSNEndDate = format.parse(COSNEndString);
@@ -276,7 +276,7 @@ public class OSMTabService {
 		String TRStartString = TRDayString + " 00:00:00";
 		String TREndString = TRDayString + " 23:59:59";
 		
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
 		Date TRStartDate = format.parse(TRStartString);
 		Date TREndDate = format.parse(TREndString);
@@ -335,7 +335,7 @@ public class OSMTabService {
 		String TRWStartString = map.get("TRWStartString").toString();
 		String TRWEndString = map.get("TRWEndString").toString();
 		
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
 		Date TRWStartDate = format.parse(TRWStartString);
 		Date TRWEndDate = format.parse(TRWEndString);
@@ -394,7 +394,7 @@ public class OSMTabService {
 		String TRMStartString = map.get("TRMStartString").toString();
 		String TRMEndString = map.get("TRMEndString").toString();
 		
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
 		Date TRMStartDate = format.parse(TRMStartString);
 		Date TRMEndDate = format.parse(TRMEndString);
