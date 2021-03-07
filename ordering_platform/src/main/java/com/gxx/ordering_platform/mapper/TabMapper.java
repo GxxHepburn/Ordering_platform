@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -38,8 +39,9 @@ public interface TabMapper {
 	@Update("UPDATE tab SET T_TTID = #{t_ttid}, T_Name = #{t_name}, T_PeopleOfDiners = #{t_peopleOfDiners} WHERE T_ID = #{t_id}")
 	void updateByTID(@Param("t_id") int t_id, @Param("t_ttid") int t_ttid, @Param("t_name") String t_name, @Param("t_peopleOfDiners") int t_peopleOfDiners);
 	
-	@Insert("INSERT INTO tab (T_MID, T_TTID, T_Name, T_PeopleOfDiners) VALUES (#{t_mid}, #{t_ttid}, #{t_name}, #{t_peopleOfDiners})")
-	void insert(@Param("t_mid") int t_mid, @Param("t_ttid") int t_ttid, @Param("t_name") String t_name, @Param("t_peopleOfDiners") int t_peopleOfDiners);
+	@Insert("INSERT INTO tab (T_MID, T_TTID, T_Name, T_PeopleOfDiners) VALUES (#{tab.T_MID}, #{tab.T_TTID}, #{tab.T_Name}, #{tab.T_PeopleOfDiners})")
+	@Options(useGeneratedKeys = true, keyProperty = "T_ID")
+	void insert(@Param("tab") Tab tab);
 	
 	@Select("SELECT * FROM tab WHERE T_TTID = #{t_ttid} LIMIT 1")
 	Tab isTabTypeNullByTTID(@Param("t_ttid") int t_ttid);

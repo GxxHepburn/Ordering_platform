@@ -22,6 +22,7 @@ import com.gxx.ordering_platform.entity.TabType;
 import com.gxx.ordering_platform.entity.UDS;
 import com.gxx.ordering_platform.mapper.MmaMapper;
 import com.gxx.ordering_platform.mapper.OrdersMapper;
+import com.gxx.ordering_platform.mapper.QrCodeMapper;
 import com.gxx.ordering_platform.mapper.TabMapper;
 import com.gxx.ordering_platform.mapper.TabTypeMapper;
 
@@ -35,6 +36,8 @@ public class OSMTabService {
 	@Autowired TabTypeMapper tabTypeMapper;
 	
 	@Autowired OrdersMapper ordersMapper;
+	
+	@Autowired QrCodeMapper qrCodeMapper;
 
 	@Transactional
 	public String tabs(Map<String, Object> map) {
@@ -165,7 +168,18 @@ public class OSMTabService {
 		Mmngct mmngct = mmaMapper.getByUsername(mmngctUserName);
 		int m_ID = mmngct.getMMA_ID();
 		
-		tabMapper.insert(m_ID, T_TTID, T_Name, T_PeopleOfDiners);
+		Tab tab = new Tab();
+		tab.setT_MID(m_ID);
+		tab.setT_TTID(T_TTID);
+		tab.setT_Name(T_Name);
+		tab.setT_PeopleOfDiners(T_PeopleOfDiners);
+		
+		
+		tabMapper.insert(tab);
+		
+		String url = "https://www.donghuastar.com/wechat/scan?res=" + m_ID + "&table=" + tab.getT_ID();
+		// 插入qrcode
+		qrCodeMapper.insert(m_ID, url);
 		
 		//拼接json
 		JSONObject newJsonObject = new JSONObject();

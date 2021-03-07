@@ -7,6 +7,7 @@ public class Tab {
 	
 	private int T_ID;
 	private int T_TTID;
+	private int T_MID;
 	private int T_Statue;
 	private int T_PeopleOfDiners;
 	private int T_Sort;
