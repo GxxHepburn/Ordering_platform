@@ -16,6 +16,7 @@ public class QrCodeService {
 	@Transactional
 	public String checking(String url) {
 		QrCode qrCode = qrCodeMapper.getByUrl(url);
+		
 		if (qrCode == null) {
 			return "0";
 		} else {

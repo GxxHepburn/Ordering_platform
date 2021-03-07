@@ -6,6 +6,6 @@ import lombok.Data;
 public class QrCode {
 
 	private int Q_ID;
-	private int M_ID;
+	private int Q_MID;
 	private String Q_url;
 }
