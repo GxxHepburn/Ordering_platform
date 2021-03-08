@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.gxx.ordering_platform.entity.Mmngct;
 import com.gxx.ordering_platform.entity.Multi_WechatUser_Orders;
+import com.gxx.ordering_platform.entity.NUS;
 import com.gxx.ordering_platform.entity.Orders;
 import com.gxx.ordering_platform.entity.UDS;
 import com.gxx.ordering_platform.mapper.MmaMapper;
@@ -138,7 +139,7 @@ public class OSMUsersService {
 	}
 
 	@Transactional
-	public String searchUDSFormList (Map<String, Object> map) throws Exception {
+	public String searchUDSFormList(Map<String, Object> map) throws Exception {
 		
 		String mmngctUserName = (String) map.get("mmngctUserName");
 		
@@ -159,6 +160,7 @@ public class OSMUsersService {
 		// 获取这个时间段用户
 		UDS udsUserNum = wechatUserMapper.searchUDSUserNum(m_ID, UDSStartDate, UDSEndDate);
 		
+		// 获取这个时间段你新用户
 		UDS udsNewUserNum = wechatUserMapper.searchUDSNewUserNum(m_ID, UDSStartDate, UDSEndDate);
 		
 		UDS udsConsume = wechatUserMapper.searchUDSConsume(m_ID, UDSStartDate, UDSEndDate);
@@ -187,6 +189,43 @@ public class OSMUsersService {
 		
 		JSONObject dataJsonObject = new JSONObject();
 		dataJsonObject.put("UDSFormList", new JSONArray(udses));
+		
+		newJsonObject.put("data", dataJsonObject);
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
+	}
+
+	@Transactional
+	public String searchNUSFormList(Map<String, Object> map) throws Exception {
+		
+		String mmngctUserName = (String) map.get("mmngctUserName");
+		
+		//根据mmngctUserName查出merId
+		Mmngct mmngct = mmaMapper.getByUsername(mmngctUserName);
+		int m_ID = mmngct.getMMA_ID();
+		
+		String NUSStartString = map.get("NUSStartString").toString();
+		String NUSEndString = map.get("NUSEndString").toString();
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		Date NUSStartDate = format.parse(NUSStartString);
+		Date NUSEndDate = format.parse(NUSEndString);
+		
+		NUS nus = wechatUserMapper.searchNUS(m_ID, NUSStartDate, NUSEndDate);
+		
+		List<NUS> nuses = new ArrayList<NUS>();
+		nuses.add(nus);
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "获取成功");
+		
+		JSONObject dataJsonObject = new JSONObject();
+		dataJsonObject.put("NUSFormList", new JSONArray(nuses));
 		
 		newJsonObject.put("data", dataJsonObject);
 		newJsonObject.put("meta", metaJsonObject);
