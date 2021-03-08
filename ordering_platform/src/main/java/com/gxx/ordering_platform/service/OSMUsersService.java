@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gxx.ordering_platform.entity.CD;
+import com.gxx.ordering_platform.entity.CS;
 import com.gxx.ordering_platform.entity.Mmngct;
 import com.gxx.ordering_platform.entity.Multi_WechatUser_Orders;
 import com.gxx.ordering_platform.entity.NUS;
@@ -271,6 +272,43 @@ public class OSMUsersService {
 		
 		JSONObject dataJsonObject = new JSONObject();
 		dataJsonObject.put("CDFormList", cdsJsonArray);
+		
+		newJsonObject.put("data", dataJsonObject);
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
+	}
+
+	@Transactional
+	public String searchCSFormList(Map<String, Object> map) throws Exception {
+		
+		String mmngctUserName = (String) map.get("mmngctUserName");
+		
+		//根据mmngctUserName查出merId
+		Mmngct mmngct = mmaMapper.getByUsername(mmngctUserName);
+		int m_ID = mmngct.getMMA_ID();
+		
+		String CSStartString = map.get("CSStartString").toString();
+		String CSEndString = map.get("CSEndString").toString();
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		Date CSStartDate = format.parse(CSStartString);
+		Date CSEndDate = format.parse(CSEndString);
+		
+		List<CS> cses = wechatUserMapper.searchCS(m_ID, CSStartDate, CSEndDate);
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "获取成功");
+		
+		JSONArray csesJsonArray = new JSONArray(cses);
+		
+		
+		JSONObject dataJsonObject = new JSONObject();
+		dataJsonObject.put("CSFormList", csesJsonArray);
 		
 		newJsonObject.put("data", dataJsonObject);
 		newJsonObject.put("meta", metaJsonObject);
