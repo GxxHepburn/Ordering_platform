@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gxx.ordering_platform.entity.CD;
 import com.gxx.ordering_platform.entity.Mmngct;
 import com.gxx.ordering_platform.entity.Multi_WechatUser_Orders;
 import com.gxx.ordering_platform.entity.NUS;
@@ -226,6 +227,50 @@ public class OSMUsersService {
 		
 		JSONObject dataJsonObject = new JSONObject();
 		dataJsonObject.put("NUSFormList", new JSONArray(nuses));
+		
+		newJsonObject.put("data", dataJsonObject);
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
+	}
+
+	@Transactional
+	public String searchCDFormList(Map<String, Object> map) throws Exception {
+		
+		String mmngctUserName = (String) map.get("mmngctUserName");
+		
+		//根据mmngctUserName查出merId
+		Mmngct mmngct = mmaMapper.getByUsername(mmngctUserName);
+		int m_ID = mmngct.getMMA_ID();
+		
+		String CDStartString = map.get("CDStartString").toString();
+		String CDEndString = map.get("CDEndString").toString();
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		Date CDStartDate = format.parse(CDStartString);
+		Date CDEndDate = format.parse(CDEndString);
+		
+		List<CD> cds = wechatUserMapper.searchCD(m_ID, CDStartDate, CDEndDate);
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "获取成功");
+		
+		JSONArray cdsJsonArray = new JSONArray(cds);
+		
+		for (int i = 0; i < cdsJsonArray.length(); i++) {
+			JSONObject cdJsonObject = cdsJsonArray.getJSONObject(i);
+			CD cd = cds.get(i);
+			
+			cdJsonObject.put("searchID", EncryptionAndDeciphering.encryption(cd.getSearchID()));
+			cdJsonObject.put("lastOrderingTime", format.format(cd.getLastOrderingTime()));
+		}
+		
+		JSONObject dataJsonObject = new JSONObject();
+		dataJsonObject.put("CDFormList", cdsJsonArray);
 		
 		newJsonObject.put("data", dataJsonObject);
 		newJsonObject.put("meta", metaJsonObject);

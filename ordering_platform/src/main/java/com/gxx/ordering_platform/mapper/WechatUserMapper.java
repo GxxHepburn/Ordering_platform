@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import com.gxx.ordering_platform.entity.CD;
 import com.gxx.ordering_platform.entity.Multi_WechatUser_Orders;
 import com.gxx.ordering_platform.entity.NUS;
 import com.gxx.ordering_platform.entity.UDS;
@@ -107,4 +108,13 @@ public interface WechatUserMapper {
 			+ " orders.O_MID = #{m_id} "
 			+ " AND orders.O_OrderingTime < #{dateStart})")
 	NUS searchNUS(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
+
+	@Select("SELECT wechat_user.U_OpenId as searchID, SUM(orders.O_TotlePrice) as totalPrice, "
+			+ " MAX(orders.O_OrderingTime) as lastOrderingTime, COUNT(*) as orderingNum, "
+			+ " SUM(orders.O_TotlePrice)/COUNT(*) as averagePrice "
+			+ " FROM orders left join wechat_user on orders.O_UID = wechat_user.U_ID "
+			+ " WHERE orders.O_MID = #{m_id} AND orders.O_OrderingTime >= #{dateStart} "
+			+ " AND orders.O_OrderingTime <= #{dateEnd} "
+			+ " GROUP BY orders.O_UID")
+	List<CD> searchCD(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
 }
