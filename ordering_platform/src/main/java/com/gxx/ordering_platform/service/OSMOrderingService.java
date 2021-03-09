@@ -34,6 +34,7 @@ import com.gxx.ordering_platform.entity.Orders;
 import com.gxx.ordering_platform.entity.OrdersPTimes;
 import com.gxx.ordering_platform.entity.Pay;
 import com.gxx.ordering_platform.entity.Refund;
+import com.gxx.ordering_platform.entity.SD;
 import com.gxx.ordering_platform.entity.WechatUser;
 import com.gxx.ordering_platform.mapper.FoodMapper;
 import com.gxx.ordering_platform.mapper.MerMapper;
@@ -588,8 +589,8 @@ public class OSMOrderingService {
 		payMapper.insert(pay);
 		
 		
-		// 更新orders O_PayStatue 
-		ordersMapper.updateO_PayStatueByO_ID(O_ID, 1);
+		// 更新orders O_PayStatue ,线下支付时间
+		ordersMapper.updateO_PayStatueO_PayTimeByO_ID(O_ID, 1, new Date());
 		
 		JSONObject newJsonObject = new JSONObject();
 		
@@ -1166,6 +1167,77 @@ public class OSMOrderingService {
 		
 		JSONObject dataJsonObject = new JSONObject();
 		dataJsonObject.put("monthFormList", new JSONArray(newOrdersPMonths));
+		
+		newJsonObject.put("data", dataJsonObject);
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
+	}
+
+	@Transactional
+	public String searchSDFormList (Map<String, Object> map) throws Exception {
+		
+		String mmngctUserName = (String) map.get("mmngctUserName");
+		
+		//根据mmngctUserName查出merId
+		Mmngct mmngct = mmaMapper.getByUsername(mmngctUserName);
+		int m_ID = mmngct.getMMA_ID();
+		
+		String SDStartString = map.get("SDStartString").toString();
+		String SDEndString = map.get("SDEndString").toString();
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		Date SDStartDate = format.parse(SDStartString);
+		Date SDEndDate = format.parse(SDEndString);
+		
+		String SDO_UniqSearchID = null;
+		
+		if (!"".equals(map.get("SDO_UniqSearchID").toString())) {
+			SDO_UniqSearchID = map.get("SDO_UniqSearchID").toString();
+		}
+		
+		List<SD> sds = ordersMapper.searchSD(m_ID, SDStartDate, SDEndDate, SDO_UniqSearchID);
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "获取成功");
+		
+		JSONArray sdsJsonArray = new JSONArray(sds);
+		
+		for (int i = 0; i < sdsJsonArray.length(); i++) {
+			JSONObject sdJsonObject = sdsJsonArray.getJSONObject(i);
+			SD sd = sds.get(i);
+			if (sd.getOrderingTime() != null) {
+				sdJsonObject.put("orderingTime", format.format(sd.getOrderingTime()));
+			}
+			
+			if (sd.getPayTime() != null) {
+				sdJsonObject.put("payTime", format.format(sd.getPayTime()));
+			}
+			
+			if (sd.getContinuedTime() != null) {
+				int eta = sd.getContinuedTime();
+				int day;
+		        int hour;
+		        int minute;
+		        day = eta / (24 * 60 * 60);
+		        eta -= day * 24 * 60 * 60;
+		        hour = eta / (60 * 60);
+		        eta -= hour * 60 * 60;
+		        minute = eta / 60;
+		        eta -= minute * 60;
+
+				String continudTimeString = day + "天" + hour + "小时" + minute + "分钟" + eta + "秒";
+				sdJsonObject.put("continuedTime", continudTimeString);
+			}
+		}
+		
+		
+		JSONObject dataJsonObject = new JSONObject();
+		dataJsonObject.put("SDFormList", sdsJsonArray);
 		
 		newJsonObject.put("data", dataJsonObject);
 		newJsonObject.put("meta", metaJsonObject);

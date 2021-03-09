@@ -13,6 +13,7 @@ import com.gxx.ordering_platform.entity.Multi_Orders_Mer;
 import com.gxx.ordering_platform.entity.Multi_Orders_Tab_Tabtype;
 import com.gxx.ordering_platform.entity.Orders;
 import com.gxx.ordering_platform.entity.OrdersPTimes;
+import com.gxx.ordering_platform.entity.SD;
 import com.gxx.ordering_platform.entity.TR;
 
 public interface OrdersMapper {
@@ -157,6 +158,9 @@ public interface OrdersMapper {
 	@Update("UPDATE orders SET O_PayStatue = #{o_payStatue} WHERE O_ID = #{o_id}")
 	void updateO_PayStatueByO_ID(@Param("o_id") int o_id, @Param("o_payStatue") int o_payStatue);
 	
+	@Update("UPDATE orders SET O_PayStatue = #{o_payStatue}, O_PayTime = #{opt} WHERE O_ID = #{o_id}")
+	void updateO_PayStatueO_PayTimeByO_ID(@Param("o_id") int o_id, @Param("o_payStatue") int o_payStatue, @Param("opt") Date opt);
+	
 	@Select("SELECT * FROM orders WHERE O_OutTradeNo = #{o_outTradeNo}")
 	Orders getOrderByO_OutTradeNo(@Param("o_outTradeNo") String o_outTradeNo);
 	
@@ -270,4 +274,25 @@ public interface OrdersMapper {
 			+ "FROM orders WHERE O_MID = #{m_id} AND O_OrderingTime >= #{dateStart} AND "
 			+ " O_OrderingTime <= #{dateEnd}")
 	TR searchTR(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
+	
+	@Select("<script>"
+			+ "SELECT orders.O_UniqSearchID as ouid, tabtype.TT_ID as ttid, "
+			+ " tabtype.TT_Name as ttname, tab.T_ID as tid, tab.T_Name as tname, "
+			+ " orders.O_OrderingTime as orderingTime, orders.O_PayTime as payTime, "
+			+ " TIMESTAMPDIFF(SECOND, orders.O_OrderingTime, orders.O_PayTime) as continuedTime, "
+			+ " pay.P_Trade_Type as payMethod, orders.O_TotlePrice as payPrice, "
+			+ " orders.O_NumberOfDiners as numberOfDiners, "
+			+ " orders.O_TotlePrice/orders.O_NumberOfDiners as averageNumberOfDiners "
+			+ " FROM orders left join pay on orders.O_ID = pay.P_OID "
+			+ " left join tab on orders.O_TID = tab.T_ID "
+			+ " left join tabtype on tab.T_TTID = tabtype.TT_ID "
+			+ " WHERE orders.O_MID = #{m_id} "
+			+ " AND orders.O_OrderingTime &gt;= #{dateStart} "
+			+ " AND orders.O_OrderingTime &lt;= #{dateEnd} "
+			+ "<if test='ouid!=null'>"
+			+ " AND orders.O_UniqSearchID = #{ouid} "
+			+ "</if>"
+			+ " ORDER BY orders.O_OrderingTime"
+			+ "</script>")
+	List<SD> searchSD(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd, @Param("ouid") String ouid);
 }
