@@ -13,6 +13,7 @@ import com.gxx.ordering_platform.entity.Multi_Orders_Mer;
 import com.gxx.ordering_platform.entity.Multi_Orders_Tab_Tabtype;
 import com.gxx.ordering_platform.entity.Orders;
 import com.gxx.ordering_platform.entity.OrdersPTimes;
+import com.gxx.ordering_platform.entity.RS2;
 import com.gxx.ordering_platform.entity.SD;
 import com.gxx.ordering_platform.entity.TR;
 
@@ -324,4 +325,14 @@ public interface OrdersMapper {
 		+ " AND orders.O_UniqSearchID = #{ousid} "
 		+ " ORDER BY orders.O_OrderingTime")
 	List<SD> searchSDWithOUID(@Param("m_id") int m_id, @Param("ousid") String ousid);
+	
+	@Select("SELECT SUM(orders.O_TotlePrice) as getPrice, "
+			+ " COUNT(DISTINCT orders.O_UID) as userNum, "
+			+ " SUM(orders.O_NumberOfDiners) as numberOfDiners, "
+			+ " COUNT(*) as orderingCount "
+			+ " FROM orders "
+			+ " WHERE orders.O_MID = #{m_id} "
+			+ " AND orders.O_OrderingTime >= #{dateStart} "
+			+ " AND orders.O_OrderingTime <= #{dateEnd}")
+	RS2 searchRS2Orders(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
 }

@@ -12,6 +12,7 @@ import org.apache.ibatis.annotations.Update;
 import com.gxx.ordering_platform.entity.OrderReturn;
 import com.gxx.ordering_platform.entity.RC;
 import com.gxx.ordering_platform.entity.RS;
+import com.gxx.ordering_platform.entity.RS2;
 import com.gxx.ordering_platform.entity.ReturnOrdersPTimes;
 
 public interface OrderReturnMapper {
@@ -158,4 +159,11 @@ public interface OrderReturnMapper {
 			+ " ORDER BY returnsku.ftname, returnsku.fname, returnsku.price, returnsku.propOne, returnsku.propTwo"
 			+ "</script>")
 	List<RS> searchRS(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
+	
+	@Select("SELECT SUM(orderreturn.OR_TotlePrice) as refundPrice "
+			+ " FROM orderreturn left join orders on orderreturn.OR_OID = orders.O_ID "
+			+ " WHERE orderreturn.OR_MID = #{m_id} "
+			+ " AND orders.O_OrderingTime >= #{dateStart} "
+			+ " AND orders.O_OrderingTime <= #{dateEnd}")
+	RS2 searchRS2Orderreturn(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
 }
