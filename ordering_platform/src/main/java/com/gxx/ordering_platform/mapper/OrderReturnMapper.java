@@ -40,8 +40,7 @@ public interface OrderReturnMapper {
 			+ " GROUP BY times ORDER BY times")
 	List<ReturnOrdersPTimes> searchReturnOrdersPMonth(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
 	
-	@Select("<script>"
-			+ "SELECT orders.O_UniqSearchID as ousid ,"
+	@Select("SELECT orders.O_UniqSearchID as ousid ,"
 			+ " tabtype.TT_ID as ttid, tabtype.TT_Name as ttname, "
 			+ " tab.T_ID as tid, tab.T_Name as tname, "
 			+ " orderreturndetail.ORD_Spec as spec, "
@@ -60,14 +59,33 @@ public interface OrderReturnMapper {
 			+ " left join tab on orderreturn.OR_TID = tab.T_ID "
 			+ " left join tabtype on tab.T_TTID = tabtype.TT_ID "
 			+ " WHERE orderreturn.OR_MID = #{m_id} "
-			+ " AND orderreturn.OR_ReturnTime &gt;= #{dateStart} "
-			+ " AND orderreturn.OR_ReturnTime &lt;= #{dateEnd} "
-			+ "<if test='ousid!=null'>"
-			+ " AND orders.O_UniqSearchID = #{ousid}"
-			+ "</if>"
-			+ " ORDER BY orderreturn.OR_ReturnTime"
-			+ "</script>")
-	List<RC> searchRC(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd, @Param("ousid") String ousid);
+			+ " AND orderreturn.OR_ReturnTime >= #{dateStart} "
+			+ " AND orderreturn.OR_ReturnTime <= #{dateEnd} "
+			+ " ORDER BY orderreturn.OR_ReturnTime")
+	List<RC> searchRCWithoutOUID(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
+	
+	@Select("SELECT orders.O_UniqSearchID as ousid ,"
+			+ " tabtype.TT_ID as ttid, tabtype.TT_Name as ttname, "
+			+ " tab.T_ID as tid, tab.T_Name as tname, "
+			+ " orderreturndetail.ORD_Spec as spec, "
+			+ " orderreturndetail.ORD_PropOne as propOne, "
+			+ " orderreturndetail.ORD_PropTwo as propTwo, "
+			+ " foodtype.FT_ID as ftid, foodtype.FT_Name as ftname, "
+			+ " food.F_ID as fid, food.F_Name as fname, "
+			+ " food.F_Unit as unit, orderreturndetail.ORD_RealPrice as price, "
+			+ " orderreturndetail.ORD_Num as num, "
+			+ " orderreturndetail.ORD_Num * orderreturndetail.ORD_RealPrice as totalPrice, "
+			+ " orders.O_OrderingTime as orderTime, orderreturn.OR_ReturnTime as returnTime "
+			+ " FROM orderreturndetail left join orderreturn on orderreturndetail.ORD_ORID = orderreturn.OR_ID "
+			+ " left join orders on orderreturndetail.ORD_OID = orders.O_ID "
+			+ " left join food on orderreturndetail.ORD_FID = food.F_ID "
+			+ " left join foodtype on food.F_FTID = foodtype.FT_ID "
+			+ " left join tab on orderreturn.OR_TID = tab.T_ID "
+			+ " left join tabtype on tab.T_TTID = tabtype.TT_ID "
+			+ " WHERE orderreturn.OR_MID = #{m_id} "
+			+ " AND orders.O_UniqSearchID = #{ousid} "
+			+ " ORDER BY orderreturn.OR_ReturnTime")
+	List<RC> searchRCWithOUID(@Param("m_id") int m_id, @Param("ousid") String ousid);
 	
 //	@Select("<script>"
 //			+ "SELECT orderreturndetail.ORD_Spec as spec, "

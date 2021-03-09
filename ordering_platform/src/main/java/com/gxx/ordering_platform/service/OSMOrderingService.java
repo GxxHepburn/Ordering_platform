@@ -735,7 +735,7 @@ public class OSMOrderingService {
 		refund.setR_PID(pay.getP_ID());
 		refund.setR_ORID(orderReturn.getOR_ID());
 		
-		// 修改提交时间格式，搞成yyyy-MM-dd hh:MM:ss
+		// 修改提交时间格式，搞成yyyy-MM-dd HH:mm:ss
 		SimpleDateFormat refundSubmitTimeDateFormatParse = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		refund.setR_Submit_Time(refundSubmitTimeDateFormatParse.format(new Date()));
 		

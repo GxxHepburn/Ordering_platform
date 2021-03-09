@@ -405,17 +405,26 @@ public class OSMRefundService {
 		
 		String RCO_UniqSearchIDString = map.get("RCO_UniqSearchID").toString();
 		
-		String RCO_UniqSearchID = null;
-		if (!"".equals(RCO_UniqSearchIDString)) {
-			RCO_UniqSearchID = RCO_UniqSearchIDString;
-		}
 		
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
 		Date RCStartDate = format.parse(RCStartString);
 		Date RCEndDate = format.parse(RCEndString);
 		
-		List<RC> rcs = orderReturnMapper.searchRC(m_ID, RCStartDate, RCEndDate, RCO_UniqSearchID);
+		String RCO_UniqSearchID = null;
+		
+		if (!"".equals(RCO_UniqSearchIDString)) {
+			RCO_UniqSearchID = RCO_UniqSearchIDString;
+		}
+		
+		// 根据有无订单号，分别检索，有订单号，无视时间，无订单号，则只用时间作为条件
+		List<RC> rcs = null;
+		if (RCO_UniqSearchID == null) {
+			rcs = orderReturnMapper.searchRCWithoutOUID(m_ID, RCStartDate, RCEndDate);
+		} else {
+			rcs = orderReturnMapper.searchRCWithOUID(m_ID, RCO_UniqSearchID);
+		}
+		
 		
 		JSONObject newJsonObject = new JSONObject();
 		
@@ -451,7 +460,7 @@ public class OSMRefundService {
 		String RSEndString = map.get("RSEndString").toString();
 		
 		
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
 		Date RSStartDate = format.parse(RSStartString);
 		Date RSEndDate = format.parse(RSEndString);
