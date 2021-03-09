@@ -1197,7 +1197,12 @@ public class OSMOrderingService {
 			SDO_UniqSearchID = map.get("SDO_UniqSearchID").toString();
 		}
 		
-		List<SD> sds = ordersMapper.searchSD(m_ID, SDStartDate, SDEndDate, SDO_UniqSearchID);
+		List<SD> sds = null;
+		if (SDO_UniqSearchID == null) {
+			sds = ordersMapper.searchSDWithoutOUID(m_ID, SDStartDate, SDEndDate);
+		} else {
+			sds = ordersMapper.searchSDWithOUID(m_ID, SDO_UniqSearchID);
+		}
 		
 		JSONObject newJsonObject = new JSONObject();
 		
