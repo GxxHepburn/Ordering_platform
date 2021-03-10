@@ -1277,15 +1277,34 @@ public class OSMOrderingService {
 		
 		RS2 rs2Orderreturn = orderReturnMapper.searchRS2Orderreturn(m_ID, RS2StartDate, RS2EndDate);
 		
-		rs2.setTotalPrice(rs2Orders.getGetPrice() + rs2Orderreturn.getRefundPrice());
-		rs2.setGetPrice(rs2Orders.getGetPrice());
-		rs2.setRefundPrice(rs2Orderreturn.getRefundPrice());
-		rs2.setUserNum(rs2Orders.getUserNum());
-		rs2.setNumberOfDiners(rs2Orders.getNumberOfDiners());
-		rs2.setOrderingCount(rs2Orders.getOrderingCount());
-		rs2.setAveragePOrderingCount(rs2.getTotalPrice()/((float) rs2.getOrderingCount()));
-		rs2.setAveragePNumberOfDiners(rs2.getTotalPrice()/((float) rs2.getNumberOfDiners()));
-		
+		if (rs2Orders.getOrderingCount() != 0 && rs2Orderreturn != null) {
+			rs2.setTotalPrice(rs2Orders.getGetPrice() + rs2Orderreturn.getRefundPrice());
+			rs2.setGetPrice(rs2Orders.getGetPrice());
+			rs2.setRefundPrice(rs2Orderreturn.getRefundPrice());
+			rs2.setUserNum(rs2Orders.getUserNum());
+			rs2.setNumberOfDiners(rs2Orders.getNumberOfDiners());
+			rs2.setOrderingCount(rs2Orders.getOrderingCount());
+			rs2.setAveragePOrderingCount(rs2.getTotalPrice()/((float) rs2.getOrderingCount()));
+			rs2.setAveragePNumberOfDiners(rs2.getTotalPrice()/((float) rs2.getNumberOfDiners()));
+		} else if (rs2Orders.getOrderingCount() != 0) {
+			rs2.setTotalPrice(rs2Orders.getGetPrice());
+			rs2.setGetPrice(rs2Orders.getGetPrice());
+			rs2.setRefundPrice(0f);
+			rs2.setUserNum(rs2Orders.getUserNum());
+			rs2.setNumberOfDiners(rs2Orders.getNumberOfDiners());
+			rs2.setOrderingCount(rs2Orders.getOrderingCount());
+			rs2.setAveragePOrderingCount(rs2.getTotalPrice()/((float) rs2.getOrderingCount()));
+			rs2.setAveragePNumberOfDiners(rs2.getTotalPrice()/((float) rs2.getNumberOfDiners()));
+		} else {
+			rs2.setTotalPrice(0f);
+			rs2.setGetPrice(0f);
+			rs2.setRefundPrice(0f);
+			rs2.setUserNum(0);
+			rs2.setNumberOfDiners(0);
+			rs2.setOrderingCount(0);
+			rs2.setAveragePOrderingCount(0f);
+			rs2.setAveragePNumberOfDiners(0f);
+		}
 		rs2s.add(rs2);
 		
 		
