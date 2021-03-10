@@ -350,7 +350,7 @@ public class OSMFoodService {
 //						ftItemList.add("");
 //					}
 			if (ftItemList.size() == 1) {
-				
+				// 只有一个属性的时候，就没有必要存在这个属性了啊
 			} else if (ftItemList.size() == 2) {
 				foodPropertyMapper.insertTwo(food.getF_ID(), f_ftid, m_ID, fpItemName, ftItemList.get(0), ftItemList.get(1));
 			} else if (ftItemList.size() == 3) {

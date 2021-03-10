@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import com.gxx.ordering_platform.entity.BS;
 import com.gxx.ordering_platform.entity.Mer;
 import com.gxx.ordering_platform.entity.Mmngct;
 import com.gxx.ordering_platform.entity.Multi_OrderAdd_Tab_Tabtype_Orders;
@@ -1299,6 +1300,63 @@ public class OSMOrderingService {
 		
 		JSONObject dataJsonObject = new JSONObject();
 		dataJsonObject.put("RS2FormList", csesJsonArray);
+		
+		newJsonObject.put("data", dataJsonObject);
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
+	}
+	
+	@Transactional
+	public String searchBSFormList(Map<String, Object> map) throws Exception {
+		
+		String mmngctUserName = (String) map.get("mmngctUserName");
+		
+		//根据mmngctUserName查出merId
+		Mmngct mmngct = mmaMapper.getByUsername(mmngctUserName);
+		int m_ID = mmngct.getMMA_ID();
+		
+		String BSStartString = map.get("BSStartString").toString();
+		String BSEndString = map.get("BSEndString").toString();
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		Date BSStartDate = format.parse(BSStartString);
+		Date BSEndDate = format.parse(BSEndString);
+		
+		
+		List<BS> bses = new ArrayList<BS>();
+		
+		BS bs = new BS();
+		
+		BS bsOrders = ordersMapper.searchBSGetPrice(m_ID, BSStartDate, BSEndDate);
+		
+		BS bsRefund = orderReturnMapper.searchBSRefundPrice(m_ID, BSStartDate, BSEndDate);
+		
+		if (bsOrders == null) {
+			bs.setGetPrice(0f);
+			bs.setRefundPrice(0f);
+			bs.setTotalPrice(0f);
+		} else {
+			bs.setGetPrice(bsOrders.getGetPrice());
+			bs.setRefundPrice(bsRefund.getRefundPrice());
+			bs.setTotalPrice(bsOrders.getGetPrice() + bsRefund.getRefundPrice());
+		}
+		
+		
+		bses.add(bs);
+		
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "获取成功");
+		
+		JSONArray csesJsonArray = new JSONArray(bses);
+		
+		
+		JSONObject dataJsonObject = new JSONObject();
+		dataJsonObject.put("BSFormList", csesJsonArray);
 		
 		newJsonObject.put("data", dataJsonObject);
 		newJsonObject.put("meta", metaJsonObject);

@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import com.gxx.ordering_platform.entity.BS;
 import com.gxx.ordering_platform.entity.OrderReturn;
 import com.gxx.ordering_platform.entity.RC;
 import com.gxx.ordering_platform.entity.RS;
@@ -166,4 +167,11 @@ public interface OrderReturnMapper {
 			+ " AND orders.O_OrderingTime >= #{dateStart} "
 			+ " AND orders.O_OrderingTime <= #{dateEnd}")
 	RS2 searchRS2Orderreturn(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
+	
+	@Select("SELECT SUM(orderreturn.OR_TotlePrice) as refundPrice "
+			+ " FROM orderreturn left join orders on orderreturn.OR_OID = orders.O_ID "
+			+ " WHERE orderreturn.OR_MID = #{m_id} "
+			+ " AND orders.O_OrderingTime >= #{dateStart} "
+			+ " AND orders.O_OrderingTime <= #{dateEnd}")
+	BS searchBSRefundPrice(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
 }

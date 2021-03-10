@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import com.gxx.ordering_platform.entity.BS;
 import com.gxx.ordering_platform.entity.Multi_Orders_Mer;
 import com.gxx.ordering_platform.entity.Multi_Orders_Tab_Tabtype;
 import com.gxx.ordering_platform.entity.Orders;
@@ -335,4 +336,11 @@ public interface OrdersMapper {
 			+ " AND orders.O_OrderingTime >= #{dateStart} "
 			+ " AND orders.O_OrderingTime <= #{dateEnd}")
 	RS2 searchRS2Orders(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
+	
+	@Select("SELECT SUM(orders.O_TotlePrice) as getPrice "
+			+ " FROM orders "
+			+ " WHERE orders.O_MID = #{m_id} "
+			+ " AND orders.O_OrderingTime >= #{dateStart} "
+			+ " AND orders.O_OrderingTime <= #{dateEnd}")
+	BS searchBSGetPrice(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
 }
