@@ -159,6 +159,8 @@ public class OSMUsersService {
 		
 		UDS uds = new UDS();
 		
+		// 返回的实体类不存在null问题
+		
 		// 获取这个时间段用户
 		UDS udsUserNum = wechatUserMapper.searchUDSUserNum(m_ID, UDSStartDate, UDSEndDate);
 		
