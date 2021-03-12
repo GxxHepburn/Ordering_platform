@@ -1352,10 +1352,14 @@ public class OSMOrderingService {
 		
 		BS bsRefund = orderReturnMapper.searchBSRefundPrice(m_ID, BSStartDate, BSEndDate);
 		
-		if (bsOrders == null) {
+		if (bsOrders == null && bsRefund == null) {
 			bs.setGetPrice(0f);
 			bs.setRefundPrice(0f);
 			bs.setTotalPrice(0f);
+		} else if (bsRefund == null) {
+			bs.setGetPrice(bsOrders.getGetPrice());
+			bs.setRefundPrice(0f);
+			bs.setTotalPrice(bsOrders.getGetPrice());
 		} else {
 			bs.setGetPrice(bsOrders.getGetPrice());
 			bs.setRefundPrice(bsRefund.getRefundPrice());
