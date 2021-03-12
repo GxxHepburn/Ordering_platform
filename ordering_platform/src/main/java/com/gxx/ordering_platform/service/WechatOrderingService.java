@@ -414,8 +414,12 @@ public class WechatOrderingService {
 			orderDetailJsonObject.put("price", orderDetails.get(i).getOD_RealPrice());
 			orderDetailJsonObject.put("specs", orderDetails.get(i).getOD_Spec());
 			JSONArray proJsonArray = new JSONArray();
-			proJsonArray.put(orderDetails.get(i).getOD_PropOne());
-			proJsonArray.put(orderDetails.get(i).getOD_PropTwo());
+			if (!"".equals(orderDetails.get(i).getOD_PropOne())) {
+				proJsonArray.put(orderDetails.get(i).getOD_PropOne());
+			}
+			if (!"".equals(orderDetails.get(i).getOD_PropOne())) {
+				proJsonArray.put(orderDetails.get(i).getOD_PropTwo());
+			}
 			orderDetailJsonObject.put("property", proJsonArray);
 			orderDetailJsonObject.put("num", orderDetails.get(i).getOD_Num());
 			orderDetailJsonObject.put("realNum", orderDetails.get(i).getOD_RealNum());
