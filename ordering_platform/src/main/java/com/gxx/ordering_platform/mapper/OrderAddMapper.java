@@ -39,6 +39,19 @@ public interface OrderAddMapper {
 			+ "limit #{limitStart}, #{pagesize}")
 	List<Multi_OrderAdd_Tab_Tabtype_Orders> getNotTakingByMIDOrderByOrderingTime(@Param("m_id") int m_id, @Param("limitStart") int limitStart, @Param("pagesize") int pagesize);
 	
+	@Select("<script>"
+			+ "SELECT * "
+			+ "FROM orderadd left join tab on tab.T_ID = orderadd.OA_TID left join tabtype on tabtype.TT_ID = tab.T_TTID left join orders on orderadd.OA_OID = orders.O_ID "
+			+ "WHERE OA_MID = #{m_id} "
+			+ "<if test='tabId!=null'>"
+			+ " AND tab.T_ID = #{tabId} "
+			+ "</if>"
+			+ " AND OA_IsTaking = '0' "
+			+ " ORDER BY OA_OrderingTime "
+			+ " limit #{limitStart}, #{pagesize}"
+			+ "</script>")
+	List<Multi_OrderAdd_Tab_Tabtype_Orders> getNotTakingByMIDTabIdOrderByOrderingTime(@Param("m_id") int m_id, @Param("tabId") Integer tabId, @Param("limitStart") int limitStart, @Param("pagesize") int pagesize);
+	
 	@Select("SELECT COUNT(*) FROM orderadd WHERE OA_MID = #{m_id} AND OA_IsTaking = '0'")
 	int getNotTakingTotleByMIDOrder(@Param("m_id") int m_id);
 }
