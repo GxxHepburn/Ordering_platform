@@ -54,7 +54,7 @@ public interface OrderAddMapper {
 			+ " AND OA_OrderingTime &lt;= #{endDate} "
 			+ "</if>"
 			+ " AND OA_IsTaking = '0' "
-			+ " ORDER BY OA_OrderingTime DESC "
+			+ " ORDER BY OA_OrderingTime "
 			+ " limit #{limitStart}, #{pagesize}"
 			+ "</script>")
 	List<Multi_OrderAdd_Tab_Tabtype_Orders> getNotTakingByMIDTabIdOrderingTimeOrderByOrderingTime(@Param("m_id") int m_id, @Param("tabId") Integer tabId,
