@@ -18,11 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.gxx.ordering_platform.entity.Mmngct;
 import com.gxx.ordering_platform.entity.Multi_OrderAdd_Tab_Tabtype_Orders;
 import com.gxx.ordering_platform.entity.Multi_Orders_Tab_Tabtype;
-import com.gxx.ordering_platform.entity.Pay;
-import com.gxx.ordering_platform.entity.Refund;
 import com.gxx.ordering_platform.entity.WechatUser;
 import com.gxx.ordering_platform.mapper.MmaMapper;
 import com.gxx.ordering_platform.mapper.OrderAddMapper;
+import com.gxx.ordering_platform.mapper.OrderDetailMapper;
 import com.gxx.ordering_platform.mapper.OrdersMapper;
 import com.gxx.ordering_platform.mapper.WechatUserMapper;
 import com.gxx.ordering_platform.utils.EncryptionAndDeciphering;
@@ -39,8 +38,8 @@ public class OSMAPPOrderingService {
 	@Autowired OrdersMapper ordersMapper;
 	
 	@Autowired WechatUserMapper wechatUserMapper;	
-
-	@Autowired OSMOrderingService oSMOrderingService;
+	
+	@Autowired OrderDetailMapper orderDetailMapper;
 
 	@Transactional
 	public String notTakingOrerAddFormList (Map<String, Object> map) throws Exception {
@@ -108,6 +107,9 @@ public class OSMAPPOrderingService {
 			} else {
 				notTakingOrerAddJSONObject.put("o_PayTime", simpleDateFormat.format(multi_OrderAdd_Tab_Tabtypes_Orderses.get(i).getO_PayTime()));
 			}
+			
+			// 插入orderDetail
+			notTakingOrerAddJSONObject.put("orderAddDetailFormList", new JSONArray(orderDetailMapper.getByOA_ID(multi_OrderAdd_Tab_Tabtypes_Orderses.get(i).getOA_ID())));
 			
 			notTakingOrerAddJsonArray.put(notTakingOrerAddJSONObject);
 		}
@@ -244,12 +246,68 @@ public class OSMAPPOrderingService {
 		metaJsonObject.put("msg", "获取成功");
 		
 		JSONObject dataJsonObject = new JSONObject();
-		dataJsonObject.put("orderFormList", oSMOrderingService.listToString(multi_Orders_Tab_Tabtypes));
+		dataJsonObject.put("orderFormList", listToString(multi_Orders_Tab_Tabtypes));
 		dataJsonObject.put("total", total);
 		
 		newJsonObject.put("data", dataJsonObject);
 		newJsonObject.put("meta", metaJsonObject);
 		
 		return newJsonObject.toString();
+	}
+	
+	public JSONArray listToString(List<Multi_Orders_Tab_Tabtype> multi_Orders_Tab_Tabtypes) {
+		
+		//格式化时间
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		JSONArray ordersJsonArray = new JSONArray();
+		for (Multi_Orders_Tab_Tabtype multi_Orders_Tab_Tabtype : multi_Orders_Tab_Tabtypes) {
+			JSONObject jsonObject = new JSONObject();
+			
+			jsonObject.put("O_ID", multi_Orders_Tab_Tabtype.getO_ID());
+			jsonObject.put("O_MID", multi_Orders_Tab_Tabtype.getO_MID());
+			jsonObject.put("O_UID", multi_Orders_Tab_Tabtype.getO_UID());
+			jsonObject.put("O_TID", multi_Orders_Tab_Tabtype.getO_TID());
+			jsonObject.put("O_TotlePrice", multi_Orders_Tab_Tabtype.getO_TotlePrice());
+			jsonObject.put("O_PayStatue", multi_Orders_Tab_Tabtype.getO_PayStatue());
+			
+			jsonObject.put("O_payMethod", multi_Orders_Tab_Tabtype.getO_PayMethod());
+			
+			//格式化时间
+			jsonObject.put("O_OrderingTime", simpleDateFormat.format(multi_Orders_Tab_Tabtype.getO_OrderingTime()));
+			if (multi_Orders_Tab_Tabtype.getO_PayTime() == null) {
+				jsonObject.put("O_PayTime", "");
+				jsonObject.put("O_OutTradeNo", "");
+			} else {
+				jsonObject.put("O_PayTime", simpleDateFormat.format(multi_Orders_Tab_Tabtype.getO_PayTime()));
+				jsonObject.put("O_OutTradeNo", multi_Orders_Tab_Tabtype.getO_OutTradeNo());
+			}
+			
+			jsonObject.put("O_Remarks", multi_Orders_Tab_Tabtype.getO_Remarks());
+			jsonObject.put("O_TotleNum", multi_Orders_Tab_Tabtype.getO_TotleNum());
+			jsonObject.put("O_UniqSearchID", multi_Orders_Tab_Tabtype.getO_UniqSearchID());
+			
+			jsonObject.put("O_isPayNow", multi_Orders_Tab_Tabtype.getO_isPayNow());
+			jsonObject.put("O_ReturnNum", multi_Orders_Tab_Tabtype.getO_ReturnNum());
+			jsonObject.put("O_NumberOfDiners", multi_Orders_Tab_Tabtype.getO_NumberOfDiners());
+			
+			String T_Name = multi_Orders_Tab_Tabtype.getT_Name();
+			if (T_Name == null) {
+				T_Name = "餐桌已删除";
+			}
+			jsonObject.put("T_Name", T_Name);
+			String TT_Name = multi_Orders_Tab_Tabtype.getTT_Name();
+			if (TT_Name == null) {
+				TT_Name = "分类已删除";
+			}
+			jsonObject.put("TT_Name", TT_Name);
+			
+			// 插入orderDetail
+			jsonObject.put("orderDetailFormList", new JSONArray(orderDetailMapper.getByOrderId(multi_Orders_Tab_Tabtype.getO_ID())));
+			
+			ordersJsonArray.put(jsonObject);
+		}
+		
+		return ordersJsonArray;
 	}
 }
