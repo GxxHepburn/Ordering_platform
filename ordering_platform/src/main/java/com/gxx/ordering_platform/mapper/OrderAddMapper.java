@@ -1,5 +1,6 @@
 package com.gxx.ordering_platform.mapper;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Insert;
@@ -46,11 +47,24 @@ public interface OrderAddMapper {
 			+ "<if test='tabId!=null'>"
 			+ " AND tab.T_ID = #{tabId} "
 			+ "</if>"
+			+ "<if test='startDate!=null'>"
+			+ " AND OA_OrderingTime &gt;= #{startDate} "
+			+ "</if>"
+			+ "<if test='endDate!=null'>"
+			+ " AND OA_OrderingTime &lt;= #{endDate} "
+			+ "</if>"
 			+ " AND OA_IsTaking = '0' "
-			+ " ORDER BY OA_OrderingTime "
+			+ " ORDER BY OA_OrderingTime DESC "
 			+ " limit #{limitStart}, #{pagesize}"
 			+ "</script>")
-	List<Multi_OrderAdd_Tab_Tabtype_Orders> getNotTakingByMIDTabIdOrderByOrderingTime(@Param("m_id") int m_id, @Param("tabId") Integer tabId, @Param("limitStart") int limitStart, @Param("pagesize") int pagesize);
+	List<Multi_OrderAdd_Tab_Tabtype_Orders> getNotTakingByMIDTabIdOrderingTimeOrderByOrderingTime(@Param("m_id") int m_id, @Param("tabId") Integer tabId,
+			@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("limitStart") int limitStart, @Param("pagesize") int pagesize);
+	
+	@Select("SELECT * "
+			+ "FROM orderadd left join tab on tab.T_ID = orderadd.OA_TID left join tabtype on tabtype.TT_ID = tab.T_TTID left join orders on orderadd.OA_OID = orders.O_ID "
+			+ "WHERE orders.O_UniqSearchID = #{ousid} "
+			+ " AND OA_IsTaking = '0' ")
+	List<Multi_OrderAdd_Tab_Tabtype_Orders> getNotTakingByUniqSearchID(@Param("ousid") String ousid);
 	
 	@Select("SELECT COUNT(*) FROM orderadd WHERE OA_MID = #{m_id} AND OA_IsTaking = '0'")
 	int getNotTakingTotleByMIDOrder(@Param("m_id") int m_id);
