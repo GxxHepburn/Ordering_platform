@@ -252,6 +252,8 @@ public class AppConfig {
 				// TODO Auto-generated method stub
 				List<String> includePathList = new ArrayList<String>();
 				includePathList.add("/OSM/**");
+				includePathList.add("/OSMAPP/**");
+				includePathList.add("/bttsToken");
 				// 添加到拦截器拦截队列中，同时前端请求修改，让其携带token
 				// 这样操作是没用的，因为拦截器只针对controller，拦截器是居于aop的方法拦截的，而我们的websocket的连接没有controller，所以无效
 				// 解决办法是在HttpSessionHandshakeInterceptor 中处理，是有需要拦截
