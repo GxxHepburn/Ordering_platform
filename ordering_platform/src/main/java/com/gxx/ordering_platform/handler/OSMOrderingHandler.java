@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -20,6 +22,8 @@ import com.gxx.ordering_platform.service.OSMMerService;
 
 @Component
 public class OSMOrderingHandler extends TextWebSocketHandler {
+	
+	final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Autowired OSMMerService oSMMerService;
 	
@@ -37,19 +41,12 @@ public class OSMOrderingHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         // 新会话根据ID放入Map:
         
-     // 检查是否有商户重乎链接-name属性重复,有就关闭
-//		for (String id : clients.keySet()) {
-//			WebSocketSession sion = clients.get(id);
-//			if (sion.getAttributes().get("name").equals(session.getAttributes().get("name"))) {
-//				sion.close();
-//			}
-//		}
 		Mmngct mmngct = mmaMapper.getByUsername(session.getAttributes().get("name").toString());
 		session.getAttributes().put("M_ID", mmngct.getMMA_MID());
         clients.put(session.getId(), session);
         // 让商家管理系统上线
         oSMMerService.openMer(Integer.valueOf(session.getAttributes().get("M_ID").toString()));
-        System.out.println("open wbss " + clients.size());
+        logger.info("open wbss " + clients.size());
     }
     
     @Override
@@ -57,6 +54,7 @@ public class OSMOrderingHandler extends TextWebSocketHandler {
         // 让商家管理系统下线
     	oSMMerService.closeMer(Integer.valueOf(session.getAttributes().get("M_ID").toString()));
         clients.remove(session.getId());
+        logger.info("closed wbss " + session.getId() + ", ");
     }
 
 	@Override
@@ -76,6 +74,7 @@ public class OSMOrderingHandler extends TextWebSocketHandler {
 			textJsonObject.put("voiceText", r);
 		}
 		session.sendMessage(new TextMessage(textJsonObject.toString()));
+		logger.info("wbss hadleTextMessage: " + textJsonObject.toString());
 		super.handleTextMessage(session, message);
 	}
 	
