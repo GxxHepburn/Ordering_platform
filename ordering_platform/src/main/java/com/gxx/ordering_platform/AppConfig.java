@@ -192,7 +192,8 @@ public class AppConfig {
 				// 线上版本，不允许跨域
 //				registry.addHandler(osmOrderingHandler, "/websocketOrdering").addInterceptors(osmWebSocketSession);
 				// 这里设置了允许跨域！请正式版本删除这个跨域
-				registry.addHandler(osmOrderingHandler, "/websocketOrdering").addInterceptors(osmWebSocketSession).setAllowedOrigins("http://localhost:8080");
+				// 没办法删除，因为Osmapp就是跨域的!
+				registry.addHandler(osmOrderingHandler, "/websocketOrdering").addInterceptors(osmWebSocketSession).setAllowedOrigins("*");
 			}
 		};
 	}

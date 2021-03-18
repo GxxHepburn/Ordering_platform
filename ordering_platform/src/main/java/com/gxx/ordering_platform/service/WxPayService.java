@@ -162,7 +162,7 @@ public class WxPayService {
 		paraMap.put("spbill_create_ip", ipAddress);
 		paraMap.put("total_fee", "2"/*total_fee*/);
 		paraMap.put("trade_type", "JSAPI");
-		paraMap.put("sub_appid", this.service_sub_appid);
+//		paraMap.put("sub_appid", this.service_sub_appid);
 		paraMap.put("sub_mch_id", this.service_sub_mch_id);
 		
 		final String SUCCESS_NOTIFY = "https://www.donghuastar.com/wxpay/success";
