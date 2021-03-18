@@ -31,6 +31,7 @@ public class WechatMerService {
 		} else {
 			Mer mer = merMapper.getMerByMID(mid);
 			JSONObject merJsonObject = new JSONObject(mer);
+			merJsonObject.put("m_Sub_Mch_ID", "");
 			return merJsonObject.toString();
 		}
 	}

@@ -44,6 +44,8 @@ public class OSMMerService {
 		JSONObject dataJsonObject = new JSONObject();
 		
 		JSONObject merInfoJSObject = new JSONObject(mer);
+		// 消除敏感信息商家特约商户号
+		merInfoJSObject.put("m_Sub_Mch_ID", "");
 		dataJsonObject.put("merInfo", merInfoJSObject);
 		
 		newJsonObject.put("data", dataJsonObject);

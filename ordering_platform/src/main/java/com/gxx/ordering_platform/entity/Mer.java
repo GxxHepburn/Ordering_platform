@@ -15,4 +15,5 @@ public class Mer {
 	private String M_EndTime;
 	private Date M_RegisterTime;
 	private String M_img;
+	private String M_Sub_Mch_ID;
 }

@@ -53,11 +53,11 @@ public class WxPayService {
 	@Value("${serviceNumber.mch_id}")
 	private String service_mch_id;
 	
-	@Value("${serviceNumber.sub_appid}")
-	private String service_sub_appid;
+//	@Value("${serviceNumber.sub_appid}")
+//	private String service_sub_appid;
 	
-	@Value("${serviceNumber.sub_mch_id}")
-	private String service_sub_mch_id;
+//	@Value("${serviceNumber.sub_mch_id}")
+//	private String service_sub_mch_id;
 	
 	@Value("${serviceNumber.mchKey}")
 	private String ServiceMchKey;
@@ -161,10 +161,10 @@ public class WxPayService {
 		paraMap.put("body", M_Name + "-消费");
 		paraMap.put("out_trade_no", out_trade_no);
 		paraMap.put("spbill_create_ip", ipAddress);
-		paraMap.put("total_fee", "2"/*total_fee*/);
+		paraMap.put("total_fee", total_fee);
 		paraMap.put("trade_type", "JSAPI");
 //		paraMap.put("sub_appid", this.service_sub_appid);
-		paraMap.put("sub_mch_id", this.service_sub_mch_id);
+		paraMap.put("sub_mch_id", mer.getM_Sub_Mch_ID());
 		
 		final String SUCCESS_NOTIFY = "https://www.donghuastar.com/wxpay/success";
 		boolean useSandbox = false;
@@ -191,15 +191,17 @@ public class WxPayService {
 	
 	// 商家客户端退款
 	public Map<String, String> returnMoneyFromWechat(String out_trade_no, String out_refund_no, String totle_fee, String refund_fee) throws Exception {
+		
+		Orders orders = ordersMapper.getOrderByO_OutTradeNo(out_trade_no);
+		Mer mer = merMapper.getMerByMID(orders.getO_MID());
+		
 		Map<String, String> paraMap = new HashMap<String, String>();
-		paraMap.put("sub_appid", this.service_sub_appid);
-		paraMap.put("sub_mch_id", this.service_sub_mch_id);
+//		paraMap.put("sub_appid", this.service_sub_appid);
+		paraMap.put("sub_mch_id", mer.getM_Sub_Mch_ID());
 		paraMap.put("out_trade_no", out_trade_no);
 		paraMap.put("out_refund_no", out_refund_no);
-//		paraMap.put("total_fee", totle_fee);
-//		paraMap.put("refund_fee", refund_fee);
-		paraMap.put("total_fee", "2");
-		paraMap.put("refund_fee", "1");
+		paraMap.put("total_fee", totle_fee);
+		paraMap.put("refund_fee", refund_fee);
 		
 		final String SUCCESS_NOTIFY = "https://www.donghuastar.com/wxpay/retturnSuccess";
 		boolean useSandbox = false;
@@ -211,9 +213,14 @@ public class WxPayService {
 	}
 	// 退款查询
 	public Map<String, String> refundQuery (Refund refund) throws Exception {
+		
+		String R_Refund_Id = refund.getR_Refund_Id();
+		int m_id = refund.getR_MID();
+		Mer mer = merMapper.getMerByMID(m_id);
+		
 		Map<String, String> paraMap = new HashMap<String, String>();
-		paraMap.put("refund_id", refund.getR_Refund_Id());
-		paraMap.put("sub_mch_id", this.service_sub_mch_id);
+		paraMap.put("refund_id", R_Refund_Id);
+		paraMap.put("sub_mch_id", mer.getM_Sub_Mch_ID());
 		boolean useSandbox = false;
 		WXPay wxPay = new WXPay(serviceWXPayConfig, false, useSandbox);
 		Map<String, String> resultap = wxPay.refundQuery(paraMap, 15000, 15000);

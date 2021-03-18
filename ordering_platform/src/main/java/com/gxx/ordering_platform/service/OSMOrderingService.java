@@ -110,6 +110,7 @@ public class OSMOrderingService {
 		dataJsonObject.put("orderForm", orderJsonObject);
 		
 		JSONObject merJsonObject = new JSONObject(mer);
+		merJsonObject.put("m_Sub_Mch_ID", "");
 		dataJsonObject.put("merForm", merJsonObject);
 		
 		
