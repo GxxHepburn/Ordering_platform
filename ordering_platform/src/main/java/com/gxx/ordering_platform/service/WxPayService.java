@@ -88,6 +88,7 @@ public class WxPayService {
 		ordersMapper.updatePaied(out_trade_no, isPayNow, payStatues, payTime);
 	}
 	
+	// 这是付款给我们自己公司的普通商户号
 	public Map<String, String> wxPay(String openId, String ipAddress) throws Exception {
 		//1.拼接统一下单地址参数
 		Map<String, String> paraMap = new HashMap<String, String>();
