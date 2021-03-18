@@ -72,9 +72,9 @@ public class OSMOrderingHandler extends TextWebSocketHandler {
 			String r = "连接测试正常 ";
 			textJsonObject.put("type", "3");
 			textJsonObject.put("voiceText", r);
+			logger.info("wbss hadleTextMessage: " + textJsonObject.toString());
 		}
 		session.sendMessage(new TextMessage(textJsonObject.toString()));
-		logger.info("wbss hadleTextMessage: " + textJsonObject.toString());
 		super.handleTextMessage(session, message);
 	}
 	
