@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gxx.ordering_platform.service.OSMAPPOrderingService;
+import com.gxx.ordering_platform.service.OSMAPPPrintService;
 import com.gxx.ordering_platform.service.OSMAPPTabService;
 import com.gxx.ordering_platform.service.OSMOrderingService;
 
@@ -21,6 +22,8 @@ public class OSMAPPController {
 	@Autowired OSMAPPTabService oSMAPPTabService;
 	
 	@Autowired OSMAPPOrderingService oSMAPPOrderingService;
+	
+	@Autowired OSMAPPPrintService oSMAPPPrintService;
 	
 
 	@PostMapping(value = "/ordersTabAndTabTypeOptions", produces="application/json;charset=UTF-8")
@@ -66,6 +69,25 @@ public class OSMAPPController {
 	public String getOrderFormList(@RequestBody Map<String, Object> map) {
 		try {
 			return oSMAPPOrderingService.getOrderFormList(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 错误信息
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
+	
+	@PostMapping(value = "/printTickt", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String printTickt(@RequestBody Map<String, Object> map) {
+		try {
+			return oSMAPPPrintService.printTickt(map);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

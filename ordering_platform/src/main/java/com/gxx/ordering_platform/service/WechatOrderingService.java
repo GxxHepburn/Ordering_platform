@@ -266,7 +266,7 @@ public class WechatOrderingService {
 	}
 	
 	//根据JSONObject转化为OrderDetail对象
-	private OrderDetail getByOrdersJsonArray(Orders orders, OrderAdd orderAdd, JSONObject orderDetailJsonObject) {
+	public OrderDetail getByOrdersJsonArray(Orders orders, OrderAdd orderAdd, JSONObject orderDetailJsonObject) {
 		OrderDetail orderDetail = new OrderDetail();
 		String OD_FName = orderDetailJsonObject.getString("name");
 		int OD_OID = orders.getO_ID();
@@ -310,7 +310,7 @@ public class WechatOrderingService {
 		PrintService printService = new PrintService();
 		PrintRequest printRequest = new PrintRequest();
 		
-		String printContent = "testADD";
+		String printContent = "";
 		
 		//根据orderId,然后insertfood
 		JSONObject jsonObject = new JSONObject(str);
