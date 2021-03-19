@@ -39,12 +39,19 @@
    
    <dependencies>
    
-   		<!-- 芯烨云打印机 -->
+   		<!-- xpyun-opensdk依赖 -->
    		<dependency>
-			<groupId>net.xpyun.platform</groupId>
-			<artifactId>xpyun-opensdk</artifactId>
-			<version>1.0-SNAPSHOT</version>
-		</dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.4</version>
+        </dependency>
+        
+        <!-- JSON系列化 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.56</version>
+        </dependency>
    			
    		<dependency>
 			<groupId>org.apache.maven.plugins</groupId>

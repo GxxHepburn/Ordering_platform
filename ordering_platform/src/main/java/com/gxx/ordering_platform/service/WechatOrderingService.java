@@ -1,5 +1,6 @@
 package com.gxx.ordering_platform.service;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -14,21 +15,29 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.gxx.ordering_platform.entity.Food;
+import com.gxx.ordering_platform.entity.Mer;
 import com.gxx.ordering_platform.entity.Multi_Orders_Mer;
 import com.gxx.ordering_platform.entity.OrderAdd;
 import com.gxx.ordering_platform.entity.OrderDetail;
 import com.gxx.ordering_platform.entity.Orders;
+import com.gxx.ordering_platform.entity.Printer;
 import com.gxx.ordering_platform.entity.Tab;
 import com.gxx.ordering_platform.entity.TabType;
 import com.gxx.ordering_platform.entity.WechatUser;
 import com.gxx.ordering_platform.handler.OSMOrderingHandler;
 import com.gxx.ordering_platform.mapper.FoodMapper;
+import com.gxx.ordering_platform.mapper.MerMapper;
 import com.gxx.ordering_platform.mapper.OrderAddMapper;
 import com.gxx.ordering_platform.mapper.OrderDetailMapper;
 import com.gxx.ordering_platform.mapper.OrdersMapper;
+import com.gxx.ordering_platform.mapper.PrinterMapper;
 import com.gxx.ordering_platform.mapper.TabMapper;
 import com.gxx.ordering_platform.mapper.TabTypeMapper;
 import com.gxx.ordering_platform.mapper.WechatUserMapper;
+import com.gxx.ordering_platform.xpyunSDK.service.PrintService;
+import com.gxx.ordering_platform.xpyunSDK.util.Config;
+import com.gxx.ordering_platform.xpyunSDK.vo.ObjectRestResponse;
+import com.gxx.ordering_platform.xpyunSDK.vo.PrintRequest;
 
 @Component
 public class WechatOrderingService {
@@ -55,7 +64,13 @@ public class WechatOrderingService {
 	OrderAddMapper orderAddMapper;
 	
 	@Autowired
+	MerMapper merMapper;
+	
+	@Autowired
 	WebApplicationContext webApplicationContext;
+	
+	@Autowired
+	PrinterMapper printerMapper;
 
 	final Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -64,6 +79,14 @@ public class WechatOrderingService {
 	
 	@Transactional
 	public String ordering(String str) {
+		
+		// 创建打印所需对象
+		PrintService printService = new PrintService();
+		PrintRequest printRequest = new PrintRequest();
+		
+		String printContent = "";
+		
+		
 		//获取参数
 		JSONObject jsonObject = new JSONObject(str);
 		String openid = jsonObject.getString("openid");
@@ -106,6 +129,33 @@ public class WechatOrderingService {
 		// 设置接单为0
 		orderAdd.setOA_IsTaking("0");
 		orderAddMapper.insert(orderAdd);
+		
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Mer mer = merMapper.getMerByMID(orders.getO_MID());
+		Tab tab = tabMapper.getByTabId(orders.getO_TID());
+		TabType tabType = tabTypeMapper.getByTabTypeId(tab.getT_TTID());
+		// 拼接小票内容
+		// 餐厅名
+		printContent+=("<CB>"+mer.getM_Name()+"<BR>");
+		printContent+=("<L><N>--------------------------------"+"<BR>");
+		printContent+=("<L><N>类型:  下单"+"<BR>");
+		printContent+=("<L><N>单号:"+orders.getO_UniqSearchID()+"<BR>");
+		printContent+=("<L><N>下单时间:"+format.format(orders.getO_OrderingTime())+"<BR>");
+		String opt = "";
+		if(orders.getO_PayTime() != null) {
+			opt = format.format(orders.getO_PayTime());
+		}
+		printContent+=("<L><N>支付时间:"+opt+"<BR>");
+		printContent+=("<L><N>餐桌区域:"+tabType.getTT_Name()+"<BR>");
+		printContent+=("<L><N>餐桌:"+tab.getT_Name()+"<BR>");
+		printContent+=("<L><N>用餐人数:"+orders.getO_NumberOfDiners()+"<BR>");
+		printContent+=("<L><N>--------------------------------"+"<BR>");
+		printContent+=("<L><N>备注:"+orders.getO_Remarks()+"<BR>");
+		printContent+=("<L><N>**************商品**************"+"<BR>");
+		printContent+=("<BR>");
+		
+		
 		
 		float totalReturnPrice = 0.00f;
 		for(int i=0; i<ordersJsonArray.length(); i++) {
@@ -158,6 +208,11 @@ public class WechatOrderingService {
 			orderDetail.setOD_RealNum(realNum);
 			orderDetailMapper.insert(orderDetail);
 			logger.info("OD_ID: " + orderDetail.getOD_ID());
+			
+			// 拼接小票菜品项
+			printContent+=("<L><HB>"+OD_FName+"<BR>");
+			printContent+=("<L><N> "+orderDetail.getOD_Spec()+" "+orderDetail.getOD_PropOne()+" "+orderDetail.getOD_PropTwo()+"<BR>");
+			printContent+=("<R><N>x"+realNum+"   ￥"+orderDetail.getOD_RealPrice()+"<BR>");
 		}
 		orders.setO_TotlePrice(totalPrice - totalReturnPrice);
 		ordersMapper.updateTotlePrice(orders.getO_ID(), orders.getO_TotlePrice());
@@ -177,6 +232,25 @@ public class WechatOrderingService {
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
+		}
+		
+		// 拼接小票信息
+		printContent+=("<L><N>--------------------------------"+"<BR>");
+		printContent+=("<L><B>合计:￥"+orders.getO_TotlePrice()+"<BR>");
+		printContent+=("<L><N>********************************"+"<BR>");
+		printContent+=("<L><N>--------------------------------"+"<BR>");
+		printContent+=("<L><N>打印时间:"+format.format(new Date())+"<BR>");
+		
+		// 获取打印机sn
+		List<Printer> printers = printerMapper.getByMID(orders.getO_MID());
+		// 设置打印内容
+		printRequest.setContent(printContent);
+		// 根据打印机数目，设置sn号，同时发送打印请求
+		for (int i = 0; i < printers.size(); i++) {
+			printRequest.setSn(printers.get(i).getP_No());
+			Config.createRequestHeader(printRequest);
+			ObjectRestResponse<String> result = printService.print(printRequest);
+			logger.info(result.toString());
 		}
 		
 		return O_UniqSearchID;
@@ -229,7 +303,14 @@ public class WechatOrderingService {
 		return orderDetail;
 	}
 	
+	@Transactional
 	public String add(String str) {
+		
+		// 创建打印所需对象
+		PrintService printService = new PrintService();
+		PrintRequest printRequest = new PrintRequest();
+		
+		String printContent = "testADD";
 		
 		//根据orderId,然后insertfood
 		JSONObject jsonObject = new JSONObject(str);
@@ -277,6 +358,30 @@ public class WechatOrderingService {
 		orderAdd.setOA_IsTaking("0");
 		orderAddMapper.insert(orderAdd);
 		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Mer mer = merMapper.getMerByMID(orders.getO_MID());
+		Tab tab = tabMapper.getByTabId(orders.getO_TID());
+		TabType tabType = tabTypeMapper.getByTabTypeId(tab.getT_TTID());
+		// 拼接小票内容
+		// 餐厅名
+		printContent+=("<CB>"+mer.getM_Name()+"<BR>");
+		printContent+=("<L><N>--------------------------------"+"<BR>");
+		printContent+=("<L><N>类型:  加菜"+"<BR>");
+		printContent+=("<L><N>单号:"+orders.getO_UniqSearchID()+"<BR>");
+		printContent+=("<L><N>下单时间:"+format.format(orderAdd.getOA_OrderingTime())+"<BR>");
+		String opt = "";
+		if(orders.getO_PayTime() != null) {
+			opt = format.format(orders.getO_PayTime());
+		}
+		printContent+=("<L><N>支付时间:"+opt+"<BR>");
+		printContent+=("<L><N>餐桌区域:"+tabType.getTT_Name()+"<BR>");
+		printContent+=("<L><N>餐桌:"+tab.getT_Name()+"<BR>");
+		printContent+=("<L><N>用餐人数:"+orders.getO_NumberOfDiners()+"<BR>");
+		printContent+=("<L><N>--------------------------------"+"<BR>");
+		printContent+=("<L><N>备注:"+orders.getO_Remarks()+"<BR>");
+		printContent+=("<L><N>**************商品**************"+"<BR>");
+		printContent+=("<BR>");
+		
 		for(int i=0; i<ordersJsonArray.length(); i++) {
 			JSONObject orderDetailJsonObject = ordersJsonArray.getJSONObject(i);
 			OrderDetail orderDetail = getByOrdersJsonArray(orders, orderAdd, orderDetailJsonObject);
@@ -321,6 +426,11 @@ public class WechatOrderingService {
 			orderDetail.setOD_RealNum(realNum);
 			orderDetailMapper.insert(orderDetail);
 			logger.info("OD_ID: " + orderDetail.getOD_ID());
+			
+			// 拼接小票菜品项
+			printContent+=("<L><HB>"+OD_FName+"<BR>");
+			printContent+=("<L><N> "+orderDetail.getOD_Spec()+" "+orderDetail.getOD_PropOne()+" "+orderDetail.getOD_PropTwo()+"<BR>");
+			printContent+=("<R><N>x"+realNum+"   ￥"+orderDetail.getOD_RealPrice()+"<BR>");
 		}
 		ordersMapper.updateNumAndPriceBySearchId(orderSearchId, totalNum, totalPrice - totalReturnPrice);
 		
@@ -338,6 +448,25 @@ public class WechatOrderingService {
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
+		}
+		
+		// 拼接小票信息
+		printContent+=("<L><N>--------------------------------"+"<BR>");
+		printContent+=("<L><B>合计:￥"+orderAdd.getOA_TotlePrice()+"<BR>");
+		printContent+=("<L><N>********************************"+"<BR>");
+		printContent+=("<L><N>--------------------------------"+"<BR>");
+		printContent+=("<L><N>打印时间:"+format.format(new Date())+"<BR>");
+		
+		// 获取打印机sn
+		List<Printer> printers = printerMapper.getByMID(orders.getO_MID());
+		// 设置打印内容
+		printRequest.setContent(printContent);
+		// 根据打印机数目，设置sn号，同时发送打印请求
+		for (int i = 0; i < printers.size(); i++) {
+			printRequest.setSn(printers.get(i).getP_No());
+			Config.createRequestHeader(printRequest);
+			ObjectRestResponse<String> result = printService.print(printRequest);
+			logger.info(result.toString());
 		}
 		
 		return "-1";
