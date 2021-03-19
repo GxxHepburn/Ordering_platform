@@ -68,4 +68,7 @@ public interface OrderAddMapper {
 	
 	@Select("SELECT COUNT(*) FROM orderadd WHERE OA_MID = #{m_id} AND OA_IsTaking = '0'")
 	int getNotTakingTotleByMIDOrder(@Param("m_id") int m_id);
+
+	@Select("SELECT * FROM orderadd WHERE OA_ID = #{oa_id}")
+	OrderAdd getOA_ID(@Param("oa_id") int oa_id);
 }
