@@ -76,10 +76,17 @@ public class OSMAPPPrintService {
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
 		Orders orders = ordersMapper.getordersByO_ID(O_ID);
-		
+
+		String tname = "";
+		String ttname = "";
 		Mer mer = merMapper.getMerByMID(orders.getO_MID());
 		Tab tab = tabMapper.getByTabId(orders.getO_TID());
-		TabType tabType = tabTypeMapper.getByTabTypeId(tab.getT_TTID());
+		if (tab != null) {
+			TabType tabType = tabTypeMapper.getByTabTypeId(tab.getT_TTID());
+			tname = tab.getT_Name();
+			ttname = tabType.getTT_Name();
+		}
+	
 		// 拼接小票内容
 		// 餐厅名
 		printContent+=("<CB>"+mer.getM_Name()+"<BR>");
@@ -92,8 +99,8 @@ public class OSMAPPPrintService {
 			opt = format.format(orders.getO_PayTime());
 		}
 		printContent+=("<L><N>支付时间:"+opt+"<BR>");
-		printContent+=("<L><N>餐桌区域:"+tabType.getTT_Name()+"<BR>");
-		printContent+=("<L><N>餐桌:"+tab.getT_Name()+"<BR>");
+		printContent+=("<L><N>餐桌区域:"+ttname+"<BR>");
+		printContent+=("<L><N>餐桌:"+tname+"<BR>");
 		printContent+=("<L><N>用餐人数:"+orders.getO_NumberOfDiners()+"<BR>");
 		printContent+=("<L><N>--------------------------------"+"<BR>");
 		printContent+=("<L><N>备注:"+orders.getO_Remarks()+"<BR>");
