@@ -16,4 +16,6 @@ public class Mer {
 	private Date M_RegisterTime;
 	private String M_img;
 	private String M_Sub_Mch_ID;
+	private int M_IsInOpenTime;
+	private int M_IsBan;
 }

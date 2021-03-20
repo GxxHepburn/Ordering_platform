@@ -83,7 +83,7 @@ public class OSMMerService {
 		} 
 	      
 		// 返回唯一地址
-	      metaJsonObject.put("status", 200);
+	    metaJsonObject.put("status", 200);
 		metaJsonObject.put("msg", "上传成功");
 		
 		JSONObject dataJsonObject = new JSONObject();
@@ -118,5 +118,32 @@ public class OSMMerService {
 	@Transactional
 	public void closeMer(int M_ID) {
 		merMapper.updateM_IsInOpenTimeByM_ID(M_ID, 0);
+	}
+	
+	@Transactional
+	public String changeMerOperateStatus(Map<String, Object> map) {
+		
+		String mmngctUserName = map.get("mmngctUserName").toString();
+		
+		//根据mmngctUserName查出merId
+		Mmngct mmngct = mmaMapper.getByUsername(mmngctUserName);
+		int m_ID = mmngct.getMMA_ID();
+		
+		int m_IsInOpenTime = Integer.valueOf(map.get("m_IsInOpenTime").toString());
+		
+		merMapper.updateM_IsInOpenTimeByM_ID(m_ID, m_IsInOpenTime);
+		
+		
+		 //拼接json
+		JSONObject newJsonObject = new JSONObject();
+		JSONObject metaJsonObject = new JSONObject();
+		
+		// 返回唯一地址
+	    metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "修改成功");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		
+		return newJsonObject.toString();
 	}
 }
