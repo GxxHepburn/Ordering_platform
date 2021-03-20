@@ -250,7 +250,6 @@ public class AppConfig {
 			@SuppressWarnings("deprecation")
 			@Override
 			public void addInterceptors(InterceptorRegistry registry) {
-				// TODO Auto-generated method stub
 				List<String> includePathList = new ArrayList<String>();
 				includePathList.add("/OSM/**");
 				includePathList.add("/OSMAPP/**");
@@ -258,12 +257,23 @@ public class AppConfig {
 				// 添加到拦截器拦截队列中，同时前端请求修改，让其携带token
 				// 这样操作是没用的，因为拦截器只针对controller，拦截器是居于aop的方法拦截的，而我们的websocket的连接没有controller，所以无效
 				// 解决办法是在HttpSessionHandshakeInterceptor 中处理，是有需要拦截
-//				includePathList.add("/websocketOrdering");//添加到拦截器拦截队列中，同时前端请求修改，让其携带token
 				List<String> excludePathList = new ArrayList<String>();
 				excludePathList.add("/OSM/login");
+				
+				// WechatIsOpeningInterceptor
+				List<String> isOpeningIncludePathList = new ArrayList<String>();
+				isOpeningIncludePathList.add("/wechat/loggedIn/add");
+				isOpeningIncludePathList.add("/wechat/loggedIn/order");
+				List<String> isOpeningExcludePathList = new ArrayList<String>();
+				
+				
 				for (var interceptor : interceptors) {
 					if ("com.gxx.ordering_platform.interceptor.AuthInterceptor".equals(interceptor.getClass().getName())) {
 						registry.addInterceptor(interceptor).excludePathPatterns(excludePathList).addPathPatterns(includePathList);
+						continue;
+					}
+					if ("com.gxx.ordering_platform.interceptor.WechatIsOpeningInterceptor".equals(interceptor.getClass().getName())) {
+						registry.addInterceptor(interceptor).excludePathPatterns(isOpeningExcludePathList).addPathPatterns(isOpeningIncludePathList);
 						continue;
 					}
 					registry.addInterceptor(interceptor);
