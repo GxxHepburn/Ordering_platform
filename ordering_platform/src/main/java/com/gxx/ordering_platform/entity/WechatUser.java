@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class WechatUser {
 
-	private int u_ID;
+	private int U_ID;
 	private String U_OpenId;
 	private Date U_RegisterTime;
 	private Date U_LoginTime;
