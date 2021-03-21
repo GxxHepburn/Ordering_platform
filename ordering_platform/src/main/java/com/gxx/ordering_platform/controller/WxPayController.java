@@ -139,6 +139,22 @@ public class WxPayController {
 		// 先判断是否处理过，如果处理过，就跳过
 		Orders orders = ordersMapper.getOrderByO_OutTradeNo(param.getOut_trade_no());
 		if (orders.getO_PayStatue() == 0) {
+			
+			// 先判断支付成功还是失败，支付失败什么也不做,直接返回
+			if ("FAIL".equals(param.getResult_code())) {
+				Map<String, String> result = new HashMap<String, String>();
+				if ("SUCCESS".equals(param.getReturn_code())) {
+					result.put("return_code", "SUCCESS");
+					result.put("return_msg", "OK");
+				}
+				String successReturn = null;
+				try {
+					successReturn =  WXPayUtil.mapToXml(result);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return successReturn;
+			}
 		
 			//修改isPayNow，同时设置payStatus,payTime
 			Date payTime = new Date();
