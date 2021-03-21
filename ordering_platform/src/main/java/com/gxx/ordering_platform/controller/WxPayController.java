@@ -255,7 +255,7 @@ public class WxPayController {
 				// 餐厅名
 				printContent+=("<CB>"+mer.getM_Name()+"<BR>");
 				printContent+=("<L><N>--------------------------------"+"<BR>");
-				printContent+=("<L><N>类型:  主动操作打印"+"<BR>");
+				printContent+=("<L><N>类型:  下单"+"<BR>");
 				printContent+=("<L><N>单号:"+orders.getO_UniqSearchID()+"<BR>");
 				printContent+=("<L><N>下单时间:"+format.format(orders.getO_OrderingTime())+"<BR>");
 				String opt = "";
