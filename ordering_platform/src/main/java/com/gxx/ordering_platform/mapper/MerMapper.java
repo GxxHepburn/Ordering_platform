@@ -20,4 +20,7 @@ public interface MerMapper {
 	
 	@Update("UPDATE mer SET M_IsInOpenTime = #{m_isInOpenTime} WHERE M_ID = #{m_id}")
 	void updateM_IsInOpenTimeByM_ID(@Param("m_id") int m_id, @Param("m_isInOpenTime") int m_isInOpenTime);
+	
+	@Update("UPDATE mer SET M_IsOrderWithPay = #{m_IsOrderWithPay} WHERE M_ID = #{m_id}")
+	void updateM_IsOrderWithPayByM_ID(@Param("m_id") int m_id, @Param("m_IsOrderWithPay") int m_IsOrderWithPay);
 }

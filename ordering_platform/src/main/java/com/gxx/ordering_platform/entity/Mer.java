@@ -18,4 +18,5 @@ public class Mer {
 	private String M_Sub_Mch_ID;
 	private int M_IsInOpenTime;
 	private int M_IsBan;
+	private int M_IsOrderWithPay;
 }
