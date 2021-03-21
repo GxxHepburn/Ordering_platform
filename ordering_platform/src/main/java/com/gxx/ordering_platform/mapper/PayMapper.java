@@ -3,6 +3,7 @@ package com.gxx.ordering_platform.mapper;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -103,4 +104,7 @@ public interface PayMapper {
 			@Param("u_id") Integer u_id, @Param("o_id") Integer o_id, @Param("outTradeNo") String outTradeNo, 
 			@Param("transactionId") String transactionId, @Param("payStartTime") String payStartTime, 
 			@Param("payEndTime") String payEndTime, @Param("tabTypeId") Integer tabTypeId, @Param("tabId") Integer tabId);
+
+	@Delete("DELETE FROM pay WHERE P_OID = #{oid}")
+	void deleteByOID(@Param("oid") int oid);
 }

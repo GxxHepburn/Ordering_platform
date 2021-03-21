@@ -2,6 +2,7 @@ package com.gxx.ordering_platform.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -20,4 +21,7 @@ public interface OrderReturnDetailMapper {
 	
 	@Select("SELECT * FROM orderreturndetail WHERE ORD_ORID = #{or_id}")
 	List<OrderReturnDetail> getByOR_ID(@Param("or_id") int or_id);
+	
+	@Delete("DELETE FROM orderreturndetail WHERE ORD_OID = #{oid}")
+	void deleteByOID(@Param("oid") int oid);
 }

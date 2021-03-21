@@ -3,6 +3,7 @@ package com.gxx.ordering_platform.mapper;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
@@ -71,4 +72,7 @@ public interface OrderAddMapper {
 
 	@Select("SELECT * FROM orderadd WHERE OA_ID = #{oa_id}")
 	OrderAdd getOA_ID(@Param("oa_id") int oa_id);
+	
+	@Delete("DELETE FROM orderadd WHERE OA_OID = #{oid}")
+	void deleteByOID(@Param("oid") int oid);
 }

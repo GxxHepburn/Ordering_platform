@@ -3,6 +3,7 @@ package com.gxx.ordering_platform.mapper;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
@@ -174,4 +175,7 @@ public interface OrderReturnMapper {
 			+ " AND orders.O_OrderingTime >= #{dateStart} "
 			+ " AND orders.O_OrderingTime <= #{dateEnd}")
 	BS searchBSRefundPrice(@Param("m_id") int m_id, @Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
+	
+	@Delete("DELETE FROM orderreturn WHERE OR_OID = #{oid}")
+	void deleteByOID(@Param("oid") int oid);
 }

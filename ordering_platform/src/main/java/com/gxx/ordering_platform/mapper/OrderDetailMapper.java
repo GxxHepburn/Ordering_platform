@@ -32,4 +32,7 @@ public interface OrderDetailMapper {
 	
 	@Update("UPDATE orderdetail set OD_Num = #{od_num}, OD_RealNum = #{od_realNum} WHERE OD_ID = #{od_id}")
 	void updateRealNumAndNumByOD_ID(@Param("od_id") int od_id, @Param("od_num") int od_num, @Param("od_realNum") int od_realNum);
+	
+	@Delete("DELETE FROM orderdetail WHERE OD_OID = #{oid}")
+	void deleteByOID(@Param("oid") int oid);
 }

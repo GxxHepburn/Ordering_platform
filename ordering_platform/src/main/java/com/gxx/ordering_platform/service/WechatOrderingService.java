@@ -246,11 +246,15 @@ public class WechatOrderingService {
 		// 设置打印内容
 		printRequest.setContent(printContent);
 		// 根据打印机数目，设置sn号，同时发送打印请求
+		// 判断支付顺序，如果是先支付后下单，则不打印
 		for (int i = 0; i < printers.size(); i++) {
 			printRequest.setSn(printers.get(i).getP_No());
 			Config.createRequestHeader(printRequest);
-			ObjectRestResponse<String> result = printService.print(printRequest);
-			logger.info(result.toString());
+			if (mer.getM_IsOrderWithPay() == 0) {
+				// 先下单后支付模式才打印
+				ObjectRestResponse<String> result = printService.print(printRequest);
+				logger.info(result.toString());
+			}
 		}
 		
 		return O_UniqSearchID;

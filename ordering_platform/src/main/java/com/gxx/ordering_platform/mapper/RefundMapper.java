@@ -2,6 +2,7 @@ package com.gxx.ordering_platform.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -146,4 +147,7 @@ public interface RefundMapper {
 			@Param("r_submit_end_time") String r_submit_end_time, @Param("r_success_start_time") String r_success_start_time, 
 			@Param("r_success_end_time") String r_success_end_time, @Param("tabTypeId") Integer tabTypeId, 
 			@Param("tabId") Integer tabId);
+	
+	@Delete("DELETE FROM refund WHERE R_OID = #{oid}")
+	void deleteByOID(@Param("oid") int oid);
 }
