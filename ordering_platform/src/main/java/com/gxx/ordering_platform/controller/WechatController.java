@@ -117,29 +117,38 @@ public class WechatController {
 	@PostMapping(value = "/loggedIn/initMenu",produces="application/json;charset=UTF-8")
 	@ResponseBody
 	public String initMenu(@RequestBody String str) {
-		JSONObject jsonObject = new JSONObject(str);
-		String res = jsonObject.getString("res");
-		return weChatInitMenuService.initMenu(res).toString();
+		try {
+			JSONObject jsonObject = new JSONObject(str);
+			String res = jsonObject.getString("res");
+			return weChatInitMenuService.initMenu(res).toString();
+		} catch (Exception e) {
+			logger.error("ERROR", e);
+			return "0";
+		}
 	}
 
 	
 	@PostMapping(value = "/loggedIn/getTabNameAndTabTypeName",produces="application/json;charset=UTF-8")
 	@ResponseBody
 	public String getTabNameAndTabTypeName(@RequestBody String str) {
-		JSONObject jsonObject = new JSONObject(str);
-		String tableId = jsonObject.getString("table");
-		return wechatTableService.getTabNameAndTabTypeName(tableId);
+		try {
+			JSONObject jsonObject = new JSONObject(str);
+			String tableId = jsonObject.getString("table");
+			return wechatTableService.getTabNameAndTabTypeName(tableId);
+		} catch (Exception e) {
+			logger.error("ERROR", e);
+			return "0";
+		}
 	}
 	
 	
 	@PostMapping(value = "/loggedIn/order",produces="application/json;charset=UTF-8")
 	@ResponseBody
 	public String order(@RequestBody String str) {
-		JSONObject jsonObject = new JSONObject(str);
-		int mid = jsonObject.getInt("mid");
-		logger.info("wechatController_mid: " + mid);
-		String orderSearchId = "";
 		try {
+			JSONObject jsonObject = new JSONObject(str);
+			int mid = jsonObject.getInt("mid");
+			String orderSearchId = "";
 			orderSearchId = wechatOrderingService.ordering(str);
 			// 对结果进行判断,如果meta=410,直接返回
 			
@@ -148,6 +157,7 @@ public class WechatController {
 				new JSONObject(orderSearchId);
 			} catch (Exception e) {
 				//下单失败-更新客户端menu
+				logger.error("ERROR", e);
 				WeChatInitMenuService weChatInitMenuService = (WeChatInitMenuService)webApplicationContext.getBean("weChatInitMenuService");
 				
 				String newJsonStr = weChatInitMenuService.initMenu(String.valueOf(mid)).toString();
@@ -159,8 +169,7 @@ public class WechatController {
 			return orderSearchId;
 		} catch (Exception e) {
 			//遇到错误，返回下单失败
-			logger.error(e.toString());
-			e.printStackTrace();
+			logger.error("ERROR", e);
 			return "0";
 		}
 	}
@@ -168,25 +177,25 @@ public class WechatController {
 	@PostMapping(value = "/loggedIn/add",produces="application/json;charset=UTF-8")
 	@ResponseBody
 	public String add(@RequestBody String str) {
-		JSONObject jsonObject = new JSONObject(str);
-		int mid = jsonObject.getInt("mid");
-		String addReturnString = "";
 		//加菜逻辑
 		try {
+			JSONObject jsonObject = new JSONObject(str);
+			int mid = jsonObject.getInt("mid");
+			String addReturnString = "";
 			addReturnString = wechatOrderingService.add(str);
 			try {
 				new JSONObject(addReturnString);
 			} catch (Exception e) {
 				// TODO: handle exception
 				//下单成功-更新客户端menu
+				logger.error("ERROR", e);
 				WeChatInitMenuService weChatInitMenuService = (WeChatInitMenuService)webApplicationContext.getBean("weChatInitMenuService");
 				return weChatInitMenuService.initMenu(String.valueOf(mid)).toString();
 			}
 			return addReturnString;
 		} catch (Exception e) {
 			//遇到错误，返回夹菜失败
-			e.printStackTrace();
-			logger.error(e.toString());
+			logger.error("ERROR", e);
 			return "0";
 		}
 		
@@ -200,8 +209,7 @@ public class WechatController {
 			returnStr = wechatOrderingService.home(str);
 		} catch (Exception e) {
 			// TODO: handle exception
-			e.printStackTrace();
-			logger.error(e.toString());
+			logger.error("ERROR", e);
 			return "0";
 		}
 		return returnStr;
@@ -214,8 +222,7 @@ public class WechatController {
 		try {
 			returnStr = wechatOrderingService.touchDetail(str);
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e.toString());
+			logger.error("ERROR", e);
 			return "0";
 		}
 		return returnStr;
@@ -224,7 +231,13 @@ public class WechatController {
 	@PostMapping(value = "/loggedIn/getMer",produces="application/json;charset=UTF-8")
 	@ResponseBody
 	public String getMer(@RequestBody String str) {
-		return wechatMerService.getMer(str);
+		try {
+			return wechatMerService.getMer(str);
+		} catch (Exception e) {
+			logger.error("ERROR", e);
+			return "-1";
+		}
+		
 	}
 	
 	@PostMapping(value = "/loggedIn/onReachBottom", produces="application/json;charset=UTF-8")
@@ -233,8 +246,7 @@ public class WechatController {
 		try {
 			return wechatOrderingService.onReachBottom(map);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();

@@ -34,7 +34,7 @@ public class BttsController {
 		try {
 			return bttsService.bttsToken(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();

@@ -103,7 +103,7 @@ public class OSMController {
 		try {
 			return mmaService.login(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -129,7 +129,7 @@ public class OSMController {
 		try {
 			return oSMUsersService.users(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -148,7 +148,7 @@ public class OSMController {
 		try {
 			return oSMOrderDetailService.orderDetails(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -173,7 +173,7 @@ public class OSMController {
 		try {
 			return oSMFoodTypeService.cates(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -192,7 +192,7 @@ public class OSMController {
 		try {
 			return oSMFoodService.editFood(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -211,7 +211,7 @@ public class OSMController {
 		try {
 			return oSMFoodService.deleteFood(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -230,7 +230,7 @@ public class OSMController {
 		try {
 			return oSMFoodService.addFood(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -249,7 +249,7 @@ public class OSMController {
 		try {
 			return oSMFoodService.searchGoods(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -268,7 +268,7 @@ public class OSMController {
 		try {
 			return oSMFoodTypeService.searchCates(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -287,7 +287,7 @@ public class OSMController {
 		try {
 			return oSMFoodTypeService.deleteCate(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -306,7 +306,7 @@ public class OSMController {
 		try {
 			return oSMFoodTypeService.changeFTName(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -325,7 +325,7 @@ public class OSMController {
 		try {
 			return oSMFoodTypeService.addFT(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -344,7 +344,7 @@ public class OSMController {
 		try {
 			return oSMMerService.getMerInfo(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -369,7 +369,7 @@ public class OSMController {
 		try {
 			return oSMMerService.changeMerInfo(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -388,7 +388,7 @@ public class OSMController {
 		try {
 			return oSMTabService.tabs(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -407,7 +407,7 @@ public class OSMController {
 		try {
 			return oSMTabService.deleteTab(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -426,7 +426,7 @@ public class OSMController {
 		try {
 			return oSMTabTypeService.tabtypes(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -445,7 +445,7 @@ public class OSMController {
 		try {
 			return oSMTabService.editTab(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -464,7 +464,7 @@ public class OSMController {
 		try {
 			return oSMTabService.searchtabs(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -483,7 +483,7 @@ public class OSMController {
 		try {
 			return oSMTabService.addTab(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -502,7 +502,7 @@ public class OSMController {
 		try {
 			return oSMTabTypeService.searchTabTypes(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -521,7 +521,7 @@ public class OSMController {
 		try {
 			return oSMTabTypeService.deleteTabType(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -540,7 +540,7 @@ public class OSMController {
 		try {
 			return oSMTabTypeService.changeTTName(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -559,7 +559,7 @@ public class OSMController {
 		try {
 			return oSMTabTypeService.addTT(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -578,7 +578,7 @@ public class OSMController {
 		try {
 			return oSMTabService.ordersTabAndTabTypeOptions(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -597,7 +597,7 @@ public class OSMController {
 		try {
 			return oSMOrderingService.getOrderFormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -616,7 +616,7 @@ public class OSMController {
 		try {
 			return oSMOrderingService.getOrderForm(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -635,7 +635,7 @@ public class OSMController {
 		try {
 			return oSMOrderingService.getOrderAddFormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -654,7 +654,7 @@ public class OSMController {
 		try {
 			return oSMOrderingService.onlyReturnGoods(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -673,7 +673,7 @@ public class OSMController {
 		try {
 			return oSMFoodService.onePunchUpGoods(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -692,7 +692,7 @@ public class OSMController {
 		try {
 			return oSMFoodService.changeFoodStatue(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -711,7 +711,7 @@ public class OSMController {
 		try {
 			return oSMFoodService.onePunchDisableOrAble(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -730,7 +730,7 @@ public class OSMController {
 		try {
 			return oSMWechatUserService.changeWechatUserStatus(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -749,7 +749,7 @@ public class OSMController {
 		try {
 			return oSMPayService.getOrderPayForm(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -768,7 +768,7 @@ public class OSMController {
 		try {
 			return oSMOrderingService.takingOrder(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -787,7 +787,7 @@ public class OSMController {
 		try {
 			return oSMOrderingService.notTakingOrerAddFormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -806,7 +806,7 @@ public class OSMController {
 		try {
 			return oSMOrderingService.orderFiUnderLine(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -825,7 +825,7 @@ public class OSMController {
 		try {
 			return oSMOrderingService.orderNotFiUnderLine(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -844,7 +844,7 @@ public class OSMController {
 		try {
 			return mmaService.sendCheck(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -863,7 +863,7 @@ public class OSMController {
 		try {
 			return mmaService.realCheck(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -882,7 +882,7 @@ public class OSMController {
 		try {
 			return oSMOrderingService.returnGoodsWithMoney(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -901,7 +901,7 @@ public class OSMController {
 		try {
 			return oSMOrderingService.getOrderReturnFormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -920,7 +920,7 @@ public class OSMController {
 		try {
 			return mmaService.checkTradePassword(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -939,7 +939,7 @@ public class OSMController {
 		try {
 			return oSMRefundService.getRefundFormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -958,7 +958,7 @@ public class OSMController {
 		try {
 			return oSMRefundService.refundQuery(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -977,7 +977,7 @@ public class OSMController {
 		try {
 			return oSMOrderingService.getLastOrderFormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -996,7 +996,7 @@ public class OSMController {
 		try {
 			return oSMOrderingService.getNotPayReturnAndNotFiAndFiOrderFormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -1015,7 +1015,7 @@ public class OSMController {
 		try {
 			return oSMPayService.getPayFormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -1034,7 +1034,7 @@ public class OSMController {
 		try {
 			return oSMRefundService.getRefundRecordFormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -1053,7 +1053,7 @@ public class OSMController {
 		try {
 			return oSMOrderingService.searchOrdersPHour(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -1072,7 +1072,7 @@ public class OSMController {
 		try {
 			return oSMOrderingService.searchOrdersPDay(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -1091,7 +1091,7 @@ public class OSMController {
 		try {
 			return oSMOrderingService.searchOrdersPMonth(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -1110,7 +1110,7 @@ public class OSMController {
 		try {
 			return oSMRefundService.searchRefundPMonth(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -1129,7 +1129,7 @@ public class OSMController {
 		try {
 			return oSMFoodTypeService.pSSGoodsAndGoodstypeOptions(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -1148,7 +1148,7 @@ public class OSMController {
 		try {
 			return oSMFoodTypeService.searchPSSFormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -1167,7 +1167,7 @@ public class OSMController {
 		try {
 			return oSMFoodTypeService.searchCSSFormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -1186,7 +1186,7 @@ public class OSMController {
 		try {
 			return oSMFoodTypeService.searchPSCFormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -1205,7 +1205,7 @@ public class OSMController {
 		try {
 			return oSMRefundService.searchRCFormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -1224,7 +1224,7 @@ public class OSMController {
 		try {
 			return oSMRefundService.searchRSFormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -1243,7 +1243,7 @@ public class OSMController {
 		try {
 			return oSMTabService.searchCOSNFormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -1262,7 +1262,7 @@ public class OSMController {
 		try {
 			return oSMTabService.searchTRFormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -1281,7 +1281,7 @@ public class OSMController {
 		try {
 			return oSMTabService.searchTRWFormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -1300,7 +1300,7 @@ public class OSMController {
 		try {
 			return oSMTabService.searchTRMFormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -1319,7 +1319,7 @@ public class OSMController {
 		try {
 			return oSMUsersService.searchUDSFormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -1338,7 +1338,7 @@ public class OSMController {
 		try {
 			return oSMUsersService.searchNUSFormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -1357,7 +1357,7 @@ public class OSMController {
 		try {
 			return oSMUsersService.searchCDFormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -1376,7 +1376,7 @@ public class OSMController {
 		try {
 			return oSMUsersService.searchCSFormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -1395,7 +1395,7 @@ public class OSMController {
 		try {
 			return oSMOrderingService.searchSDFormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -1414,7 +1414,7 @@ public class OSMController {
 		try {
 			return oSMOrderingService.searchRS2FormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -1433,7 +1433,7 @@ public class OSMController {
 		try {
 			return oSMOrderingService.searchBSFormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -1452,7 +1452,7 @@ public class OSMController {
 		try {
 			return oSMMerService.changeMerOperateStatus(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -1471,7 +1471,7 @@ public class OSMController {
 		try {
 			return oSMMerService.changeMerIsOrderWithPay(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();

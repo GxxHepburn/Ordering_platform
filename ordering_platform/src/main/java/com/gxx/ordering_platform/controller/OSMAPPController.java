@@ -3,6 +3,8 @@ package com.gxx.ordering_platform.controller;
 import java.util.Map;
 
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +27,8 @@ public class OSMAPPController {
 	
 	@Autowired OSMAPPPrintService oSMAPPPrintService;
 	
+	final Logger logger = LoggerFactory.getLogger(getClass());
+	
 
 	@PostMapping(value = "/ordersTabAndTabTypeOptions", produces="application/json;charset=UTF-8")
 	@ResponseBody
@@ -32,7 +36,7 @@ public class OSMAPPController {
 		try {
 			return oSMAPPTabService.ordersTabAndTabTypeOptions(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -51,7 +55,7 @@ public class OSMAPPController {
 		try {
 			return oSMAPPOrderingService.notTakingOrerAddFormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -70,7 +74,7 @@ public class OSMAPPController {
 		try {
 			return oSMAPPOrderingService.getOrderFormList(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -89,7 +93,7 @@ public class OSMAPPController {
 		try {
 			return oSMAPPPrintService.printTickt(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
@@ -108,7 +112,7 @@ public class OSMAPPController {
 		try {
 			return oSMAPPPrintService.notTakingPrintTickt(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ERROR", e);
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
