@@ -1,6 +1,9 @@
 package com.gxx.ordering_platform.service;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -100,7 +103,13 @@ public class WechatOrderingService {
 		JSONArray ordersJsonArray = jsonObject.getJSONArray("orders");
 		Date orderingTime = new Date();
 		WechatUser wechatUser = wechatUserMapper.getByUOpenId(openid);
-		String O_UniqSearchID = getOrderSearchID(mid, tid, orderingTime);
+		String O_UniqSearchID = getOrderSearchID(mid, tid, orderingTime, openid);
+		
+		// 检查数据库中是否有该订单，如果有，就返回
+		if (ordersMapper.getOrdersByUniqSearchID(O_UniqSearchID) != null) {
+			return "1";
+		}
+		
 		logger.info("orders: " + ordersJsonArray);
 		logger.info("O_UniqSearchID: " + O_UniqSearchID);
 		
@@ -261,12 +270,12 @@ public class WechatOrderingService {
 	}
 	
 	//生成订单号
-	private String getOrderSearchID(int mid, int tid, Date orderingTime) {
+	private String getOrderSearchID(int mid, int tid, Date orderingTime, String openid) {
 		return "M" + mid + "T" + tid + "Y" 
 				+ (orderingTime.getYear()+1900) + "M" 
 				+ (orderingTime.getMonth()+1) + "D" + orderingTime.getDate() 
 				+ "H" + orderingTime.getHours() + "M" + orderingTime.getMinutes() 
-				+ "S" + orderingTime.getSeconds();
+				+ "S" + orderingTime.getSeconds() + "U" + openid.substring(openid.length()-4);
 	}
 	
 	//根据JSONObject转化为OrderDetail对象
