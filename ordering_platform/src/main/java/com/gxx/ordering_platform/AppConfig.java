@@ -121,8 +121,8 @@ public class AppConfig {
 		
 		// 开发调试8442
 //	    connector.setPort(8442);
-		// 线上8443
-	    connector.setPort(8443);
+		// 线上8443，tomcat已经配置了
+//	    connector.setPort(8443);
 	    connector.setSecure(true);
 	    connector.setScheme("https");
 	    connector.setAttribute("sslkeyAlias", "alias");
