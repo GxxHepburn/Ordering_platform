@@ -200,7 +200,8 @@ public class AppConfig {
 	DataSource createDataSource(
 			@Value("${jdbc.url}") String jdbcUrl,
 			@Value("${jdbc.username}") String jdbcUsername,
-			@Value("${jdbc.password}") String jdbcPassword) {
+			@Value("${jdbc.password}") String jdbcPassword) throws ClassNotFoundException {
+		Class.forName("com.mysql.jdbc.Driver");
 		HikariConfig config = new HikariConfig();
 		config.setJdbcUrl(jdbcUrl);
 		config.setUsername(jdbcUsername);
