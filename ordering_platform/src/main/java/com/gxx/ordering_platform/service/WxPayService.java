@@ -33,7 +33,7 @@ import com.gxx.ordering_platform.wxPaySDK.WXPayUtil;
 
 @Component
 public class WxPayService {
-
+	
 	final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Value("${merchantNumber.body}")

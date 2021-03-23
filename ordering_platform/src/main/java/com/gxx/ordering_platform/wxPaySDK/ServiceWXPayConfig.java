@@ -14,7 +14,7 @@ import com.gxx.ordering_platform.wxPaySDK.IWXPayDomain.DomainInfo;
 
 @Component
 public class ServiceWXPayConfig extends WXPayConfig {
-
+	
 	final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Value("${serviceNumber.appid}")

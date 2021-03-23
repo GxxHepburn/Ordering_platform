@@ -53,7 +53,7 @@ import com.gxx.ordering_platform.utils.EncryptionAndDeciphering;
 
 @Component
 public class OSMOrderingService {
-	
+
 	@Autowired OrdersMapper ordersMapper;
 
 	@Autowired WechatUserMapper wechatUserMapper;

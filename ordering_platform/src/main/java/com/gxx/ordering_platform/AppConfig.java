@@ -188,10 +188,8 @@ public class AppConfig {
 			
 			@Override
 			public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-				// TODO Auto-generated method stub
-				// 线上版本，不允许跨域
 //				registry.addHandler(osmOrderingHandler, "/websocketOrdering").addInterceptors(osmWebSocketSession);
-				// 这里设置了允许跨域！请正式版本删除这个跨域
+				// 这里设置了允许跨域！
 				// 没办法删除，因为Osmapp就是跨域的!
 				registry.addHandler(osmOrderingHandler, "/websocketOrdering").addInterceptors(osmWebSocketSession).setAllowedOrigins("*");
 			}
@@ -204,7 +202,8 @@ public class AppConfig {
 			@Value("${jdbc.username}") String jdbcUsername,
 			@Value("${jdbc.password}") String jdbcPassword) {
 		HikariConfig config = new HikariConfig();
-		config.setJdbcUrl(jdbcUrl);
+		config.setJdbcUrl("jdbc:mysql://localhost:3306/gxxordering?zeroDateTimeBehavior=convertToNull");
+//		config.setJdbcUrl(jdbcUrl);
 		config.setUsername(jdbcUsername);
 		config.setPassword(jdbcPassword);
 		config.addDataSourceProperty("autoCommit", "false");

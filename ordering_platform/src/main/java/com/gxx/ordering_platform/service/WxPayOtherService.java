@@ -45,7 +45,7 @@ import com.gxx.ordering_platform.xpyunSDK.vo.PrintRequest;
 
 @Component
 public class WxPayOtherService {
-	
+
 	@Autowired
 	WechatOrderingService wechatOrderingService;
 	

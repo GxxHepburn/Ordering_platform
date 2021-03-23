@@ -30,7 +30,6 @@ import com.gxx.ordering_platform.mapper.FoodTypeMapper;
 @WebAppConfiguration
 @ContextConfiguration(classes= {AppConfig.class})
 public class WeChatInitMenuServiceTest {
-
 	@Autowired
 	FoodTypeMapper foodTypeMapper;
 	

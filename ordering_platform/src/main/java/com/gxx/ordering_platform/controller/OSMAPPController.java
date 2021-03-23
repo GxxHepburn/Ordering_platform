@@ -116,7 +116,6 @@ public class OSMAPPController {
 		}
 		// 错误信息
 		JSONObject newJsonObject = new JSONObject();
-		
 		JSONObject metaJsonObject = new JSONObject();
 		metaJsonObject.put("status", 500);
 		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
