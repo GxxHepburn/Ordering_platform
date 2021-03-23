@@ -118,10 +118,14 @@ public class AppConfig {
 	}
 	
 	private static void getSslConnector(Connector connector) throws IOException {
+		
+		// 开发调试8442
+//	    connector.setPort(8442);
+		// 线上8443
 	    connector.setPort(8443);
 	    connector.setSecure(true);
 	    connector.setScheme("https");
-	    connector.setAttribute("sslkeyAlias", "tomcat");
+	    connector.setAttribute("sslkeyAlias", "alias");
 	    
 	    String password = "";
 	    String path = "";

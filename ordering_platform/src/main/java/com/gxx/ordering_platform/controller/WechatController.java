@@ -156,8 +156,7 @@ public class WechatController {
 				// 如果没超卖了，那么new JSOBObject就会报错
 				new JSONObject(orderSearchId);
 			} catch (Exception e) {
-				//下单失败-更新客户端menu
-				logger.error("ERROR", e);
+				logger.info("下单成功！");
 				WeChatInitMenuService weChatInitMenuService = (WeChatInitMenuService)webApplicationContext.getBean("weChatInitMenuService");
 				
 				String newJsonStr = weChatInitMenuService.initMenu(String.valueOf(mid)).toString();
