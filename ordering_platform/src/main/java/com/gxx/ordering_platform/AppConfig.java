@@ -202,8 +202,7 @@ public class AppConfig {
 			@Value("${jdbc.username}") String jdbcUsername,
 			@Value("${jdbc.password}") String jdbcPassword) {
 		HikariConfig config = new HikariConfig();
-		config.setJdbcUrl("jdbc:mysql://localhost:3306/gxxordering?zeroDateTimeBehavior=convertToNull");
-//		config.setJdbcUrl(jdbcUrl);
+		config.setJdbcUrl(jdbcUrl);
 		config.setUsername(jdbcUsername);
 		config.setPassword(jdbcPassword);
 		config.addDataSourceProperty("autoCommit", "false");
