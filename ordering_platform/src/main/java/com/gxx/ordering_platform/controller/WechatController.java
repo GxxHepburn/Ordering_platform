@@ -186,7 +186,7 @@ public class WechatController {
 				new JSONObject(addReturnString);
 			} catch (Exception e) {
 				//下单成功-更新客户端menu
-				logger.info("家才成功");
+				logger.info("加菜成功");
 				WeChatInitMenuService weChatInitMenuService = (WeChatInitMenuService)webApplicationContext.getBean("weChatInitMenuService");
 				return weChatInitMenuService.initMenu(String.valueOf(mid)).toString();
 			}

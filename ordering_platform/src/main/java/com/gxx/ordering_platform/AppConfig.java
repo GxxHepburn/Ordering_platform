@@ -120,7 +120,7 @@ public class AppConfig {
 	private static void getSslConnector(Connector connector) throws IOException {
 		
 		// 开发调试8442
-//	    connector.setPort(8442);
+	    connector.setPort(8442);
 		// 线上8443，tomcat已经配置了
 //	    connector.setPort(8443);
 	    connector.setSecure(true);
