@@ -100,8 +100,8 @@ public class AppConfig {
 		
 		Connector connector = tomcat.getConnector();
 		connector.setURIEncoding("utf-8");
-		getSslConnector(connector);
-		
+//		getSslConnector(connector);
+		connector.setPort(80);
 		
 		Context ctx = tomcat.addWebapp("", new File("src/main/webapp").getAbsolutePath());
 		WebResourceRoot resources = new StandardRoot(ctx);

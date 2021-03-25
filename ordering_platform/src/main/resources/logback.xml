@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-	<property name="LOG_HOME" value="C:/Users/Administrator/Desktop/log" />  
-	<property name="SECURITY_LOG" value="C:/Users/Administrator/Desktop/securitylog" />  
+	<!-- <property name="LOG_HOME" value="C:/Users/Administrator/Desktop/log" />   -->
+	<!-- <property name="SECURITY_LOG" value="C:/Users/Administrator/Desktop/securitylog" />   -->
+	<property name="LOG_HOME" value="C:/Users/gxx/Desktop/log" /> 
+	<property name="SECURITY_LOG" value="C:/Users/gxx/Desktop/securitylog" />
 	
 	<!-- 自定义securityLoggerFilter的日志文件 -->
 	<!--特殊业务记录单独的日志文件-->
