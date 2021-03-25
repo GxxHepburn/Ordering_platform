@@ -44,15 +44,11 @@ public class OSMOrderingHandler extends TextWebSocketHandler {
 		Mmngct mmngct = mmaMapper.getByUsername(session.getAttributes().get("name").toString());
 		session.getAttributes().put("M_ID", mmngct.getMMA_MID());
         clients.put(session.getId(), session);
-        // 让商家管理系统上线
-        oSMMerService.openMer(Integer.valueOf(session.getAttributes().get("M_ID").toString()));
         logger.info("open wbss " + clients.size());
     }
     
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        // 让商家管理系统下线
-    	oSMMerService.closeMer(Integer.valueOf(session.getAttributes().get("M_ID").toString()));
         clients.remove(session.getId());
         logger.info("closed wbss " + session.getId() + ", ");
     }
