@@ -30,6 +30,10 @@ public class WechatMerService {
 			return "0";
 		} else {
 			Mer mer = merMapper.getMerByMID(mid);
+			// 查看餐厅有没有被禁用，为1是被禁用了，为0是正常的
+			if (mer.getM_IsBan() == 1) {
+				return "-2";
+			}
 			JSONObject merJsonObject = new JSONObject(mer);
 			merJsonObject.put("m_Sub_Mch_ID", "");
 			return merJsonObject.toString();
