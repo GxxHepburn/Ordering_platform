@@ -216,6 +216,8 @@ public class MmaService {
 			newJsonObject.put("meta", metaJsonObject);
 			return newJsonObject.toString();
 		}
+		// 将使用过的二维码删除
+		redisUtil.delete(username);
 		// 将，用户名+Useful，验证时间放入redis
 		String key = username + "Useful";
 		redisUtil.setEx(key, "成功验证", 3, TimeUnit.DAYS);
@@ -373,6 +375,8 @@ public class MmaService {
 		}
 		// 修改密码
 		mmaMapper.updatePassword(username, newPasswordOne);
+		// 删除使用过的验证码
+		redisUtil.delete(username+"-ChangePW");
 		metaJsonObject.put("status", 200);
 		metaJsonObject.put("msg", "修改密码成功!");
 		newJsonObject.put("meta", metaJsonObject);
