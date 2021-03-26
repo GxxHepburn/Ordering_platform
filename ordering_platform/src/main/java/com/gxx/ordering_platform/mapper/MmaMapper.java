@@ -19,4 +19,7 @@ public interface MmaMapper {
 	
 	@Update("UPDATE mmngct set MMA_LastLoginTime = #{mma_lastLoginTime} WHERE MMA_UserName = #{mma_username}")
 	void updateLastLoginTime(@Param("mma_username") String mma_username, @Param("mma_lastLoginTime") Date mma_lastLoginTime);
+	
+	@Update("UPDATE mmngct set MMA_Password = #{password}")
+	void updatePassword(@Param("username") String username, @Param("password") String password);
 }

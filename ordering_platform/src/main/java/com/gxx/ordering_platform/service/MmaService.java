@@ -327,4 +327,55 @@ public class MmaService {
 		newJsonObject.put("meta", metaJsonObject);
 		return newJsonObject.toString();
 	}
+	
+	@Transactional
+	public String realChangePWCheck(Map<String, Object> map) {
+		
+		// 验证用户名
+		// 验证二维码
+		
+		JSONObject newJsonObject = new JSONObject();
+		JSONObject metaJsonObject = new JSONObject();
+		
+		String username = map.get("username").toString();
+		String checkNum = map.get("checkNum").toString();
+		String newPasswordOne = map.get("newPasswordOne").toString();
+		String newPasswordTwo = map.get("newPasswordTwo").toString();
+		Mmngct mmngct = mmaMapper.getByUsername(username);
+		if (mmngct == null) {
+			metaJsonObject.put("status", 404);
+			metaJsonObject.put("msg", "用户名不存在,请核实后再试!");
+			newJsonObject.put("meta", metaJsonObject);
+			return newJsonObject.toString();
+		}
+		
+		String redisCheckNum = redisUtil.get(username+"-ChangePW");
+		if (redisCheckNum == null || "null".equals(redisCheckNum)) {
+			// 返回错误信息，验证码有失效了，过期了
+			metaJsonObject.put("status", 403);
+			metaJsonObject.put("msg", "验证码过期，请重试!");
+			newJsonObject.put("meta", metaJsonObject);
+			return newJsonObject.toString();
+		}
+		if (!checkNum.equals(redisCheckNum)) {
+			// 返回验证码错误，请重新输入
+			metaJsonObject.put("status", 405);
+			metaJsonObject.put("msg", "验证码错误，请重新输入!");
+			newJsonObject.put("meta", metaJsonObject);
+			return newJsonObject.toString();
+		}
+		if (!newPasswordTwo.equals(newPasswordOne)) {
+			// 返回验证码错误，请重新输入
+			metaJsonObject.put("status", 406);
+			metaJsonObject.put("msg", "两次输入密码不相同!");
+			newJsonObject.put("meta", metaJsonObject);
+			return newJsonObject.toString();
+		}
+		// 修改密码
+		mmaMapper.updatePassword(username, newPasswordOne);
+		metaJsonObject.put("status", 200);
+		metaJsonObject.put("msg", "修改密码成功!");
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
+	}
 }

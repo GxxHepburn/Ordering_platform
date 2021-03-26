@@ -260,6 +260,7 @@ public class AppConfig {
 				List<String> excludePathList = new ArrayList<String>();
 				excludePathList.add("/OSM/login");
 				excludePathList.add("/OSM/sendChangePWCheck");
+				excludePathList.add("/OSM/realChangePWCheck");
 				
 				// WechatIsOpeningInterceptor
 				List<String> isOpeningIncludePathList = new ArrayList<String>();
