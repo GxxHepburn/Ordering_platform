@@ -259,6 +259,7 @@ public class AppConfig {
 				// 解决办法是在HttpSessionHandshakeInterceptor 中处理，是有需要拦截
 				List<String> excludePathList = new ArrayList<String>();
 				excludePathList.add("/OSM/login");
+				excludePathList.add("/OSM/sendChangePWCheck");
 				
 				// WechatIsOpeningInterceptor
 				List<String> isOpeningIncludePathList = new ArrayList<String>();
