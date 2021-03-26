@@ -21,6 +21,7 @@ import com.aliyuncs.http.MethodType;
 import com.aliyuncs.profile.DefaultProfile;
 import com.gxx.ordering_platform.entity.Mer;
 import com.gxx.ordering_platform.entity.Mmngct;
+import com.gxx.ordering_platform.mapper.MerMapper;
 import com.gxx.ordering_platform.mapper.MmaMapper;
 import com.gxx.ordering_platform.utils.JWTUtils;
 import com.gxx.ordering_platform.utils.RedisUtil;
@@ -29,6 +30,8 @@ import com.gxx.ordering_platform.utils.RedisUtil;
 public class MmaService {
 	
 	@Autowired MmaMapper mmaMapper;
+	
+	@Autowired MerMapper merMapper;
 	
 	@Autowired RedisUtil redisUtil;
 	
@@ -50,6 +53,20 @@ public class MmaService {
 		//如果不正确，则返回登陆失败信息
 		JSONObject newJsonObject = new JSONObject();
 		if (this.checkingMma(username, password)) {
+			
+			// 判断isban，如果isban，则返回，否则继续
+			Mmngct mmngct = mmaMapper.getByUsername(username);
+			Mer mer = merMapper.getMerByMID(mmngct.getMMA_MID());
+			if (mer.getM_IsBan() == 1) {
+				
+				JSONObject metaJsonObject = new JSONObject();
+				metaJsonObject.put("status", 402);
+				metaJsonObject.put("msg", "餐厅已下架,请联系管理员!");
+				
+				newJsonObject.put("meta", metaJsonObject);
+				return newJsonObject.toString();
+			}
+			
 			// 判断是不是要验证码
 			String userful = redisUtil.get(username + "Useful");
 			if (userful == null) {
@@ -59,7 +76,7 @@ public class MmaService {
 				// 设置3分钟有效期token
 				String jwtString = JWTUtils.createJwt(username, 180000, claims);
 				
-				Mmngct mmngct = mmaMapper.getByUsername(username);
+//				Mmngct mmngct = mmaMapper.getByUsername(username);
 				JSONObject dataJsonObject = new JSONObject();
 				dataJsonObject.put("mmngct", new JSONObject(mmngct));
 				dataJsonObject.put("token", jwtString);
