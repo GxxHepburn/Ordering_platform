@@ -37,7 +37,6 @@ public class WeChatInitMenuService {
 	final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	//事物-防止读取菜单过程中，被修改库存
-	@Transactional
 	public JSONObject initMenu(String res) {
 		int ft_mid = Integer.valueOf(res);
 		List<FoodType> foodTypes = foodTypeMapper.getByFTMID(ft_mid);
