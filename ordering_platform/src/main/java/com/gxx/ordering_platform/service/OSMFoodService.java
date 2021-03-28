@@ -593,7 +593,6 @@ public class OSMFoodService {
 			        int j = 0;
 			        for (; j < fileUploadBytes.length; j++) {
 			        	if (fileUploadBytes[j] != fileHavedBytes[j]) {
-			        		System.out.println("触发不等");
 			        		break;
 			        	}
 			        }
