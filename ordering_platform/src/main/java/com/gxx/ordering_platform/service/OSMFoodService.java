@@ -1,6 +1,11 @@
 package com.gxx.ordering_platform.service;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +14,8 @@ import java.util.function.Consumer;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,11 +24,13 @@ import org.springframework.web.multipart.MultipartFile;
 import com.gxx.ordering_platform.entity.Food;
 import com.gxx.ordering_platform.entity.FoodProperty;
 import com.gxx.ordering_platform.entity.FoodSpecifications;
+import com.gxx.ordering_platform.entity.Image;
 import com.gxx.ordering_platform.entity.Mmngct;
 import com.gxx.ordering_platform.mapper.FoodMapper;
 import com.gxx.ordering_platform.mapper.FoodPropertyMapper;
 import com.gxx.ordering_platform.mapper.FoodSpecificationsMapper;
 import com.gxx.ordering_platform.mapper.FoodTypeMapper;
+import com.gxx.ordering_platform.mapper.ImageMapper;
 import com.gxx.ordering_platform.mapper.MmaMapper;
 import com.gxx.ordering_platform.utils.PropertiesUtils;
 
@@ -38,26 +47,65 @@ public class OSMFoodService {
 	
 	@Autowired FoodTypeMapper foodTypeMapper;
 	
-	public String uploadFoodImg(MultipartFile file) {
+	@Autowired ImageMapper imageMapper;
+	
+	final Logger logger = LoggerFactory.getLogger(getClass());
+	
+	@Transactional
+	public String uploadFoodImg(MultipartFile file) throws Exception {
+		
+		//拼接json
+		JSONObject newJsonObject = new JSONObject();
+		JSONObject metaJsonObject = new JSONObject();
+		String imgUrl;
+		
+		// 判断是否存在，如果存在，则不上传并获取存在图片地址
+		String isImgRepeatString = isImgRepeat(file);
+		if (!"-1".equals(isImgRepeatString)) {
+			imgUrl = PropertiesUtils.get("netSet", "OSMDomain") + "/static/FoodImges/" + isImgRepeatString;
+			
+			// 返回唯一地址
+	        metaJsonObject.put("status", 200);
+			metaJsonObject.put("msg", "上传成功");
+			
+			JSONObject dataJsonObject = new JSONObject();
+			dataJsonObject.put("imgUrl", imgUrl);
+			
+			newJsonObject.put("meta", metaJsonObject);
+			newJsonObject.put("data", dataJsonObject);
+			
+			return newJsonObject.toString();
+		}
+		// 如果不存在，则走下面分支,并将图片信息存入image表
+		
 		// 生成唯一地址,以及存储的绝对地址
 		String fileName = file.getOriginalFilename();
         String suffix = fileName.substring(fileName.lastIndexOf(".")+1); // 后缀
         String uuID = UUID.randomUUID().toString();
         String imgPath = PropertiesUtils.get("netSet", "OSMAbsolutePath") + "/FoodImges/"
-				+ uuID;
-        imgPath = imgPath + "." + suffix;
-        String imgUrl = PropertiesUtils.get("netSet", "OSMDomain") + "/static/FoodImges/" + uuID + "." + suffix;
+				+ uuID + "." + suffix;
+        imgUrl = PropertiesUtils.get("netSet", "OSMDomain") + "/static/FoodImges/" + uuID + "." + suffix;
         
+		
+        
+        // 将图片名,hash值存入数据库
+        byte[] fileUploadBytes = file.getBytes();
+        MessageDigest md = MessageDigest.getInstance("MD5");
+		md.update(fileUploadBytes);
+		byte[] mdResult = md.digest();
+		String mdString = new BigInteger(1, mdResult).toString(16);
+		String I_Name = uuID + "." + suffix;
+		imageMapper.insert(mdString, I_Name);
+		
+		
+		
 		// 取出图片，放到唯一地址上
         File localFile = new File(imgPath);
-        
-        //拼接json
-		JSONObject newJsonObject = new JSONObject();
-		JSONObject metaJsonObject = new JSONObject();
 		
         try {
 			file.transferTo(localFile);
 		} catch (Exception e) {
+			logger.error("ERROR", e);
 			// TODO Auto-generated catch block
 			metaJsonObject.put("status", "500");
 			metaJsonObject.put("msg", "上传失败");
@@ -514,5 +562,49 @@ public class OSMFoodService {
 		newJsonObject.put("meta", metaJsonObject);
 		
 		return newJsonObject.toString();
+	}
+	
+	// 判断图片是否存在
+	public String isImgRepeat (MultipartFile file) throws Exception {
+		// 获取图片字节流
+		byte[] fileUploadBytes = file.getBytes();
+		
+		// 计算图片hash值
+		MessageDigest md = MessageDigest.getInstance("MD5");
+		md.update(fileUploadBytes);
+		byte[] mdResult = md.digest();
+		String mdString = new BigInteger(1, mdResult).toString(16);
+		// 数据库检索相同hash值图片List
+		List<Image> images = imageMapper.getByI_Hash_Uniq(mdString);
+		if (images.size() == 0) {
+			return "-1";
+		}
+		// 和List中每一张图片比对
+		for (int i = 0; i < images.size(); i++) {
+			String fileName = images.get(i).getI_Name();
+	        String imgPath = PropertiesUtils.get("netSet", "OSMAbsolutePath") + "/FoodImges/"
+					+ fileName;
+	        File fileHaved = new File(imgPath);
+	        // 如果字节长度相同，再逐字节对比
+	        if (fileUploadBytes.length == fileHaved.length()) {
+	        	try (InputStream inputStream = new FileInputStream(fileHaved);) {
+			        byte[] fileHavedBytes = new byte[(int)fileHaved.length()];
+			        inputStream.read(fileHavedBytes);
+			        int j = 0;
+			        for (; j < fileUploadBytes.length; j++) {
+			        	if (fileUploadBytes[j] != fileHavedBytes[j]) {
+			        		System.out.println("触发不等");
+			        		break;
+			        	}
+			        }
+			        if (j == fileUploadBytes.length) {
+			        	// 相同
+			        	return images.get(i).getI_Name();
+			        }
+	        	}
+		        
+	        }
+		}
+		return "-1";
 	}
 }

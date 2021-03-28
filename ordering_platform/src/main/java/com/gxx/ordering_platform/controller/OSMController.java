@@ -164,7 +164,20 @@ public class OSMController {
 	@PostMapping(value = "/uploadFoodImg", produces="application/json;charset=UTF-8")
 	@ResponseBody
 	public String uploadFoodImg(@RequestParam("file") MultipartFile file) {
-		return oSMFoodService.uploadFoodImg(file);
+		try {
+			return oSMFoodService.uploadFoodImg(file);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error("ERROR", e);
+		}
+		JSONObject newJsonObject = new JSONObject();
+		
+		JSONObject metaJsonObject = new JSONObject();
+		metaJsonObject.put("status", 500);
+		metaJsonObject.put("msg", "服务器错误，请联系管理员!");
+		
+		newJsonObject.put("meta", metaJsonObject);
+		return newJsonObject.toString();
 	}
 	
 	@PostMapping(value = "/cates", produces="application/json;charset=UTF-8")
